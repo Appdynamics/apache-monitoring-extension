@@ -18,7 +18,7 @@ In addition, it lists:
    * Top Requests: Most requests by quantity and by volume, measured by number of bytes transferred.
    * Top Activity: Current activity such as responding, cleaning up, logging, etc.
 
-##Files and folders included
+##Files and Folders Included
 
 <table><tbody>
 <tr>
