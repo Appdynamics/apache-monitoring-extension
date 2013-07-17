@@ -18,6 +18,35 @@ In addition, it lists:
    * Top Requests: Most requests by quantity and by volume, measured by number of bytes transferred.
    * Top Activity: Current activity such as responding, cleaning up, logging, etc.
 
+##Files and folders included
+
+<table><tbody>
+<tr>
+<th align = 'left'> Directory/File </th>
+<th align = 'left'> Description </th>
+</tr>
+<tr>
+<td class='confluenceTd'> conf </td>
+<td class='confluenceTd'> Contains the monitor.xml </td>
+</tr>
+<tr>
+<td class='confluenceTd'> lib </td>
+<td class='confluenceTd'> Contains third-party project references </td>
+</tr>
+<tr>
+<td class='confluenceTd'> src </td>
+<td class='confluenceTd'> Contains source code to the Apache monitoring extension </td>
+</tr>
+<tr>
+<td class='confluenceTd'> dist </td>
+<td class='confluenceTd'> Only obtained when using ant. Run 'ant build' to get binaries. Run 'ant package' to get the distributable .zip file </td>
+</tr>
+<tr>
+<td class='confluenceTd'> build.xml </td>
+<td class='confluenceTd'> Ant build script to package the project (required only if changing Java code) </td>
+</tr>
+</tbody>
+</table>
 
 
 ##Installation
@@ -39,13 +68,13 @@ In addition, it lists:
     Scoreboard: __W___……………….
    ```
 
-2. Deploy the .zip file into the \<machine agent home\>/monitors directory.
+3. Run `ant package`. Deploy the ApacheMonitor.zip file found in 'dist' into the \<machine agent home\>/monitors directory.
 
    ```
 > cd <machine agent home>/monitors/
 > unzip apachemon.zip
    ```
-2. Setup task.properties with the correct host and port:
+4. Setup task.properties with the correct host and port:
    -   host=your-apache-server
    -   port=90
 
