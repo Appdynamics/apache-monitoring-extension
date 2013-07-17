@@ -4,7 +4,6 @@
 
 The Apache HTTP Server is a widely-used web server supported by the Apache Software Foundation. The Apache HTTP Server monitoring extension captures metrics from an Apache web server and displays them in the AppDynamics Metric Browser.
 
-
 Metrics include:
 
    * Availability: Percentage of time that the server has been up; graphs server up/down status over time.
@@ -17,36 +16,6 @@ In addition, it lists:
 
    * Top Requests: Most requests by quantity and by volume, measured by number of bytes transferred.
    * Top Activity: Current activity such as responding, cleaning up, logging, etc.
-
-##Files and Folders Included
-
-<table><tbody>
-<tr>
-<th align = 'left'> Directory/File </th>
-<th align = 'left'> Description </th>
-</tr>
-<tr>
-<td class='confluenceTd'> conf </td>
-<td class='confluenceTd'> Contains the monitor.xml </td>
-</tr>
-<tr>
-<td class='confluenceTd'> lib </td>
-<td class='confluenceTd'> Contains third-party project references </td>
-</tr>
-<tr>
-<td class='confluenceTd'> src </td>
-<td class='confluenceTd'> Contains source code to the Apache monitoring extension </td>
-</tr>
-<tr>
-<td class='confluenceTd'> dist </td>
-<td class='confluenceTd'> Only obtained when using ant. Run 'ant build' to get binaries. Run 'ant package' to get the distributable .zip file. </td>
-</tr>
-<tr>
-<td class='confluenceTd'> build.xml </td>
-<td class='confluenceTd'> Ant build script to package the project (required only if changing Java code) </td>
-</tr>
-</tbody>
-</table>
 
 
 ##Installation
@@ -98,6 +67,38 @@ Output from this monitoring extension includes:
 
 -   Idle Workers: The number of idle Apache processes waiting for an HTTP request.
 
+
+##Directory Structure
+
+<table><tbody>
+<tr>
+<th align = 'left'> Directory/File </th>
+<th align = 'left'> Description </th>
+</tr>
+<tr>
+<td class='confluenceTd'> conf </td>
+<td class='confluenceTd'> Contains the monitor.xml </td>
+</tr>
+<tr>
+<td class='confluenceTd'> lib </td>
+<td class='confluenceTd'> Contains third-party project references </td>
+</tr>
+<tr>
+<td class='confluenceTd'> src </td>
+<td class='confluenceTd'> Contains source code to the Apache monitoring extension </td>
+</tr>
+<tr>
+<td class='confluenceTd'> dist </td>
+<td class='confluenceTd'> Only obtained when using ant. Run 'ant build' to get binaries. Run 'ant package' to get the distributable .zip file. </td>
+</tr>
+<tr>
+<td class='confluenceTd'> build.xml </td>
+<td class='confluenceTd'> Ant build script to package the project (required only if changing Java code) </td>
+</tr>
+</tbody>
+</table>
+
+
 ##Metrics
 
 ###Availability
@@ -130,13 +131,14 @@ Output from this monitoring extension includes:
 -   Gracefully Finishing
 -   Cleaning up of working
 
-
-
 ##Contributing
 
-Always feel free to fork and contribute any changes directly via GitHub.
+Always feel free to fork and contribute any changes directly via [GitHub](https://github.com/Appdynamics/apache-monitoring-extension).
 
+##Community
+
+Find out more in the [AppSphere](http://appsphere.appdynamics.com/t5/Extensions/Apache-Monitoring-Extension/idi-p/753) community.
 
 ##Support
 
-For any support questions, please contact ace@appdynamics.com.
+For any questions or feature request, please contact [AppDynamics Center of Excellence](mailto://ace-request@appdynamics.com).
