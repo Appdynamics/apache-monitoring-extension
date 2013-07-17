@@ -39,7 +39,7 @@ In addition, it lists:
 </tr>
 <tr>
 <td class='confluenceTd'> dist </td>
-<td class='confluenceTd'> Only obtained when using ant. Run 'ant build' to get binaries. Run 'ant package' to get the distributable .zip file </td>
+<td class='confluenceTd'> Only obtained when using ant. Run 'ant build' to get binaries. Run 'ant package' to get the distributable .zip file. </td>
 </tr>
 <tr>
 <td class='confluenceTd'> build.xml </td>
