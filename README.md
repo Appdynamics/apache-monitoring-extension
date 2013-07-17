@@ -1,4 +1,4 @@
-# AppDynamics Apache Monitoring Extension
+# AppDynamics Apache - Monitoring Extension
 
 ##Use Case
 
