@@ -107,19 +107,19 @@ Output from this monitoring extension includes:
 
 ###Resource Utilization
 
--   CPU Load (N/A on Windows)
+-   Counter Description CPU Load (N/A on Windows) -- The percentage of the CPU used by Apache.
 -   Processes
-    - Busy Workers
-    - Idle Workers
+    - Busy Workers -- The number of Apache processes actively processing an HTTP request.
+    - Idle Workers -- The number of idle Apache processes waiting for an HTTP request.
 -   Memory
 
 ###Activity
 
 -   Accesses -- Total number of accesses per Minute
 -   Total Traffic (kb)
--   Requests per second
--   Bytes per second
--   Bytes per request
+-   Requests per second -- The number of HTTP requests the web server is processing per second.
+-   Bytes per second -- The amount of data the web server is transferring per second.
+-   Bytes per request -- The average number of bytes being transferred per HTTP request.
 -   Activity Types
     -   Starting up
     -   Reading Request
