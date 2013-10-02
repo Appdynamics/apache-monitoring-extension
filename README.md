@@ -43,13 +43,14 @@ In addition, it lists:
 > cd <machine agent home>/monitors/
 > unzip apachemon.zip
    ```
-4. Setup task.properties with the correct host and port:
+4. Set up task.properties with the correct host and port:
    -   host=your-apache-server
    -   port=90
 
    ```
    > cat <machine agent home>/monitors/ApacheMon/task.properties
    ```
+   Note: If you want to monitor more than one server, see [Monitoring multiple Apache servers](#Monitoring multiple Apache servers).  
 
 ​5. Restart the Machine Agent.
 
@@ -66,6 +67,51 @@ Output from this monitoring extension includes:
 -   Busy Workers: The number of Apache processes actively processing an HTTP request.
 
 -   Idle Workers: The number of idle Apache processes waiting for an HTTP request.
+
+### Monitoring multiple Apache servers
+Currently, the Apache HTTP Server monitoring extension only supports a single Apache server.
+However, you can "fool" the system into monitoring multiple servers as follows.
+
+​1. For each server you want to monitor, copy the monitors/ApacheMonitor directory into another directory, such as monitors/ApacheStatusMonitor2.
+
+​2. Edit the monitor.xml file in that directory, changing the `<name>` value to the name of the new directory:
+
+
+   ```  
+<monitor>
+	<name>ApacheStatusMonitor2</name>
+	<type>managed</type>
+	<description>Monitors general status of Apache Server 
+	</description>
+    <monitor-configuration>
+    </monitor-configuration>
+	<monitor-run-task>
+	      <execution-style>periodic</execution-style>
+	      <execution-frequency-in-seconds>60</execution-frequency-in-seconds>
+	      <name>Apache Status Monitor Run Task</name>
+    	  <display-name>Apache Status Monitor Task</display-name>
+    	  <description>Apache Status Monitor Task</description>
+    	  <type>java</type>
+    	  <execution-timeout-in-secs>120</execution-timeout-in-secs>
+    	  <task-arguments>
+	        	<argument name="port" is-required="false"/>
+    	  </task-arguments>
+    	  <java-task>
+          	<classpath>ApacheMonitor.jar</classpath>
+          	<impl-class>com.appdynamics.monitors.apache.ApacheStatusMonitor
+          	</impl-class>
+          </java-task>
+	</monitor-run-task>
+</monitor>
+   ```
+​3. Set up the task.properties file in the monitors/ApacheStatusMonitor2 directory to point to the other webserver instance.
+
+   -   host=your-other-apache-server
+   -   port=90
+<br/>
+   
+​4. When you have finished adding all the servers you want to monitor, restart the machine agent.
+
 
 
 ##Directory Structure
