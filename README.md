@@ -41,7 +41,7 @@ In addition, it lists:
 
    ```
 > cd <machine agent home>/monitors/
-> unzip apachemon.zip
+> unzip ApacheMonitor.zip
    ```
 4. Set up task.properties with the correct host and port:
    -   host=your-apache-server
