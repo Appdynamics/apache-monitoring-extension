@@ -1,5 +1,7 @@
 # AppDynamics Apache - Monitoring Extension
 
+This extension works only with the Java agent.
+
 ##Use Case
 
 The Apache HTTP Server is a widely-used web server supported by the Apache Software Foundation. The Apache HTTP Server monitoring extension captures metrics from an Apache web server and displays them in the AppDynamics Metric Browser.
