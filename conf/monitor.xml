@@ -14,7 +14,9 @@
     	  <type>java</type>
     	  <execution-timeout-in-secs>120</execution-timeout-in-secs>
     	  <task-arguments>
-	        	<argument name="port" is-required="false"/>
+            <argument name="host" is-required="false" default-value="localhost"/>
+            <argument name="port" is-required="false" default-value="90"/>
+            <argument name="custom-url-path" is-required="false" default-value="/server-status?auto"/>
     	  </task-arguments>
     	  <java-task>
           	<classpath>ApacheMonitor.jar</classpath>

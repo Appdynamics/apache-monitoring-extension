@@ -151,7 +151,7 @@ public class ApacheStatusMonitor extends JavaServersMonitor
 		IHttpClientWrapper httpClient = HttpClientWrapper.getInstance();
 
 		// make http request for stats to apache
-		String connStr = "http://" + host + ":" + port + "/server-status?auto";
+		String connStr = "http://" + host + ":" + port + customURLPath;
 		HttpExecutionRequest request = new HttpExecutionRequest(connStr, "", HttpOperation.GET);
 		HttpExecutionResponse response = httpClient.executeHttpOperation(request, new Log4JLogger(logger));
 

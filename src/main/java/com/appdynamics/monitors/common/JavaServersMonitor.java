@@ -26,6 +26,7 @@ public abstract class JavaServersMonitor extends AManagedMonitor
 	protected volatile String passwd;
 	protected volatile String serverRoot = "C:/Program Files/Apache Software Foundation/Apache2.2";   // root directory of the server we are monitoring (for finding files or deploying programs)
 	protected volatile String restartAllowed = "TRUE";
+    protected volatile String customURLPath = "/server-status?auto";
 
 	protected volatile Map<String, String> oldValueMap;
 	protected volatile Map<String, String> valueMap;
@@ -41,6 +42,7 @@ public abstract class JavaServersMonitor extends AManagedMonitor
 		userName = getArg(args, "user", userName);
 		passwd = getArg(args, "password", passwd);
 		port = getArg(args, "port", "90");
+        customURLPath = getArg(args, "custom-url-path", customURLPath);
 		serverRoot = getArg(args, "serverRoot", serverRoot);
 		restartAllowed = getArg(args, "restartAllowed", restartAllowed);
 	}
