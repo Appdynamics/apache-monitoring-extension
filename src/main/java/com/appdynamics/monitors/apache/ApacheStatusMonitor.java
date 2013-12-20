@@ -23,6 +23,9 @@ import com.singularity.ee.util.log4j.Log4JLogger;
 
 public class ApacheStatusMonitor extends JavaServersMonitor
 {
+
+    Logger logger = Logger.getLogger(ApacheStatusMonitor.class.getName());
+    
 	private final static String metricPrefix = "Custom Metrics|WebServer|Apache|Status|";
 
 	public ApacheStatusMonitor()
@@ -56,8 +59,9 @@ public class ApacheStatusMonitor extends JavaServersMonitor
 			throw new TaskExecutionException(e);
 		}
 
-		// just for debug output
-		System.out.println("Starting METRIC COLLECTION for Apache Monitor.......");
+        if(logger.isDebugEnabled()) {
+            logger.debug("Starting METRIC COLLECTION for Apache Monitor.......");
+        }
 
 		// Availability
 		printMetric("Availability|up", getString(1),
@@ -147,7 +151,7 @@ public class ApacheStatusMonitor extends JavaServersMonitor
 	protected void populate(Map<String, String> valueMap, String arg1) throws InstantiationException,
 			IllegalAccessException, ClassNotFoundException, IOException
 	{
-		Logger logger = Logger.getLogger(ApacheStatusMonitor.class.getName());
+		
 		IHttpClientWrapper httpClient = HttpClientWrapper.getInstance();
 
 		// make http request for stats to apache
@@ -155,12 +159,17 @@ public class ApacheStatusMonitor extends JavaServersMonitor
 		HttpExecutionRequest request = new HttpExecutionRequest(connStr, "", HttpOperation.GET);
 		HttpExecutionResponse response = httpClient.executeHttpOperation(request, new Log4JLogger(logger));
 
+        if (response.isExceptionHappened()) {
+            logger.error("Failed to execute HTTP request to URL " + connStr +". Got error"+ response.getExceptionMessage());
+            throw new RuntimeException(response.getExceptionMessage());
+        }
+
 		String statStr = response.getResponseBody();
 
 		// get most accurate time
 		currentTime = System.currentTimeMillis();
 
-		System.out.println(statStr);
+        logger.error(statStr); //Print metrics to log
 
 		BufferedReader reader = new BufferedReader(new StringReader(statStr));
 		String line;

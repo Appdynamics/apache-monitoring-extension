@@ -1,20 +1,15 @@
 package com.appdynamics.monitors.common;
 
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.Statement;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-
-import org.apache.log4j.Logger;
-
 import com.singularity.ee.agent.systemagent.api.AManagedMonitor;
 import com.singularity.ee.agent.systemagent.api.EnvPropertyWriter;
 import com.singularity.ee.agent.systemagent.api.MetricWriter;
 import com.singularity.ee.agent.systemagent.api.TaskExecutionContext;
 import com.singularity.ee.agent.systemagent.api.TaskOutput;
 import com.singularity.ee.agent.systemagent.api.exception.TaskExecutionException;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+import org.apache.log4j.Logger;
 
 public abstract class JavaServersMonitor extends AManagedMonitor
 {
@@ -103,48 +98,11 @@ public abstract class JavaServersMonitor extends AManagedMonitor
 		oldTime = currentTime;
 
 		// just for debug output
-		logger.debug("Finished METRIC COLLECTION for Monitor.......");
+        if(logger.isDebugEnabled()) {
+		    logger.debug("Finished METRIC COLLECTION for Monitor.......");
+        }
 
 		return new TaskOutput("Success");
-	}
-
-	protected void close(ResultSet rs, Statement stmt, Connection conn)
-	{
-		if (rs != null)
-		{
-			try 
-			{
-				rs.close();
-			} 
-			catch (Exception e) 
-			{
-				// ignore
-			}
-		}
-		
-		if (stmt != null)
-		{
-			try 
-			{
-				stmt.close();
-			} 
-			catch (Exception e) 
-			{
-				// ignore
-			}
-		}
-		
-		if (conn != null)
-		{
-			try 
-			{
-				conn.close();
-			} 
-			catch (Exception e) 
-			{
-				// ignore
-			}
-		}		
 	}
 	
 	protected String getString(float num)
