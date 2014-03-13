@@ -9,11 +9,11 @@ import java.util.regex.Pattern;
 
 import org.apache.log4j.Logger;
 
+import com.appdynamics.monitors.common.JavaServersMonitor;
 import com.singularity.ee.agent.systemagent.api.MetricWriter;
 import com.singularity.ee.agent.systemagent.api.TaskExecutionContext;
 import com.singularity.ee.agent.systemagent.api.TaskOutput;
 import com.singularity.ee.agent.systemagent.api.exception.TaskExecutionException;
-import com.appdynamics.monitors.common.JavaServersMonitor;
 import com.singularity.ee.util.httpclient.HttpClientWrapper;
 import com.singularity.ee.util.httpclient.HttpExecutionRequest;
 import com.singularity.ee.util.httpclient.HttpExecutionResponse;
@@ -25,8 +25,6 @@ public class ApacheStatusMonitor extends JavaServersMonitor
 {
 
     Logger logger = Logger.getLogger(ApacheStatusMonitor.class.getName());
-    
-	private final static String metricPrefix = "Custom Metrics|WebServer|Apache|Status|";
 
 	public ApacheStatusMonitor()
 	{

@@ -17,6 +17,7 @@
             <argument name="host" is-required="false" default-value="localhost"/>
             <argument name="port" is-required="false" default-value="90"/>
             <argument name="custom-url-path" is-required="false" default-value="/server-status?auto"/>
+            <argument name="metric-prefix" is-required="false" default-value="Custom Metrics|WebServer|Apache|Status|"/>
     	  </task-arguments>
     	  <java-task>
           	<classpath>ApacheMonitor.jar</classpath>

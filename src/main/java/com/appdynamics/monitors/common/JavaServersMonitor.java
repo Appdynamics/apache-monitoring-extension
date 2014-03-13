@@ -1,15 +1,17 @@
 package com.appdynamics.monitors.common;
 
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+
+import org.apache.log4j.Logger;
+
 import com.singularity.ee.agent.systemagent.api.AManagedMonitor;
 import com.singularity.ee.agent.systemagent.api.EnvPropertyWriter;
 import com.singularity.ee.agent.systemagent.api.MetricWriter;
 import com.singularity.ee.agent.systemagent.api.TaskExecutionContext;
 import com.singularity.ee.agent.systemagent.api.TaskOutput;
 import com.singularity.ee.agent.systemagent.api.exception.TaskExecutionException;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-import org.apache.log4j.Logger;
 
 public abstract class JavaServersMonitor extends AManagedMonitor
 {
@@ -22,6 +24,7 @@ public abstract class JavaServersMonitor extends AManagedMonitor
 	protected volatile String serverRoot = "C:/Program Files/Apache Software Foundation/Apache2.2";   // root directory of the server we are monitoring (for finding files or deploying programs)
 	protected volatile String restartAllowed = "TRUE";
     protected volatile String customURLPath = "/server-status?auto";
+    protected volatile String metricPrefix = "Custom Metrics|WebServer|Apache|Status|";
 
 	protected volatile Map<String, String> oldValueMap;
 	protected volatile Map<String, String> valueMap;
@@ -40,6 +43,7 @@ public abstract class JavaServersMonitor extends AManagedMonitor
         customURLPath = getArg(args, "custom-url-path", customURLPath);
 		serverRoot = getArg(args, "serverRoot", serverRoot);
 		restartAllowed = getArg(args, "restartAllowed", restartAllowed);
+		metricPrefix = getArg(args, "metric-prefix", metricPrefix);
 	}
 
 	// safe way to get parameter from monitor, but if null, use default

@@ -1,6 +1,7 @@
 *.class
 *.iml
-
+.classpath
+.project
 .idea
 dist
 
@@ -8,3 +9,4 @@ dist
 # Package Files #
 *.war
 *.ear
+/bin
