@@ -30,6 +30,9 @@ public abstract class JavaServersMonitor extends AManagedMonitor
 	protected volatile Map<String, String> valueMap;
 	protected volatile long oldTime = 0;
 	protected volatile long currentTime = 0;
+    
+    protected String proxyHost;
+    protected String proxyPort;
 
 	public abstract TaskOutput execute(Map<String, String> taskArguments, TaskExecutionContext taskContext)
 			throws TaskExecutionException;
@@ -44,6 +47,9 @@ public abstract class JavaServersMonitor extends AManagedMonitor
 		serverRoot = getArg(args, "serverRoot", serverRoot);
 		restartAllowed = getArg(args, "restartAllowed", restartAllowed);
 		metricPrefix = getArg(args, "metric-prefix", metricPrefix);
+
+        proxyHost = getArg(args, "proxy-host", proxyHost);
+        proxyPort = getArg(args, "proxy-port", proxyPort);
 	}
 
 	// safe way to get parameter from monitor, but if null, use default

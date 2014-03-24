@@ -14,8 +14,10 @@
     	  <type>java</type>
     	  <execution-timeout-in-secs>120</execution-timeout-in-secs>
     	  <task-arguments>
-            <argument name="host" is-required="false" default-value="localhost"/>
-            <argument name="port" is-required="false" default-value="90"/>
+            <argument name="host" is-required="true" default-value="localhost"/>
+            <argument name="port" is-required="true" default-value="8091"/>
+            <argument name="proxy-host" is-required="false" default-value="localhost"/>
+            <argument name="proxy-port" is-required="false" default-value="8888"/>
             <argument name="custom-url-path" is-required="false" default-value="/server-status?auto"/>
             <argument name="metric-prefix" is-required="false" default-value="Custom Metrics|WebServer|Apache|Status|"/>
     	  </task-arguments>

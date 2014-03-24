@@ -1,25 +1,21 @@
 package com.appdynamics.monitors.apache;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.StringReader;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.regex.Pattern;
-
-import org.apache.log4j.Logger;
-
 import com.appdynamics.monitors.common.JavaServersMonitor;
 import com.singularity.ee.agent.systemagent.api.MetricWriter;
 import com.singularity.ee.agent.systemagent.api.TaskExecutionContext;
 import com.singularity.ee.agent.systemagent.api.TaskOutput;
 import com.singularity.ee.agent.systemagent.api.exception.TaskExecutionException;
-import com.singularity.ee.util.httpclient.HttpClientWrapper;
-import com.singularity.ee.util.httpclient.HttpExecutionRequest;
-import com.singularity.ee.util.httpclient.HttpExecutionResponse;
-import com.singularity.ee.util.httpclient.HttpOperation;
-import com.singularity.ee.util.httpclient.IHttpClientWrapper;
-import com.singularity.ee.util.log4j.Log4JLogger;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.StringReader;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.regex.Pattern;
+import org.apache.commons.httpclient.HttpClient;
+import org.apache.commons.httpclient.methods.GetMethod;
+import org.apache.log4j.Logger;
 
 public class ApacheStatusMonitor extends JavaServersMonitor
 {
@@ -38,7 +34,7 @@ public class ApacheStatusMonitor extends JavaServersMonitor
 
 		try
 		{
-			populate(valueMap, null);
+			populate(valueMap);
 		}
 		catch (IOException e)
 		{
@@ -146,30 +142,39 @@ public class ApacheStatusMonitor extends JavaServersMonitor
 	}
 
 	// collects all monitoring data for this time period from database
-	protected void populate(Map<String, String> valueMap, String arg1) throws InstantiationException,
+	protected void populate(Map<String, String> valueMap) throws InstantiationException,
 			IllegalAccessException, ClassNotFoundException, IOException
 	{
-		
-		IHttpClientWrapper httpClient = HttpClientWrapper.getInstance();
+ 
+        HttpClient httpClient = new HttpClient();
+        
+        if(proxyHost != null && proxyHost.length() > 0 && proxyPort != null && proxyPort.length() > 0) {
+            if(logger.isDebugEnabled()) {
+                logger.debug("Using proxy server "+proxyHost+":"+proxyPort);
+            }
+            
+            httpClient.getHostConfiguration().setProxy(proxyHost, Integer.valueOf(proxyPort));
+        }
 
 		// make http request for stats to apache
 		String connStr = "http://" + host + ":" + port + customURLPath;
-		HttpExecutionRequest request = new HttpExecutionRequest(connStr, "", HttpOperation.GET);
-		HttpExecutionResponse response = httpClient.executeHttpOperation(request, new Log4JLogger(logger));
 
-        if (response.isExceptionHappened()) {
-            logger.error("Failed to execute HTTP request to URL " + connStr +". Got error"+ response.getExceptionMessage());
-            throw new RuntimeException(response.getExceptionMessage());
-        }
+        GetMethod get = new GetMethod(connStr);
 
-		String statStr = response.getResponseBody();
+        InputStream responseStream = null;
+        try {
+            int responseCode = httpClient.executeMethod(get);
+            responseStream = get.getResponseBodyAsStream();
+            logger.info("Response code : "+responseCode + " Response length: "+get.getResponseContentLength());
+        } catch(IOException e){
+            logger.error("Failed to execute HTTP request to URL " + connStr +". Got error"+ e.getMessage());
+            throw new RuntimeException(e.getMessage());
+        }  
 
 		// get most accurate time
 		currentTime = System.currentTimeMillis();
 
-        logger.error(statStr); //Print metrics to log
-
-		BufferedReader reader = new BufferedReader(new StringReader(statStr));
+		BufferedReader reader = new BufferedReader(new InputStreamReader(responseStream));
 		String line;
 		
 		// time to parse
@@ -206,6 +211,9 @@ public class ApacheStatusMonitor extends JavaServersMonitor
 				}
 			}
 		}
+        
+        //release get resources
+        get.releaseConnection();
 	}
 
 	// go through and count each activity type
@@ -280,7 +288,7 @@ public class ApacheStatusMonitor extends JavaServersMonitor
 	{
 		ApacheStatusMonitor monitor = new ApacheStatusMonitor();
 		Map<String, String> taskArguments = new HashMap<String, String>();
-		taskArguments.put("port", "90");
+		taskArguments.put("port", "8081");
 		TaskExecutionContext taskContext = null;
 
 		monitor.execute(taskArguments, taskContext);
