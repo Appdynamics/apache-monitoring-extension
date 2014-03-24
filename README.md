@@ -99,7 +99,7 @@ However, you can "fool" the system into monitoring multiple servers as follows.
 		            <argument name="port" is-required="true" default-value="8092"/>
 		            <argument name="proxy-host" is-required="false" default-value="localhost"/>
 		            <argument name="proxy-port" is-required="false" default-value="8888"/>
-		            <argument name="custom-url-path" is-required="false" 		      default-value="/server-status?auto"/>
+		            <argument name="custom-url-path" is-required="false" default-value="/server-status?auto"/>
 		            <argument name="metric-prefix" is-required="false" default-value="Custom Metrics|WebServer|Apache2|Status|"/>
     	  </task-arguments>
     	  <java-task>
