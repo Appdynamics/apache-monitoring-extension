@@ -45,13 +45,12 @@ In addition, it lists:
 > cd <machine agent home>/monitors/
 > unzip ApacheMonitor.zip
    ```
-4. Set up task.properties with the correct host and port:
+4. Set up monitor.xml with the correct host and port:
    -   host=your-apache-server
    -   port=90
+   -   proxy-host=proxy host address if any
+   -   proxy-port=proxy port if any
 
-   ```
-   > cat <machine agent home>/monitors/ApacheMon/task.properties
-   ```
    Note: If you want to monitor more than one server, see [Monitoring multiple Apache servers](#Monitoring multiple Apache servers).  
 
 ​5. Restart the Machine Agent.
@@ -76,7 +75,7 @@ However, you can "fool" the system into monitoring multiple servers as follows.
 
 ​1. For each server you want to monitor, copy the monitors/ApacheMonitor directory into another directory, such as monitors/ApacheStatusMonitor2.
 
-​2. Edit the monitor.xml file in that directory, changing the `<name>` value to the name of the new directory:
+​2. Edit the monitor.xml file in that directory, changing the `<name>`, host, port and metric-prefix values accordingly:
 
 
    ```  
@@ -96,7 +95,12 @@ However, you can "fool" the system into monitoring multiple servers as follows.
     	  <type>java</type>
     	  <execution-timeout-in-secs>120</execution-timeout-in-secs>
     	  <task-arguments>
-	        	<argument name="port" is-required="false"/>
+	        	<argument name="host" is-required="true" default-value="localhost"/>
+		            <argument name="port" is-required="true" default-value="8092"/>
+		            <argument name="proxy-host" is-required="false" default-value="localhost"/>
+		            <argument name="proxy-port" is-required="false" default-value="8888"/>
+		            <argument name="custom-url-path" is-required="false" default-value="/server-status?auto"/>
+		            <argument name="metric-prefix" is-required="false" default-value="Custom Metrics|WebServer|Apache2|Status|"/>
     	  </task-arguments>
     	  <java-task>
           	<classpath>ApacheMonitor.jar</classpath>
@@ -106,10 +110,7 @@ However, you can "fool" the system into monitoring multiple servers as follows.
 	</monitor-run-task>
 </monitor>
    ```
-​3. Set up the task.properties file in the monitors/ApacheStatusMonitor2 directory to point to the other webserver instance.
-
-   -   host=your-other-apache-server
-   -   port=90
+​
 <br/>
    
 ​4. When you have finished adding all the servers you want to monitor, restart the machine agent.
