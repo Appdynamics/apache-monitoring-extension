@@ -23,7 +23,7 @@
             <argument name="metric-prefix" is-required="false" default-value="Custom Metrics|WebServer|Apache|Status|"/>
     	  </task-arguments>
     	  <java-task>
-          	<classpath>ApacheMonitor.jar</classpath>
+          	<classpath>apache-monitoring-extension.jar</classpath>
           	<impl-class>com.appdynamics.monitors.apache.ApacheStatusMonitor
           	</impl-class>
           </java-task>
