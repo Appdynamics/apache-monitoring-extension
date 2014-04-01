@@ -125,24 +125,20 @@ However, you can "fool" the system into monitoring multiple servers as follows.
 <th align = 'left'> Description </th>
 </tr>
 <tr>
-<td class='confluenceTd'> conf </td>
+<td class='confluenceTd'> src/main/resources/config </td>
 <td class='confluenceTd'> Contains the monitor.xml </td>
 </tr>
 <tr>
-<td class='confluenceTd'> lib </td>
-<td class='confluenceTd'> Contains third-party project references </td>
-</tr>
-<tr>
-<td class='confluenceTd'> src </td>
+<td class='confluenceTd'> src/main/resources/java </td>
 <td class='confluenceTd'> Contains source code to the Apache monitoring extension </td>
 </tr>
 <tr>
-<td class='confluenceTd'> dist </td>
-<td class='confluenceTd'> Only obtained when using ant. Run 'ant build' to get binaries. Run 'ant package' to get the distributable .zip file. </td>
+<td class='confluenceTd'> target </td>
+<td class='confluenceTd'> Only obtained when using maven. Run 'maven clean install' to get the distributable .zip file. </td>
 </tr>
 <tr>
-<td class='confluenceTd'> build.xml </td>
-<td class='confluenceTd'> Ant build script to package the project (required only if changing Java code) </td>
+<td class='confluenceTd'> pom.xml </td>
+<td class='confluenceTd'> maven build script to package the project (required only if changing Java code) </td>
 </tr>
 </tbody>
 </table>
