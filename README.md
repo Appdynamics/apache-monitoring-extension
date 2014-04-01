@@ -39,7 +39,7 @@ In addition, it lists:
     Scoreboard: __W___……………….
    ```
 
-3. Run `ant package`. Deploy the ApacheMonitor.zip file found in 'dist' into the \<machine agent home\>/monitors directory.
+3. Run `maven clean install`. Deploy the ApacheMonitor.zip file found in 'target' into the \<machine agent home\>/monitors directory.
 
    ```
 > cd <machine agent home>/monitors/
