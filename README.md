@@ -129,7 +129,7 @@ However, you can "fool" the system into monitoring multiple servers as follows.
 <td class='confluenceTd'> Contains the monitor.xml </td>
 </tr>
 <tr>
-<td class='confluenceTd'> src/main/resources/java </td>
+<td class='confluenceTd'> src/main/java </td>
 <td class='confluenceTd'> Contains source code to the Apache monitoring extension </td>
 </tr>
 <tr>
