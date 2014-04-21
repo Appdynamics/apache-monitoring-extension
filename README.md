@@ -46,6 +46,7 @@ In addition, it lists:
 > unzip ApacheMonitor.zip
    ```
 4. Set up monitor.xml with the correct host and port:
+   -   protocol=http/https
    -   host=your-apache-server
    -   port=90
    -   proxy-host=proxy host address if any
@@ -75,7 +76,7 @@ However, you can "fool" the system into monitoring multiple servers as follows.
 
 ​1. For each server you want to monitor, copy the monitors/ApacheMonitor directory into another directory, such as monitors/ApacheStatusMonitor2.
 
-​2. Edit the monitor.xml file in that directory, changing the `<name>`, host, port and metric-prefix values accordingly:
+​2. Edit the monitor.xml file in that directory, changing the `<name>`, protocol, host, port and metric-prefix values accordingly:
 
 
    ```  
@@ -95,7 +96,8 @@ However, you can "fool" the system into monitoring multiple servers as follows.
     	  <type>java</type>
     	  <execution-timeout-in-secs>120</execution-timeout-in-secs>
     	  <task-arguments>
-	        	<argument name="host" is-required="true" default-value="localhost"/>
+    	                    <argument name="protocol" is-required="true" default-value="http"/>
+	        	    <argument name="host" is-required="true" default-value="localhost"/>
 		            <argument name="port" is-required="true" default-value="8092"/>
 		            <argument name="proxy-host" is-required="false" default-value="localhost"/>
 		            <argument name="proxy-port" is-required="false" default-value="8888"/>
