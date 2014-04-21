@@ -21,6 +21,7 @@ public abstract class JavaServersMonitor extends AManagedMonitor
 	protected volatile String port;
 	protected volatile String userName;
 	protected volatile String passwd;
+	protected volatile String protocol;
 	protected volatile String serverRoot = "C:/Program Files/Apache Software Foundation/Apache2.2";   // root directory of the server we are monitoring (for finding files or deploying programs)
 	protected volatile String restartAllowed = "TRUE";
     protected volatile String customURLPath = "/server-status?auto";
@@ -39,6 +40,7 @@ public abstract class JavaServersMonitor extends AManagedMonitor
 
 	protected void parseArgs(Map<String, String> args)
 	{ 
+		protocol = getArg(args, "protocol", "http");
 		host = getArg(args, "host", "localhost");
 		userName = getArg(args, "user", userName);
 		passwd = getArg(args, "password", passwd);

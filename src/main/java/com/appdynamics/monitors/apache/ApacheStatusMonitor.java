@@ -157,7 +157,7 @@ public class ApacheStatusMonitor extends JavaServersMonitor
         }
 
 		// make http request for stats to apache
-		String connStr = "http://" + host + ":" + port + customURLPath;
+		String connStr = protocol + "://" + host + ":" + port + customURLPath;
 
         GetMethod get = new GetMethod(connStr);
 

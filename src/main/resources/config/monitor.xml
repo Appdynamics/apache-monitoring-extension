@@ -14,6 +14,7 @@
     	  <type>java</type>
     	  <execution-timeout-in-secs>120</execution-timeout-in-secs>
     	  <task-arguments>
+            <argument name="protocol" is-required="true" default-value="http"/>
             <argument name="host" is-required="true" default-value="localhost"/>
             <argument name="port" is-required="true" default-value="8091"/>
             <!--Configure your proxy host and port if any  -->
