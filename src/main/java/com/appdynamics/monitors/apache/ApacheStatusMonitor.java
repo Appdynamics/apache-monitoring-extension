@@ -1,296 +1,193 @@
 package com.appdynamics.monitors.apache;
 
-import com.appdynamics.monitors.common.JavaServersMonitor;
+import com.appdynamics.extensions.ArgumentsValidator;
+import com.appdynamics.extensions.http.SimpleHttpClient;
+import com.appdynamics.extensions.http.UrlBuilder;
+import com.appdynamics.extensions.io.Lines;
+import com.appdynamics.extensions.util.GroupCounter;
+import com.singularity.ee.agent.systemagent.api.AManagedMonitor;
 import com.singularity.ee.agent.systemagent.api.MetricWriter;
 import com.singularity.ee.agent.systemagent.api.TaskExecutionContext;
 import com.singularity.ee.agent.systemagent.api.TaskOutput;
 import com.singularity.ee.agent.systemagent.api.exception.TaskExecutionException;
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.StringReader;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Pattern;
-import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.methods.GetMethod;
-import org.apache.log4j.Logger;
 
-public class ApacheStatusMonitor extends JavaServersMonitor
-{
+/**
+ * Created with IntelliJ IDEA.
+ * User: abey.tom
+ * Date: 4/21/14
+ * Time: 7:08 PM
+ * To change this template use File | Settings | File Templates.
+ */
+public class ApacheStatusMonitor extends AManagedMonitor {
+    public static final Logger logger = LoggerFactory.getLogger(ApacheStatusMonitor.class);
+    private static final Pattern SPLIT_PATTERN = Pattern.compile(":", Pattern.LITERAL);
 
-    Logger logger = Logger.getLogger(ApacheStatusMonitor.class.getName());
+    //default values if not specified
+    private static final Map<String, String> DEFAULT_ARGS = new HashMap<String, String>() {{
+        put("custom-url-path", "server-status?auto");
+        put("metric-prefix", "Custom Metrics|WebServer|Apache|Status");
+    }};
 
-	public ApacheStatusMonitor()
-	{
-		oldValueMap = new HashMap<String, String>();
-	}
+    public ApacheStatusMonitor() {
+        String version = getClass().getPackage().getImplementationTitle();
+        String msg = String.format("Using Monitor Version [%s]", version);
+        logger.info(msg);
+        System.out.println(msg);
+    }
 
-	public TaskOutput execute(Map<String, String> taskArguments, TaskExecutionContext taskContext)
-			throws TaskExecutionException
-	{
-		startExecute(taskArguments, taskContext);
-
-		try
-		{
-			populate(valueMap);
-		}
-		catch (IOException e)
-		{
-			throw new TaskExecutionException(e);
-		}
-		catch (IllegalAccessException e)
-		{
-			throw new TaskExecutionException(e);
-		}
-		catch (ClassNotFoundException e)
-		{
-			throw new TaskExecutionException(e);
-		}
-		catch (InstantiationException e)
-		{
-			throw new TaskExecutionException(e);
-		}
-
-        if(logger.isDebugEnabled()) {
-            logger.debug("Starting METRIC COLLECTION for Apache Monitor.......");
-        }
-
-		// Availability
-		printMetric("Availability|up", getString(1),
-				MetricWriter.METRIC_AGGREGATION_TYPE_OBSERVATION, MetricWriter.METRIC_TIME_ROLLUP_TYPE_SUM,
-				MetricWriter.METRIC_CLUSTER_ROLLUP_TYPE_COLLECTIVE);
-
-		// printStringMetric("Availability|Server Uptime (sec)", getString("Uptime"));
-		printMetric("Availability|Server Uptime (sec)", getString("Uptime"),
-				MetricWriter.METRIC_AGGREGATION_TYPE_OBSERVATION, MetricWriter.METRIC_TIME_ROLLUP_TYPE_CURRENT,
-				MetricWriter.METRIC_CLUSTER_ROLLUP_TYPE_INDIVIDUAL);
-
-		// RESOURCE UTILIZATION
-		
-		printMetric("Resource Utilization|CPU|Load", getString("CPULoad"),
-				MetricWriter.METRIC_AGGREGATION_TYPE_OBSERVATION, MetricWriter.METRIC_TIME_ROLLUP_TYPE_AVERAGE,
-				MetricWriter.METRIC_CLUSTER_ROLLUP_TYPE_COLLECTIVE);
-		
-		printMetric("Resource Utilization|Processes|Busy Workers", getString("BusyWorkers"),
-				MetricWriter.METRIC_AGGREGATION_TYPE_OBSERVATION, MetricWriter.METRIC_TIME_ROLLUP_TYPE_AVERAGE,
-				MetricWriter.METRIC_CLUSTER_ROLLUP_TYPE_COLLECTIVE);
-		
-		printMetric("Resource Utilization|Processes|Idle Workers", getString("IdleWorkers"),
-				MetricWriter.METRIC_AGGREGATION_TYPE_OBSERVATION, MetricWriter.METRIC_TIME_ROLLUP_TYPE_AVERAGE,
-				MetricWriter.METRIC_CLUSTER_ROLLUP_TYPE_COLLECTIVE);
-		
-		// Activity
-		printMetric("Activity|Total Accesses", getString(getDiffValue("Total Accesses")),
-				MetricWriter.METRIC_AGGREGATION_TYPE_OBSERVATION, MetricWriter.METRIC_TIME_ROLLUP_TYPE_SUM,
-				MetricWriter.METRIC_CLUSTER_ROLLUP_TYPE_COLLECTIVE);
-		
-		printMetric("Activity|Total Traffic", getString(getDiffValue("Total kBytes")),
-				MetricWriter.METRIC_AGGREGATION_TYPE_OBSERVATION, MetricWriter.METRIC_TIME_ROLLUP_TYPE_SUM,
-				MetricWriter.METRIC_CLUSTER_ROLLUP_TYPE_COLLECTIVE);
-
-		printMetric("Activity|Requests/min", getString("ReqPerMin"),
-				MetricWriter.METRIC_AGGREGATION_TYPE_OBSERVATION, MetricWriter.METRIC_TIME_ROLLUP_TYPE_AVERAGE,
-				MetricWriter.METRIC_CLUSTER_ROLLUP_TYPE_COLLECTIVE);
-
-		printMetric("Activity|Bytes/min", getString("BytesPerMin"),
-				MetricWriter.METRIC_AGGREGATION_TYPE_OBSERVATION, MetricWriter.METRIC_TIME_ROLLUP_TYPE_AVERAGE,
-				MetricWriter.METRIC_CLUSTER_ROLLUP_TYPE_COLLECTIVE);
-
-		printMetric("Activity|Bytes/req", getString(getDiffValue("BytesPerReq")),
-				MetricWriter.METRIC_AGGREGATION_TYPE_OBSERVATION, MetricWriter.METRIC_TIME_ROLLUP_TYPE_AVERAGE,
-				MetricWriter.METRIC_CLUSTER_ROLLUP_TYPE_COLLECTIVE);
-
-		printMetric("Activity|Type|Starting Up",  getString("StartingUp"),
-				MetricWriter.METRIC_AGGREGATION_TYPE_OBSERVATION, MetricWriter.METRIC_TIME_ROLLUP_TYPE_CURRENT,
-				MetricWriter.METRIC_CLUSTER_ROLLUP_TYPE_COLLECTIVE);
-
-		printMetric("Activity|Type|Reading Request",  getString("ReadingRequest"),
-				MetricWriter.METRIC_AGGREGATION_TYPE_OBSERVATION, MetricWriter.METRIC_TIME_ROLLUP_TYPE_CURRENT,
-				MetricWriter.METRIC_CLUSTER_ROLLUP_TYPE_COLLECTIVE);
-
-		printMetric("Activity|Type|Sending Reply",  getString("SendingReply"),
-				MetricWriter.METRIC_AGGREGATION_TYPE_OBSERVATION, MetricWriter.METRIC_TIME_ROLLUP_TYPE_CURRENT,
-				MetricWriter.METRIC_CLUSTER_ROLLUP_TYPE_COLLECTIVE);
-
-		printMetric("Activity|Type|Keep Alive",  getString("KeepAlive"),
-				MetricWriter.METRIC_AGGREGATION_TYPE_OBSERVATION, MetricWriter.METRIC_TIME_ROLLUP_TYPE_CURRENT,
-				MetricWriter.METRIC_CLUSTER_ROLLUP_TYPE_COLLECTIVE);
-
-		printMetric("Activity|Type|DNS Lookup",  getString("DNSLookup"),
-				MetricWriter.METRIC_AGGREGATION_TYPE_OBSERVATION, MetricWriter.METRIC_TIME_ROLLUP_TYPE_CURRENT,
-				MetricWriter.METRIC_CLUSTER_ROLLUP_TYPE_COLLECTIVE);
-
-		printMetric("Activity|Type|Closing Connection",  getString("ClosingConnection"),
-				MetricWriter.METRIC_AGGREGATION_TYPE_OBSERVATION, MetricWriter.METRIC_TIME_ROLLUP_TYPE_CURRENT,
-				MetricWriter.METRIC_CLUSTER_ROLLUP_TYPE_COLLECTIVE);
-
-		printMetric("Activity|Type|Logging",  getString("Logging"),
-				MetricWriter.METRIC_AGGREGATION_TYPE_OBSERVATION, MetricWriter.METRIC_TIME_ROLLUP_TYPE_CURRENT,
-				MetricWriter.METRIC_CLUSTER_ROLLUP_TYPE_COLLECTIVE);
-
-		printMetric("Activity|Type|Gracefully Finishing",  getString("GracefullyFinishing"),
-				MetricWriter.METRIC_AGGREGATION_TYPE_OBSERVATION, MetricWriter.METRIC_TIME_ROLLUP_TYPE_CURRENT,
-				MetricWriter.METRIC_CLUSTER_ROLLUP_TYPE_COLLECTIVE);
-
-		printMetric("Activity|Type|Cleaning Up",  getString("CleaningUp"),
-				MetricWriter.METRIC_AGGREGATION_TYPE_OBSERVATION, MetricWriter.METRIC_TIME_ROLLUP_TYPE_CURRENT,
-				MetricWriter.METRIC_CLUSTER_ROLLUP_TYPE_COLLECTIVE);
-
-		return finishExecute();
-	}
-
-	// collects all monitoring data for this time period from database
-	protected void populate(Map<String, String> valueMap) throws InstantiationException,
-			IllegalAccessException, ClassNotFoundException, IOException
-	{
- 
-        HttpClient httpClient = new HttpClient();
-        
-        if(proxyHost != null && proxyHost.length() > 0 && proxyPort != null && proxyPort.length() > 0) {
-            if(logger.isDebugEnabled()) {
-                logger.debug("Using proxy server "+proxyHost+":"+proxyPort);
-            }
-            
-            httpClient.getHostConfiguration().setProxy(proxyHost, Integer.valueOf(proxyPort));
-        }
-
-		// make http request for stats to apache
-		String connStr = protocol + "://" + host + ":" + port + customURLPath;
-
-        GetMethod get = new GetMethod(connStr);
-
-        InputStream responseStream = null;
+    public TaskOutput execute(Map<String, String> argsMap, TaskExecutionContext executionContext) throws TaskExecutionException {
+        logger.debug("The args map before filling the default is {}", argsMap);
+        argsMap = ArgumentsValidator.validateArguments(argsMap, DEFAULT_ARGS);
+        logger.debug("The args map after filling the default is {}", argsMap);
+        SimpleHttpClient httpClient = buildHttpClient(argsMap);
+        String url = UrlBuilder.builder(argsMap).path(argsMap.get("custom-url-path")).build();
         try {
-            int responseCode = httpClient.executeMethod(get);
-            responseStream = get.getResponseBodyAsStream();
-            logger.info("Response code : "+responseCode + " Response length: "+get.getResponseContentLength());
-        } catch(IOException e){
-            logger.error("Failed to execute HTTP request to URL " + connStr +". Got error"+ e.getMessage());
-            throw new RuntimeException(e.getMessage());
-        }  
+            Lines lines = httpClient.target(url).get().lines();
+            parse(lines, argsMap);
+            return new TaskOutput("Apache Monitor Completed");
+        } catch (Exception e) {
+            logger.error("Exception while getting the apache status from the URL " + url, e);
+            throw new TaskExecutionException(e);
+        }
+    }
 
-		// get most accurate time
-		currentTime = System.currentTimeMillis();
+    protected SimpleHttpClient buildHttpClient(Map<String, String> argsMap) {
+        return SimpleHttpClient.builder(argsMap).build();
+    }
 
-		BufferedReader reader = new BufferedReader(new InputStreamReader(responseStream));
-		String line;
-		
-		// time to parse
-		while ((line = reader.readLine()) != null)
-		{
-			Pattern p = Pattern.compile(":", Pattern.LITERAL);
-			String[] result = p.split(line);
+    private void parse(Lines lines, Map<String, String> argsMap) {
+        Map<String, String> valueMap = new HashMap<String, String>();
+        for (String line : lines) {
+            String[] kv = SPLIT_PATTERN.split(line);
+            if (kv.length == 2) {
+                valueMap.put(kv[0].trim(), kv[1].trim());
+            }
+        }
+        logger.debug("The extracted metrics are {}", valueMap);
+        if (!valueMap.isEmpty()) {
+            String metricPrefix = argsMap.get("metric-prefix") + "|";
+            printRegularMetrics(valueMap, metricPrefix);
+            parseScoreboard(valueMap, metricPrefix);
+        }
+    }
 
-			if (result.length == 2)
-			{
-				String key = result[0];
-				String value = result[1];
+    /**
+     * Counts the occurrence of each character in the scoreboard and report it.
+     *
+     * @param valueMap
+     * @param metricPrefix
+     */
+    private void parseScoreboard(Map<String, String> valueMap, String metricPrefix) {
+        String scoreboard = valueMap.get("Scoreboard");
+        if (scoreboard != null && !scoreboard.isEmpty()) {
+            //Count the occurrences of each character
+            GroupCounter<String> counter = new GroupCounter<String>();
+            char[] chars = scoreboard.toCharArray();
+            for (char aChar : chars) {
+                counter.increment(Character.toString(aChar));
+            }
+            printCollectiveObservedCurrent(metricPrefix + "Activity|Type|Waiting for Conn", getString(counter.get("_")));
+            printCollectiveObservedCurrent(metricPrefix + "Activity|Type|Starting Up", getString(counter.get("S")));
+            printCollectiveObservedCurrent(metricPrefix + "Activity|Type|Reading Request", getString(counter.get("R")));
+            printCollectiveObservedCurrent(metricPrefix + "Activity|Type|Sending Reply", getString(counter.get("W")));
+            printCollectiveObservedCurrent(metricPrefix + "Activity|Type|Keep Alive", getString(counter.get("K")));
+            printCollectiveObservedCurrent(metricPrefix + "Activity|Type|DNS Lookup", getString(counter.get("D")));
+            printCollectiveObservedCurrent(metricPrefix + "Activity|Type|Closing Connection", getString(counter.get("S")));
+            printCollectiveObservedCurrent(metricPrefix + "Activity|Type|Logging", getString(counter.get("L")));
+            printCollectiveObservedCurrent(metricPrefix + "Activity|Type|Gracefully Finishing", getString(counter.get("G")));
+            printCollectiveObservedCurrent(metricPrefix + "Activity|Type|Cleaning Up", getString(counter.get("I")));
+        }
+    }
 
-				if (key.equals("Scoreboard")) {
-					parseScoreboard(value);
-				}
-				else 
-				{
-					// convert from secends to minutes since our system is minute based and these numbers could always show up as zero
-					if (key.equals("BytesPerSec"))
-					{
-						key = "BytesPerMin";
-						float floatVal = Float.valueOf(value);
-						value = getString(floatVal * 60);
-					}
-					if (key.equals("ReqPerSec"))
-					{
-						key = "ReqPerMin";
-						float floatVal = Float.valueOf(value);
-						value = getString(floatVal * 60);
-					}
+    private String getString(Long aLong) {
+        if (aLong != null) {
+            return aLong.toString();
+        }
+        return null;
+    }
 
-					valueMap.put(key.toUpperCase(), value);
-				}
-			}
-		}
-        
-        //release get resources
-        get.releaseConnection();
-	}
+    private void printRegularMetrics(Map<String, String> valueMap, String metricPrefix) {
+        printCollectiveObservedAverage(metricPrefix + "Availability|up", String.valueOf(1));
+        printCollectiveObservedCurrent(metricPrefix + "Availability|Server Uptime (sec)", valueMap.get("Uptime"));
+        //Resource Utilization
+        printCollectiveObservedAverage(metricPrefix + "Resource Utilization|CPU|Load", convertToPercent(valueMap.get("CPULoad")));
+        printCollectiveObservedAverage(metricPrefix + "Resource Utilization|Processes|Busy Workers", valueMap.get("BusyWorkers"));
+        printCollectiveObservedAverage(metricPrefix + "Resource Utilization|Processes|Idle Workers", valueMap.get("IdleWorkers"));
+        printCollectiveObservedAverage(metricPrefix + "Resource Utilization|ConnsAsyncClosing", valueMap.get("ConnsAsyncClosing"));
+        printCollectiveObservedAverage(metricPrefix + "Resource Utilization|ConnsAsyncKeepAlive", valueMap.get("ConnsAsyncKeepAlive"));
+        printCollectiveObservedAverage(metricPrefix + "Resource Utilization|ConnsAsyncWriting", valueMap.get("ConnsAsyncWriting"));
+        printCollectiveObservedAverage(metricPrefix + "Resource Utilization|Total Connections", valueMap.get("ConnsTotal"));
+        // Activity
+        printCollectiveObservedCurrent(metricPrefix + "Activity|Total Accesses", valueMap.get("Total Accesses"));
+        printCollectiveObservedCurrent(metricPrefix + "Activity|Total Traffic", valueMap.get("Total kBytes"));
+        printCollectiveObservedAverage(metricPrefix + "Activity|Requests/min", convertSecToMin(valueMap.get("ReqPerSec")));
+        printCollectiveObservedAverage(metricPrefix + "Activity|Bytes/min", convertSecToMin(valueMap.get("BytesPerSec")));
+        printCollectiveObservedAverage(metricPrefix + "Activity|Bytes/req", valueMap.get("BytesPerReq"));
+    }
 
-	// go through and count each activity type
-	protected void 	parseScoreboard(String value) throws IOException
-	{
-		int StartingUp, ReadingRequest, SendingReply,KeepAlive, DNSLookup,ClosingConnection, Logging,GracefullyFinishing, CleaningUp;
-		StartingUp = ReadingRequest = SendingReply=KeepAlive=DNSLookup=ClosingConnection=Logging=GracefullyFinishing= CleaningUp = 0;
+    protected void printCollectiveObservedCurrent(String metricName, String metricValue) {
+        printMetric(metricName, metricValue,
+                MetricWriter.METRIC_AGGREGATION_TYPE_OBSERVATION,
+                MetricWriter.METRIC_TIME_ROLLUP_TYPE_CURRENT,
+                MetricWriter.METRIC_CLUSTER_ROLLUP_TYPE_COLLECTIVE
+        );
+    }
 
-		StringReader reader = new StringReader(value);
-		
-		char typeChar;
-		int typeInt;
-		while ((typeInt = reader.read()) != -1)
-		{
-			typeChar = (char)typeInt;
-			
-			switch (typeChar)
-			{
-			case 'I':
-				CleaningUp++;
-				break;
-			case 'C':
-				ClosingConnection++;
-				break;
-			case 'S': 
-				StartingUp++;
-				break;
-			case 'R':
-				ReadingRequest++;
-				break;
-			case 'W':
-				SendingReply++;
-				break;
-			case 'K':
-				KeepAlive++;
-				break;
-			case 'D':
-				DNSLookup++;
-				break;
-			case 'L':
-				Logging++;
-				break;
-			case 'G':
-				GracefullyFinishing++;
-				break;
-			default: 
-				break;
-			
-			}
-		}
-		
-		valueMap.put("STARTINGUP", Integer.toString(StartingUp));
-		valueMap.put("READINGREQUEST", Integer.toString(ReadingRequest));
-		valueMap.put("SENDINGREPLY", Integer.toString(SendingReply));
-		valueMap.put("KEEPALIVE", Integer.toString(KeepAlive));
-		valueMap.put("DNSLOOKUP", Integer.toString(DNSLookup));
-		valueMap.put("CLOSINGCONNECTION", Integer.toString(ClosingConnection));
-		valueMap.put("LOGGING", Integer.toString(Logging));
-		valueMap.put("GRACEFULLYFINISHING", Integer.toString(GracefullyFinishing));
-		valueMap.put("CLEANINGUP", Integer.toString(CleaningUp));
-		
-		reader.close();
+    protected void printCollectiveObservedAverage(String metricName, String metricValue) {
+        printMetric(metricName, metricValue,
+                MetricWriter.METRIC_AGGREGATION_TYPE_OBSERVATION,
+                MetricWriter.METRIC_TIME_ROLLUP_TYPE_AVERAGE,
+                MetricWriter.METRIC_CLUSTER_ROLLUP_TYPE_COLLECTIVE
+        );
+    }
 
-	}
-	
-	protected String getMetricPrefix()
-	{
-		return this.metricPrefix;
-	}
+    public void printMetric(String metricPath, String metricValue, String aggregation, String timeRollup, String cluster) {
+        MetricWriter metricWriter = getMetricWriter(metricPath,
+                aggregation,
+                timeRollup,
+                cluster
+        );
+        if (metricValue != null) {
+            metricWriter.printMetric(metricValue.toString());
+        }
+        if (logger.isDebugEnabled()) {
+            logger.debug("Metric [" + aggregation + "/" + timeRollup + "/" + cluster
+                    + "] metric = " + metricPath + " = " + metricValue);
+        }
+    }
 
-	public static void main(String[] args) throws Exception
-	{
-		ApacheStatusMonitor monitor = new ApacheStatusMonitor();
-		Map<String, String> taskArguments = new HashMap<String, String>();
-		taskArguments.put("port", "8081");
-		TaskExecutionContext taskContext = null;
+    public String convertSecToMin(String valueStr) {
+        BigDecimal bd = toBigDecimal(valueStr);
+        if (bd != null) {
+            return bd.multiply(new BigDecimal("60")).setScale(0, RoundingMode.HALF_UP).toString();
+        }
+        return null;
+    }
 
-		monitor.execute(taskArguments, taskContext);
-	}
+    public String convertToPercent(String valueStr) {
+        BigDecimal bd = toBigDecimal(valueStr);
+        if (bd != null) {
+            return bd.multiply(new BigDecimal("100")).setScale(0, RoundingMode.HALF_UP).toString();
+        }
+        return null;
+    }
+
+    private static BigDecimal toBigDecimal(String valueStr) {
+        if (valueStr != null && !valueStr.trim().isEmpty()) {
+            try {
+                return new BigDecimal(valueStr.trim());
+            } catch (NumberFormatException e) {
+                logger.warn("Cannot convert the value {} to string", valueStr);
+            }
+        }
+        return null;
+    }
 }

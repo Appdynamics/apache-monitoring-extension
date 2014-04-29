@@ -4,9 +4,10 @@
 .project
 .idea
 dist
-
+target
 
 # Package Files #
 *.war
 *.ear
 /bin
+
