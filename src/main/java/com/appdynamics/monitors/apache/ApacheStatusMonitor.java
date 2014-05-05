@@ -127,10 +127,21 @@ public class ApacheStatusMonitor extends AManagedMonitor {
         printCollectiveObservedAverage(metricPrefix + "Resource Utilization|Total Connections", valueMap.get("ConnsTotal"));
         // Activity
         printCollectiveObservedCurrent(metricPrefix + "Activity|Total Accesses", valueMap.get("Total Accesses"));
-        printCollectiveObservedCurrent(metricPrefix + "Activity|Total Traffic", valueMap.get("Total kBytes"));
+        printCollectiveObservedCurrent(metricPrefix + "Activity|Total Traffic", round(valueMap.get("Total kBytes")));
         printCollectiveObservedAverage(metricPrefix + "Activity|Requests/min", convertSecToMin(valueMap.get("ReqPerSec")));
         printCollectiveObservedAverage(metricPrefix + "Activity|Bytes/min", convertSecToMin(valueMap.get("BytesPerSec")));
-        printCollectiveObservedAverage(metricPrefix + "Activity|Bytes/req", valueMap.get("BytesPerReq"));
+        printCollectiveObservedAverage(metricPrefix + "Activity|Bytes/req", round(valueMap.get("BytesPerReq")));
+    }
+
+    private String round(String s) {
+        if (s != null && !s.trim().isEmpty()) {
+            try {
+                return new BigDecimal(s.trim()).setScale(0, RoundingMode.HALF_UP).toString();
+            } catch (Exception e) {
+                logger.error("Error while rounding the value {}", s);
+            }
+        }
+        return null;
     }
 
     protected void printCollectiveObservedCurrent(String metricName, String metricValue) {
