@@ -20,6 +20,8 @@
             <!-- Optional Properties  -->
             <!--
             <argument name="use-ssl" is-required="false" default-value="false"/>
+            <argument name="username" is-required="true" default-value=""/>
+            <argument name="password" is-required="false" default-value=""/>
             <argument name="proxy-host" is-required="false" default-value=""/>
             <argument name="proxy-port" is-required="false" default-value=""/>
             <argument name="proxy-username" is-required="false" default-value=""/>

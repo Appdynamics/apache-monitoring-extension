@@ -83,14 +83,14 @@ public class ApacheStatusMonitorTest {
         map.put("Apache|Resource Utilization|ConnsAsyncClosing","406");
         map.put("Apache|Resource Utilization|Total Connections","935");
         map.put("Apache|Resource Utilization|ConnsAsyncKeepAlive","139");
-        map.put("Apache|Activity|Bytes/min","1088436000");
+        map.put("Apache|Activity|Bytes/min","1088436025");
         map.put("Apache|Activity|Requests/min","6723");
         map.put("Apache|Activity|Type|Sending Reply","45");
         map.put("Apache|Activity|Type|Gracefully Finishing","122");
         map.put("Apache|Activity|Type|Reading Request","322");
         map.put("Apache|Activity|Type|Logging","10");
         map.put("Apache|Activity|Type|Waiting for Conn","397");
-        map.put("Apache|Activity|Bytes/req","161903");
+        map.put("Apache|Activity|Bytes/req","161904");
         return map;
     }
 }

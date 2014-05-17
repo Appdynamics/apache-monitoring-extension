@@ -3,8 +3,8 @@ Total kBytes: 16067823270
 CPULoad: .598118
 Uptime: 906998
 ReqPerSec: 112.046
-BytesPerSec: 18140600
-BytesPerReq: 161903
+BytesPerSec: 18140600.41
+BytesPerReq: 161903.67
 BusyWorkers: 371
 IdleWorkers: 397
 ConnsTotal: 935
