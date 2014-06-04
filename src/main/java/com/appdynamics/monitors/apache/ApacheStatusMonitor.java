@@ -118,7 +118,7 @@ public class ApacheStatusMonitor extends AManagedMonitor {
         printCollectiveObservedAverage(metricPrefix + "Availability|up", String.valueOf(1));
         printCollectiveObservedCurrent(metricPrefix + "Availability|Server Uptime (sec)", valueMap.get("Uptime"));
         //Resource Utilization
-        printCollectiveObservedAverage(metricPrefix + "Resource Utilization|CPU|Load", convertToPercent(valueMap.get("CPULoad")));
+        printCollectiveObservedAverage(metricPrefix + "Resource Utilization|CPU|Load", round(valueMap.get("CPULoad")));
         printCollectiveObservedAverage(metricPrefix + "Resource Utilization|Processes|Busy Workers", valueMap.get("BusyWorkers"));
         printCollectiveObservedAverage(metricPrefix + "Resource Utilization|Processes|Idle Workers", valueMap.get("IdleWorkers"));
         printCollectiveObservedAverage(metricPrefix + "Resource Utilization|ConnsAsyncClosing", valueMap.get("ConnsAsyncClosing"));

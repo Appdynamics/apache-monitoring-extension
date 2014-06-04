@@ -78,7 +78,7 @@ public class ApacheStatusMonitorTest {
         map.put("Apache|Availability|Server Uptime (sec)","906998");
         map.put("Apache|Resource Utilization|ConnsAsyncWriting","13");
         map.put("Apache|Resource Utilization|Processes|Idle Workers","397");
-        map.put("Apache|Resource Utilization|CPU|Load","60");
+        map.put("Apache|Resource Utilization|CPU|Load","1");
         map.put("Apache|Activity|Total Accesses","101625603");
         map.put("Apache|Resource Utilization|ConnsAsyncClosing","406");
         map.put("Apache|Resource Utilization|Total Connections","935");
