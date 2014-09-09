@@ -6,6 +6,8 @@ This extension works only with the standalone machine agent.
 
 The Apache HTTP Server is a widely-used web server supported by the Apache Software Foundation. The Apache HTTP Server monitoring extension captures metrics from an Apache web server and displays them in the AppDynamics Metric Browser.
 
+This extension is capable of fetching metrics from most of the apache based HTTP servers. Tested the extension with IBM HTTP server 7.0 and Oracle HTTP Server 12.1.2. 
+
 Metrics include:
 
    * Availability: Percentage of time that the server has been up; graphs server up/down status over time.
@@ -18,6 +20,10 @@ In addition, it lists:
 
    * Top Requests: Most requests by quantity and by volume, measured by number of bytes transferred.
    * Top Activity: Current activity such as responding, cleaning up, logging, etc.
+
+##Prerequisite
+
+Please enable mod_status on the HTTP server to get stats.
 
 
 ##Installation
@@ -177,6 +183,63 @@ However, you can "fool" the system into monitoring multiple servers as follows.
 -   Logging
 -   Gracefully Finishing
 -   Cleaning up of working
+
+##Load balancing metrics
+
+In addition to the above specified metrics, this extension can also show metrics from mod_jk status. To do this we have to configure mod_jk in the apache HTTP server.
+More info on mod_jk at http://tomcat.apache.org/connectors-doc/
+
+###example configuration
+
+####in httpd.conf
+   ```   
+	LoadModule    jk_module  modules/mod_jk.so
+	JkWorkersFile conf/workers.properties
+	JkShmFile     /var/log/httpd/mod_jk.shm
+	JkLogFile     /var/log/httpd/mod_jk.log
+	JkLogLevel    info
+	JkLogStampFormat "[%a %b %d %H:%M:%S %Y] "
+	JkMount  /examples/* loadbalancer
+	
+	<Location /status>
+	    JkMount statusmanager
+	    Order deny,allow
+	    Allow from localhost
+	</Location>
+
+   ```
+####worker.properties file	
+   ```
+	worker.list=worker1,worker2,loadbalancer,statusmanager
+	
+	#worker1
+	worker.worker1.type=ajp13
+	worker.worker1.host={host1}
+	worker.worker1.port={host1 ajp post}
+	worker.worker1.lbfactor=100   
+	
+	#worker2
+	worker.worker2.type=ajp13
+	worker.worker2.host={host2}
+	worker.worker2.port={host2 ajp port}
+	worker.worker2.lbfactor=100   
+	
+	#Load balancer
+	worker.loadbalancer.type=lb
+	worker.loadbalancer.balance_workers=worker1,worker2
+	worker.loadbalancer.sticky_session=1
+	
+	#status manager
+	worker.statusmanager.type=status
+	
+   ```
+####monitor.xml
+   ```
+       <argument name="jk-status-path" is-required="false" default-value="/status"/>
+       <argument name="jk-worker-stats" is-required="false" default-value="connection_pool_timeout,ping_timeout,connect_timeout,prepost_timeout,reply_timeout,retries,connection_ping_interval,recovery_options,max_packet_size,activation,lbfactor,distance,lbmult,lbvalue,elected,sessions,errors,client_errors,reply_timeouts,transferred,read,busy,max_busy,connected,time_to_recover_min,time_to_recover_max,used,map_count,last_reset_ago"/>
+        
+   ```
+   `jk-status-path` is the url path defined in the Location section of httpd.conf.
 
 ##Contributing
 
