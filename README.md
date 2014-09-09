@@ -239,7 +239,8 @@ More info on mod_jk at http://tomcat.apache.org/connectors-doc/
        <argument name="jk-worker-stats" is-required="false" default-value="connection_pool_timeout,ping_timeout,connect_timeout,prepost_timeout,reply_timeout,retries,connection_ping_interval,recovery_options,max_packet_size,activation,lbfactor,distance,lbmult,lbvalue,elected,sessions,errors,client_errors,reply_timeouts,transferred,read,busy,max_busy,connected,time_to_recover_min,time_to_recover_max,used,map_count,last_reset_ago"/>
         
    ```
-   `jk-status-path` is the url path defined in the Location section of httpd.conf.
+   `jk-status-path` is the url path defined in the Location section of httpd.conf.<br/>
+   `jk-worker-stats` list of worker stats.
 
 ##Contributing
 
