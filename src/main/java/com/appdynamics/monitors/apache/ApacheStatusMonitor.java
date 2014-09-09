@@ -5,6 +5,9 @@ import com.appdynamics.extensions.http.SimpleHttpClient;
 import com.appdynamics.extensions.http.UrlBuilder;
 import com.appdynamics.extensions.io.Lines;
 import com.appdynamics.extensions.util.GroupCounter;
+import com.google.common.base.Strings;
+import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.Multimap;
 import com.singularity.ee.agent.systemagent.api.AManagedMonitor;
 import com.singularity.ee.agent.systemagent.api.MetricWriter;
 import com.singularity.ee.agent.systemagent.api.TaskExecutionContext;
@@ -15,8 +18,10 @@ import org.slf4j.LoggerFactory;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 import java.util.regex.Pattern;
 
 /**
@@ -29,6 +34,8 @@ import java.util.regex.Pattern;
 public class ApacheStatusMonitor extends AManagedMonitor {
     public static final Logger logger = LoggerFactory.getLogger(ApacheStatusMonitor.class);
     private static final Pattern SPLIT_PATTERN = Pattern.compile(":", Pattern.LITERAL);
+    private static final Pattern EQUAL_SPLIT_PATTERN = Pattern.compile("=", Pattern.LITERAL);
+    private static final String DOT = ".";
 
     //default values if not specified
     private static final Map<String, String> DEFAULT_ARGS = new HashMap<String, String>() {{
@@ -48,14 +55,107 @@ public class ApacheStatusMonitor extends AManagedMonitor {
         argsMap = ArgumentsValidator.validateArguments(argsMap, DEFAULT_ARGS);
         logger.debug("The args map after filling the default is {}", argsMap);
         SimpleHttpClient httpClient = buildHttpClient(argsMap);
+
+        getServerStats(argsMap, httpClient);
+
+        String jkStatusPath = argsMap.get("jk-status-path");
+        if (!Strings.isNullOrEmpty(jkStatusPath)) {
+            //If we have jk status path then get the jk stats in properties format
+            getJKStats(argsMap, httpClient, jkStatusPath + "?mime=prop");
+        }
+        return new TaskOutput("Apache Monitor Completed");
+    }
+
+    private void getJKStats(Map<String, String> argsMap, SimpleHttpClient httpClient, String jkStatusPath) throws TaskExecutionException {
+        String url = UrlBuilder.builder(argsMap).path(jkStatusPath).build();
+        try {
+            Lines lines = httpClient.target(url).get().lines();
+            Multimap<String, String> jkStatsMap = buildMap(lines);
+
+            String jkWorkerStatsStr = argsMap.get("jk-worker-stats");
+            String[] jkWorkerStats = jkWorkerStatsStr.split(",");
+            String jkMetricPrefix = argsMap.get("metric-prefix") + "| JK Status";
+            printJKStats(jkStatsMap, jkMetricPrefix, jkWorkerStats);
+
+
+        } catch (Exception e) {
+            logger.error("Exception while getting the apache JK stats from the URL " + url, e);
+            throw new TaskExecutionException("Exception while getting the apache JK stats from the URL " + url, e);
+        }
+    }
+
+    private void printJKStats(Multimap<String, String> jkStatsMap, String jkMetricPrefix, String[] jkWorkerStats) {
+
+        Set<String> strings = jkStatsMap.keySet();
+        for (String key : strings) {
+            if (key.contains("balance_workers")) {
+                Collection<String> workers = jkStatsMap.get(key);
+                for (String workerName : workers) {
+                    printJKWorkerMetrics(workerName, jkWorkerStats, jkStatsMap, jkMetricPrefix);
+                }
+            }
+        }
+    }
+
+    private void printJKWorkerMetrics(String workerName, String[] jkWorkerStats, Multimap<String, String> jkStatsMap, String jkMetricPrefix) {
+
+        for (String workerStat : jkWorkerStats) {
+            String key = getKey(workerName, workerStat);
+            Collection<String> values = jkStatsMap.get(key);
+            String value = getValue(values);
+            if (key.contains("activation")) {
+                if ("ACT".equals(value)) {
+                    value = "1";
+                } else if ("DIS".equals(value)) {
+                    value = "2";
+                } else {
+                    value = "3";
+                }
+            }
+            try {
+                Integer.parseInt(value);
+                printCollectiveObservedCurrent(jkMetricPrefix + "|" + key.replace(".", "|"), value);
+            } catch (NumberFormatException e) {
+                logger.error("Ignoring " + key + " as it can not be converted to Integer");
+            }
+        }
+    }
+
+    private String getValue(Collection<String> values) {
+        if (values == null) {
+            return "0";
+        } else {
+            return values.iterator().next();
+        }
+    }
+
+    private String getKey(String workerName, String workerStat) {
+        StringBuilder keyBuilder = new StringBuilder("worker");
+        keyBuilder.append(DOT).append(workerName).append(DOT).append(workerStat);
+        return keyBuilder.toString();
+    }
+
+    private Multimap<String, String> buildMap(Lines lines) {
+        Multimap<String, String> jkStatsMap = ArrayListMultimap.create();
+
+        for (String line : lines) {
+            String[] kv = EQUAL_SPLIT_PATTERN.split(line);
+            if (kv.length == 2) {
+                jkStatsMap.put(kv[0].trim(), kv[1].trim());
+            }
+        }
+
+        return jkStatsMap;
+    }
+
+    private void getServerStats(Map<String, String> argsMap, SimpleHttpClient httpClient) throws TaskExecutionException {
         String url = UrlBuilder.builder(argsMap).path(argsMap.get("custom-url-path")).build();
         try {
             Lines lines = httpClient.target(url).get().lines();
             parse(lines, argsMap);
-            return new TaskOutput("Apache Monitor Completed");
         } catch (Exception e) {
             logger.error("Exception while getting the apache status from the URL " + url, e);
-            throw new TaskExecutionException(e);
+            throw new TaskExecutionException("Exception while getting the apache status from the URL " + url, e);
         }
     }
 
@@ -161,6 +261,7 @@ public class ApacheStatusMonitor extends AManagedMonitor {
     }
 
     public void printMetric(String metricPath, String metricValue, String aggregation, String timeRollup, String cluster) {
+
         MetricWriter metricWriter = getMetricWriter(metricPath,
                 aggregation,
                 timeRollup,
