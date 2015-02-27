@@ -55,15 +55,19 @@ public class ApacheStatusMonitor extends AManagedMonitor {
         argsMap = ArgumentsValidator.validateArguments(argsMap, DEFAULT_ARGS);
         logger.debug("The args map after filling the default is {}", argsMap);
         SimpleHttpClient httpClient = buildHttpClient(argsMap);
+        try {
+            getServerStats(argsMap, httpClient);
 
-        getServerStats(argsMap, httpClient);
-
-        String jkStatusPath = argsMap.get("jk-status-path");
-        if (!Strings.isNullOrEmpty(jkStatusPath)) {
-            //If we have jk status path then get the jk stats in properties format
-            getJKStats(argsMap, httpClient, jkStatusPath + "?mime=prop");
+            String jkStatusPath = argsMap.get("jk-status-path");
+            if (!Strings.isNullOrEmpty(jkStatusPath)) {
+                //If we have jk status path then get the jk stats in properties format
+                getJKStats(argsMap, httpClient, jkStatusPath + "?mime=prop");
+            }
+        } finally {
+            httpClient.close();
         }
         return new TaskOutput("Apache Monitor Completed");
+
     }
 
     private void getJKStats(Map<String, String> argsMap, SimpleHttpClient httpClient, String jkStatusPath) throws TaskExecutionException {
