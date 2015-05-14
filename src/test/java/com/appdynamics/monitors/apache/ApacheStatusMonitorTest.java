@@ -56,6 +56,15 @@ public class ApacheStatusMonitorTest {
         Assert.assertEquals(0,expectedValueMap.size());
     }
 
+    @Test
+    public void testBigDecimalToString() {
+        ApacheStatusMonitor.toBigDecimal("33227844900").toString().equals("33227844900");
+        ApacheStatusMonitor.toBigDecimal("332278.900").toString().equals("332278.900");
+        ApacheStatusMonitor.toBigDecimal("33").toString().equals("33");
+        ApacheStatusMonitor.toBigDecimal("23asf").toString().equals("23asf");
+
+    }
+
     @Test(expected = TaskExecutionException.class)
     public void testException() throws TaskExecutionException {
         SimpleHttpClient httpClient = Mockito.mock(SimpleHttpClient.class);

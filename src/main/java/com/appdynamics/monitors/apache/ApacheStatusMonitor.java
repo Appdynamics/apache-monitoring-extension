@@ -119,7 +119,9 @@ public class ApacheStatusMonitor extends AManagedMonitor {
             try {
                 //Integer.parseInt(value);
                 BigDecimal bigValue = toBigDecimal(value);
-                printCollectiveObservedCurrent(jkMetricPrefix + "|" + key.replace(".", "|"), bigValue.toString());
+                if(bigValue != null) {
+                    printCollectiveObservedCurrent(jkMetricPrefix + "|" + key.replace(".", "|"), bigValue.toString());
+                }
             } catch (NumberFormatException e) {
                 logger.error("Ignoring " + key + " as it can not be converted to Integer");
             }
@@ -297,7 +299,7 @@ public class ApacheStatusMonitor extends AManagedMonitor {
         return null;
     }
 
-    private static BigDecimal toBigDecimal(String valueStr) {
+    public static BigDecimal toBigDecimal(String valueStr) {
         if (valueStr != null && !valueStr.trim().isEmpty()) {
             try {
                 return new BigDecimal(valueStr.trim());
