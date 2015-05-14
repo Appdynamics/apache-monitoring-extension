@@ -61,8 +61,11 @@ public class ApacheStatusMonitorTest {
         ApacheStatusMonitor.toBigDecimal("33227844900").toString().equals("33227844900");
         ApacheStatusMonitor.toBigDecimal("332278.900").toString().equals("332278.900");
         ApacheStatusMonitor.toBigDecimal("33").toString().equals("33");
-        ApacheStatusMonitor.toBigDecimal("23asf").toString().equals("23asf");
+    }
 
+    @Test(expected = NullPointerException.class)
+    public void testInvalidNumberToBigDecimal() {
+        ApacheStatusMonitor.toBigDecimal("23asf").toString().equals("23asf");
     }
 
     @Test(expected = TaskExecutionException.class)
