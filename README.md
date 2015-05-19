@@ -51,12 +51,38 @@ Please enable mod_status on the HTTP server to get stats.
 > cd <machine agent home>/monitors/
 > unzip ApacheMonitor.zip
    ```
-4. Set up monitor.xml with the correct host and port:
-   -   protocol=http/https
-   -   host=your-apache-server
-   -   port=90
-   -   proxy-host=proxy host address if any
-   -   proxy-port=proxy port if any
+4. Set up config.yml with the correct host and port:
+   ~~~
+# Apache particulars
+
+host: "localhost"
+port: 8989
+username: ""
+password: ""
+useSSL: false
+proxyHost: ""
+proxyPort: ""
+proxyUsername: ""
+proxyPassword: ""
+customUrlPath: "/server-status?auto"
+jkStatusPath: "/status"
+jkWorkerStats: "connection_pool_timeout,ping_timeout,connect_timeout,prepost_timeout,reply_timeout,retries,connection_ping_interval,recovery_options,max_packet_size,activation,lbfactor,distance,lbmult,lbvalue,elected,sessions,errors,client_errors,reply_timeouts,transferred,read,busy,max_busy,connected,time_to_recover_min,time_to_recover_max,used,map_count,last_reset_ago"
+
+customStats:
+        #Metric group under which all the metrics are displayed
+    -   metricGroup: "MyCustom"
+        #Metric path to get the metrics from
+        metricPath: "/server-status?auto"
+        #Metric key value separator
+        keyValueSeparator: ":"
+        #Comma separated List of metrics which will be shown in the controller
+        #keep this empty if you want to show all the metrics
+        metricsToCollect: []
+
+#prefix used to show up metrics in AppDynamics
+metricPrefix:  "Custom Metrics|WebServer|Apache|Status|"
+
+   ~~~
 
    Note: If you want to monitor more than one server, see [Monitoring multiple Apache servers](#Monitoring multiple Apache servers).  
 
@@ -82,41 +108,39 @@ However, you can "fool" the system into monitoring multiple servers as follows.
 
 ​1. For each server you want to monitor, copy the monitors/ApacheMonitor directory into another directory, such as monitors/ApacheStatusMonitor2.
 
-​2. Edit the monitor.xml file in that directory, changing the `<name>`, protocol, host, port and metric-prefix values accordingly:
+​2. Edit the monitor.xml and config.yml files in that directory, changing the `<name>`, protocol, host, port and metric-prefix values accordingly:
 
 
    ```  
-<monitor>
-	<name>ApacheStatusMonitor2</name>
-	<type>managed</type>
-	<description>Monitors general status of Apache Server 
-	</description>
-    <monitor-configuration>
-    </monitor-configuration>
-	<monitor-run-task>
-	      <execution-style>periodic</execution-style>
-	      <execution-frequency-in-seconds>60</execution-frequency-in-seconds>
-	      <name>Apache Status Monitor Run Task</name>
-    	  <display-name>Apache Status Monitor Task</display-name>
-    	  <description>Apache Status Monitor Task</description>
-    	  <type>java</type>
-    	  <execution-timeout-in-secs>120</execution-timeout-in-secs>
-    	  <task-arguments>
-    	                    <argument name="protocol" is-required="true" default-value="http"/>
-	        	    <argument name="host" is-required="true" default-value="localhost"/>
-		            <argument name="port" is-required="true" default-value="8092"/>
-		            <argument name="proxy-host" is-required="false" default-value="localhost"/>
-		            <argument name="proxy-port" is-required="false" default-value="8888"/>
-		            <argument name="custom-url-path" is-required="false" default-value="/server-status?auto"/>
-		            <argument name="metric-prefix" is-required="false" default-value="Custom Metrics|WebServer|Apache2|Status|"/>
-    	  </task-arguments>
-    	  <java-task>
-          	<classpath>ApacheMonitor.jar</classpath>
-          	<impl-class>com.appdynamics.monitors.apache.ApacheStatusMonitor
-          	</impl-class>
-          </java-task>
-	</monitor-run-task>
-</monitor>
+# Apache particulars
+
+host: "localhost"
+port: 8092
+username: ""
+password: ""
+useSSL: false
+proxyHost: ""
+proxyPort: ""
+proxyUsername: ""
+proxyPassword: ""
+customUrlPath: "/server-status?auto"
+jkStatusPath: "/status"
+jkWorkerStats: "connection_pool_timeout,ping_timeout,connect_timeout,prepost_timeout,reply_timeout,retries,connection_ping_interval,recovery_options,max_packet_size,activation,lbfactor,distance,lbmult,lbvalue,elected,sessions,errors,client_errors,reply_timeouts,transferred,read,busy,max_busy,connected,time_to_recover_min,time_to_recover_max,used,map_count,last_reset_ago"
+
+customStats:
+        #Metric group under which all the metrics are displayed
+    -   metricGroup: "MyCustom"
+        #Metric path to get the metrics from
+        metricPath: "/server-status?auto"
+        #Metric key value separator
+        keyValueSeparator: ":"
+        #Comma separated List of metrics which will be shown in the controller
+        #keep this empty if you want to show all the metrics
+        metricsToCollect: []
+
+#prefix used to show up metrics in AppDynamics
+metricPrefix:  "Custom Metrics|WebServer|Apache2|Status|"
+
    ```
 ​
 <br/>
@@ -233,14 +257,34 @@ More info on mod_jk at http://tomcat.apache.org/connectors-doc/
 	worker.statusmanager.type=status
 	
    ```
-####monitor.xml
+####config.yml
    ```
-       <argument name="jk-status-path" is-required="false" default-value="/status"/>
-       <argument name="jk-worker-stats" is-required="false" default-value="connection_pool_timeout,ping_timeout,connect_timeout,prepost_timeout,reply_timeout,retries,connection_ping_interval,recovery_options,max_packet_size,activation,lbfactor,distance,lbmult,lbvalue,elected,sessions,errors,client_errors,reply_timeouts,transferred,read,busy,max_busy,connected,time_to_recover_min,time_to_recover_max,used,map_count,last_reset_ago"/>
-        
+jkStatusPath: "/status"
+jkWorkerStats: "connection_pool_timeout,ping_timeout,connect_timeout,prepost_timeout,reply_timeout,retries,connection_ping_interval,recovery_options,max_packet_size,activation,lbfactor,distance,lbmult,lbvalue,elected,sessions,errors,client_errors,reply_timeouts,transferred,read,busy,max_busy,connected,time_to_recover_min,time_to_recover_max,used,map_count,last_reset_ago"
+
    ```
-   `jk-status-path` is the url path defined in the Location section of httpd.conf.<br/>
-   `jk-worker-stats` list of worker stats.
+   `jkStatusPath` is the url path defined in the Location section of httpd.conf.<br/>
+   `jkWorkerStats` list of worker stats.
+
+##Custom Metrics
+
+You can monitor custom URLs configured in apache.
+example custom URL configuration in config.yml
+
+~~~
+customStats:
+        #Metric group under which all the metrics are displayed
+    -   metricGroup: "MyCustom"
+        #Metric path to get the metrics from
+        metricPath: "/server-status?auto"
+        #Metric key value separator
+        keyValueSeparator: ":"
+        #Comma separated List of metrics which will be shown in the controller
+        #keep this empty if you want to show all the metrics
+        metricsToCollect: []
+~~~
+
+
 
 ##Contributing
 
