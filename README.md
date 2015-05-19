@@ -158,7 +158,7 @@ metricPrefix:  "Custom Metrics|WebServer|Apache2|Status|"
 </tr>
 <tr>
 <td class='confluenceTd'> src/main/resources/config </td>
-<td class='confluenceTd'> Contains the monitor.xml </td>
+<td class='confluenceTd'> Contains monitor.xml and config.yml</td>
 </tr>
 <tr>
 <td class='confluenceTd'> src/main/java </td>
