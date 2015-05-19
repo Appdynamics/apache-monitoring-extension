@@ -50,7 +50,7 @@ public class ApacheStatusMonitorTest {
             }
         }).when(spy).printMetric(Mockito.anyString(), Mockito.anyString(), Mockito.anyString(), Mockito.anyString(), Mockito.anyString());
         HashMap<String, String> argsMap = new HashMap<String, String>();
-        argsMap.put("metric-prefix","Apache| ");
+        argsMap.put("config-file","src/test/resources/config.yml");
         spy.execute(argsMap, null);
         logger.info("The remaining values are {}",expectedValueMap);
         Assert.assertEquals(0,expectedValueMap.size());
@@ -77,6 +77,7 @@ public class ApacheStatusMonitorTest {
         Mockito.when(target.get()).thenReturn(response);
         Mockito.when(response.lines()).thenThrow(new RuntimeException());
         HashMap<String, String> argsMap = new HashMap<String, String>();
+        argsMap.put("config-file","src/test/resources/config.yml");
         ApacheStatusMonitor spy = Mockito.spy(new ApacheStatusMonitor());
         Mockito.doReturn(httpClient).when(spy).buildHttpClient(Mockito.anyMap());
         spy.execute(argsMap, null);

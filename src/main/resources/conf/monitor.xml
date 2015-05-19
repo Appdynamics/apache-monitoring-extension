@@ -14,29 +14,8 @@
         <type>java</type>
         <execution-timeout-in-secs>120</execution-timeout-in-secs>
         <task-arguments>
-            <argument name="host" is-required="true" default-value="localhost"/>
-            <argument name="port" is-required="true" default-value="80"/>
-
-            <!-- Optional Properties  -->
-            <!--
-            <argument name="use-ssl" is-required="false" default-value="false"/>
-            <argument name="username" is-required="true" default-value=""/>
-            <argument name="password" is-required="false" default-value=""/>
-            <argument name="proxy-host" is-required="false" default-value=""/>
-            <argument name="proxy-port" is-required="false" default-value=""/>
-            <argument name="proxy-username" is-required="false" default-value=""/>
-            <argument name="proxy-password" is-required="false" default-value=""/>
-            <argument name="custom-url-path" is-required="false" default-value="/server-status?auto"/>
-            <argument name="metric-prefix" is-required="false" default-value="Custom Metrics|WebServer|Apache|Status|"/>
-            -->
-
-            <!--Optional properties for mod_jk stats -->
-            <!--
-            <argument name="jk-status-path" is-required="false" default-value="/status"/>
-            <argument name="jk-worker-stats" is-required="false" default-value="connection_pool_timeout,ping_timeout,connect_timeout,prepost_timeout,reply_timeout,retries,connection_ping_interval,recovery_options,max_packet_size,activation,lbfactor,distance,lbmult,lbvalue,elected,sessions,errors,client_errors,reply_timeouts,transferred,read,busy,max_busy,connected,time_to_recover_min,time_to_recover_max,used,map_count,last_reset_ago"/>
-            -->
-
-
+            <!-- config file-->
+            <argument name="config-file" is-required="true" default-value="monitors/ApacheMonitor/config.yml" />
         </task-arguments>
         <java-task>
             <classpath>apache-monitoring-extension.jar</classpath>

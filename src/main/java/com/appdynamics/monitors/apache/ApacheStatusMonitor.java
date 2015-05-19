@@ -1,10 +1,13 @@
 package com.appdynamics.monitors.apache;
 
-import com.appdynamics.extensions.ArgumentsValidator;
+import com.appdynamics.extensions.PathResolver;
 import com.appdynamics.extensions.http.SimpleHttpClient;
 import com.appdynamics.extensions.http.UrlBuilder;
 import com.appdynamics.extensions.io.Lines;
 import com.appdynamics.extensions.util.GroupCounter;
+import com.appdynamics.extensions.yml.YmlReader;
+import com.appdynamics.monitors.apache.config.Configuration;
+import com.appdynamics.monitors.apache.config.CustomStats;
 import com.google.common.base.Strings;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
@@ -16,10 +19,12 @@ import com.singularity.ee.agent.systemagent.api.exception.TaskExecutionException
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.File;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.regex.Pattern;
@@ -33,15 +38,15 @@ import java.util.regex.Pattern;
  */
 public class ApacheStatusMonitor extends AManagedMonitor {
     public static final Logger logger = LoggerFactory.getLogger(ApacheStatusMonitor.class);
-    private static final Pattern SPLIT_PATTERN = Pattern.compile(":", Pattern.LITERAL);
-    private static final Pattern EQUAL_SPLIT_PATTERN = Pattern.compile("=", Pattern.LITERAL);
+    private static final String COLON = ":";
+    private static final Pattern COLON_SPLIT_PATTERN = Pattern.compile(COLON, Pattern.LITERAL);
+    private static final String EQUAL = "=";
+    private static final Pattern EQUAL_SPLIT_PATTERN = Pattern.compile(EQUAL, Pattern.LITERAL);
     private static final String DOT = ".";
 
-    //default values if not specified
-    private static final Map<String, String> DEFAULT_ARGS = new HashMap<String, String>() {{
-        put("custom-url-path", "server-status?auto");
-        put("metric-prefix", "Custom Metrics|WebServer|Apache|Status");
-    }};
+    private static final String CONFIG_ARG = "config-file";
+    private static final String FILE_NAME = "monitors/ApacheMonitor/config.yml";
+
 
     public ApacheStatusMonitor() {
         String version = getClass().getPackage().getImplementationTitle();
@@ -51,45 +56,147 @@ public class ApacheStatusMonitor extends AManagedMonitor {
     }
 
     public TaskOutput execute(Map<String, String> argsMap, TaskExecutionContext executionContext) throws TaskExecutionException {
-        logger.debug("The args map before filling the default is {}", argsMap);
-        argsMap = ArgumentsValidator.validateArguments(argsMap, DEFAULT_ARGS);
-        logger.debug("The args map after filling the default is {}", argsMap);
-        SimpleHttpClient httpClient = buildHttpClient(argsMap);
-        try {
-            getServerStats(argsMap, httpClient);
+        logger.info("Starting the Apache Monitoring task.");
 
-            String jkStatusPath = argsMap.get("jk-status-path");
+        String configFilename = getConfigFilename(argsMap.get(CONFIG_ARG));
+        Configuration config = YmlReader.readFromFile(configFilename, Configuration.class);
+        Map<String, String> requestMap = buildRequestMap(config);
+
+        SimpleHttpClient httpClient = buildHttpClient(requestMap);
+        try {
+            getServerStats(config, requestMap, httpClient);
+
+            String jkStatusPath = config.getJkStatusPath();
             if (!Strings.isNullOrEmpty(jkStatusPath)) {
                 //If we have jk status path then get the jk stats in properties format
-                getJKStats(argsMap, httpClient, jkStatusPath + "?mime=prop");
+                getJKStats(config, requestMap, httpClient, jkStatusPath + "?mime=prop");
             }
+            getCustomStats(config, requestMap, httpClient);
+        } catch (Exception e) {
+            logger.error("Metrics Collection Failed: ", e);
+            throw new TaskExecutionException("Metrics Collection Failed: ", e);
         } finally {
             httpClient.close();
         }
+        logger.info("Apache Monitoring task completed successfully");
         return new TaskOutput("Apache Monitor Completed");
-
     }
 
-    private void getJKStats(Map<String, String> argsMap, SimpleHttpClient httpClient, String jkStatusPath) throws TaskExecutionException {
-        String url = UrlBuilder.builder(argsMap).path(jkStatusPath).build();
+    private void getCustomStats(Configuration config, Map<String, String> requestMap, SimpleHttpClient httpClient) {
+        List<CustomStats> customStats = config.getCustomStats();
+        if (customStats != null) {
+            for (CustomStats customStat : customStats) {
+                getAndPrintCustomStat(config, requestMap, httpClient, customStat);
+            }
+        } else {
+            logger.debug("No customs stats defined");
+        }
+    }
+
+    private void getAndPrintCustomStat(Configuration config, Map<String, String> requestMap, SimpleHttpClient httpClient, CustomStats customStat) {
+        if (Strings.isNullOrEmpty(customStat.getMetricPath())) {
+            logger.error("Empty metric path specified, ignoring the custom metric");
+            return;
+        }
+        String url = UrlBuilder.builder(requestMap).path(customStat.getMetricPath()).build();
+        try {
+            Lines lines = httpClient.target(url).get().lines();
+            String keyValueSeparator = customStat.getKeyValueSeparator();
+            Pattern splitPattern = null;
+            if (COLON.equals(keyValueSeparator)) {
+                splitPattern = COLON_SPLIT_PATTERN;
+            } else if (EQUAL.equals(keyValueSeparator)) {
+                splitPattern = EQUAL_SPLIT_PATTERN;
+            } else {
+                splitPattern = Pattern.compile(keyValueSeparator, Pattern.LITERAL);
+            }
+
+            Map<String, String> stats = parse(lines, splitPattern);
+            String customMetricPrefix = config.getMetricPrefix() + customStat.getMetricGroup();
+            printCustomMetrics(stats, customMetricPrefix, customStat.getMetricsToCollect());
+        } catch (Exception e) {
+            logger.error("Exception while getting the apache stats from the URL " + url, e);
+        }
+    }
+
+    private void printCustomMetrics(Map<String, String> stats, String metricPrefix, List<String> metricsToCollect) {
+        if (stats != null) {
+            //If metricsToCollect is empty or null print all the stats
+            if (metricsToCollect == null || metricsToCollect.isEmpty()) {
+                for (Map.Entry<String, String> entry : stats.entrySet()) {
+                    String roundedValue = round(entry.getValue());
+                    if (roundedValue != null) {
+                        printCollectiveObservedCurrent(metricPrefix + "|" + entry.getKey(), roundedValue);
+                    }
+                }
+            } else { //If metricsToCollect is not empty print only those defined in metricsToCollect
+                for (Map.Entry<String, String> entry : stats.entrySet()) {
+                    String metricKey = entry.getKey();
+                    String roundedValue = round(entry.getValue());
+                    if (roundedValue != null) {
+                        for (String metricToCollect : metricsToCollect) {
+                            if (metricKey.trim().equalsIgnoreCase(metricToCollect.trim())) {
+                                printCollectiveObservedCurrent(metricPrefix + "|" + metricKey, roundedValue);
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private Map<String, String> buildRequestMap(Configuration config) {
+        Map<String, String> requestMap = new HashMap<String, String>();
+        requestMap.put("host", config.getHost());
+        requestMap.put("port", String.valueOf(config.getPort()));
+        requestMap.put("use-ssl", String.valueOf(config.isUseSSL()));
+        requestMap.put("username", config.getUsername());
+        requestMap.put("password", config.getPassword());
+        requestMap.put("proxy-host", config.getProxyHost());
+        requestMap.put("proxy-port", config.getProxyPort());
+        requestMap.put("proxy-username", config.getProxyUsername());
+        requestMap.put("proxy-password", config.getProxyPassword());
+        return requestMap;
+    }
+
+    private String getConfigFilename(String filename) {
+        if (filename == null) {
+            return "";
+        }
+
+        if ("".equals(filename)) {
+            filename = FILE_NAME;
+        }
+        // for absolute paths
+        if (new File(filename).exists()) {
+            return filename;
+        }
+        // for relative paths
+        File jarPath = PathResolver.resolveDirectory(AManagedMonitor.class);
+        String configFileName = "";
+        if (!Strings.isNullOrEmpty(filename)) {
+            configFileName = jarPath + File.separator + filename;
+        }
+        return configFileName;
+    }
+
+    private void getJKStats(Configuration config, Map<String, String> requestMap, SimpleHttpClient httpClient, String jkStatusPath) {
+        String url = UrlBuilder.builder(requestMap).path(jkStatusPath).build();
         try {
             Lines lines = httpClient.target(url).get().lines();
             Multimap<String, String> jkStatsMap = buildMap(lines);
 
-            String jkWorkerStatsStr = argsMap.get("jk-worker-stats");
+            String jkWorkerStatsStr = config.getJkWorkerStats();
             String[] jkWorkerStats = jkWorkerStatsStr.split(",");
-            String jkMetricPrefix = argsMap.get("metric-prefix") + "| JK Status";
+            String jkMetricPrefix = config.getMetricPrefix() + "JK Status";
             printJKStats(jkStatsMap, jkMetricPrefix, jkWorkerStats);
-
-
         } catch (Exception e) {
             logger.error("Exception while getting the apache JK stats from the URL " + url, e);
-            throw new TaskExecutionException("Exception while getting the apache JK stats from the URL " + url, e);
         }
     }
 
     private void printJKStats(Multimap<String, String> jkStatsMap, String jkMetricPrefix, String[] jkWorkerStats) {
-
         Set<String> strings = jkStatsMap.keySet();
         for (String key : strings) {
             if (key.contains("balance_workers")) {
@@ -102,7 +209,6 @@ public class ApacheStatusMonitor extends AManagedMonitor {
     }
 
     private void printJKWorkerMetrics(String workerName, String[] jkWorkerStats, Multimap<String, String> jkStatsMap, String jkMetricPrefix) {
-
         for (String workerStat : jkWorkerStats) {
             String key = getKey(workerName, workerStat);
             Collection<String> values = jkStatsMap.get(key);
@@ -117,7 +223,6 @@ public class ApacheStatusMonitor extends AManagedMonitor {
                 }
             }
             try {
-                //Integer.parseInt(value);
                 BigDecimal bigValue = toBigDecimal(value);
                 if(bigValue != null) {
                     printCollectiveObservedCurrent(jkMetricPrefix + "|" + key.replace(".", "|"), bigValue.toString());
@@ -155,34 +260,41 @@ public class ApacheStatusMonitor extends AManagedMonitor {
         return jkStatsMap;
     }
 
-    private void getServerStats(Map<String, String> argsMap, SimpleHttpClient httpClient) throws TaskExecutionException {
-        String url = UrlBuilder.builder(argsMap).path(argsMap.get("custom-url-path")).build();
+    private void getServerStats(Configuration config, Map<String, String> requestMap, SimpleHttpClient httpClient) throws TaskExecutionException {
+        String url = UrlBuilder.builder(requestMap).path(config.getCustomUrlPath()).build();
         try {
             Lines lines = httpClient.target(url).get().lines();
-            parse(lines, argsMap);
+            Map<String, String> metrics = parse(lines, COLON_SPLIT_PATTERN);
+            print(metrics, config.getMetricPrefix());
         } catch (Exception e) {
             logger.error("Exception while getting the apache status from the URL " + url, e);
             throw new TaskExecutionException("Exception while getting the apache status from the URL " + url, e);
         }
     }
 
-    protected SimpleHttpClient buildHttpClient(Map<String, String> argsMap) {
-        return SimpleHttpClient.builder(argsMap).build();
+    protected SimpleHttpClient buildHttpClient(Map<String, String> requestMap) {
+        return SimpleHttpClient.builder(requestMap).build();
     }
 
-    private void parse(Lines lines, Map<String, String> argsMap) {
+    private Map<String, String> parse(Lines lines, Pattern splitPattern) {
         Map<String, String> valueMap = new HashMap<String, String>();
         for (String line : lines) {
-            String[] kv = SPLIT_PATTERN.split(line);
+            String[] kv = splitPattern.split(line);
             if (kv.length == 2) {
                 valueMap.put(kv[0].trim(), kv[1].trim());
             }
         }
         logger.debug("The extracted metrics are {}", valueMap);
-        if (!valueMap.isEmpty()) {
-            String metricPrefix = argsMap.get("metric-prefix") + "|";
-            printRegularMetrics(valueMap, metricPrefix);
-            parseScoreboard(valueMap, metricPrefix);
+        return valueMap;
+    }
+
+    private void print(Map<String, String> metrics, String metricPrefix) {
+        if (!metrics.isEmpty()) {
+            if (!(metricPrefix.endsWith("|"))) {
+                metricPrefix = metricPrefix.concat("|");
+            }
+            printRegularMetrics(metrics, metricPrefix);
+            parseScoreboard(metrics, metricPrefix);
         }
     }
 
@@ -275,7 +387,7 @@ public class ApacheStatusMonitor extends AManagedMonitor {
                 cluster
         );
         if (metricValue != null) {
-            metricWriter.printMetric(metricValue.toString());
+            metricWriter.printMetric(metricValue);
         }
         if (logger.isDebugEnabled()) {
             logger.debug("Metric [" + aggregation + "/" + timeRollup + "/" + cluster
@@ -308,5 +420,14 @@ public class ApacheStatusMonitor extends AManagedMonitor {
             }
         }
         return null;
+    }
+
+    public static void main(String[] args) throws TaskExecutionException {
+        ApacheStatusMonitor apacheStatusMonitor = new ApacheStatusMonitor();
+
+        Map<String, String> taskArgs = new HashMap<String, String>();
+        taskArgs.put("config-file", "/home/satish/AppDynamics/Code/extensions/apache-monitoring-extension/src/main/resources/conf/config.yml");
+
+        apacheStatusMonitor.execute(taskArgs, null);
     }
 }
