@@ -15,9 +15,11 @@ public class Configuration {
     private String proxyUsername;
     private String proxyPassword;
     private String customUrlPath;
+    private List<String> deltaStats;
     private String metricPrefix;
     private String jkStatusPath;
     private String jkWorkerStats;
+    private List<String> jkDeltaStats;
 
     private List<CustomStats> customStats;
 
@@ -101,6 +103,14 @@ public class Configuration {
         this.customUrlPath = customUrlPath;
     }
 
+    public List<String> getDeltaStats() {
+        return deltaStats;
+    }
+
+    public void setDeltaStats(List<String> deltaStats) {
+        this.deltaStats = deltaStats;
+    }
+
     public String getMetricPrefix() {
         return metricPrefix;
     }
@@ -123,6 +133,14 @@ public class Configuration {
 
     public void setJkWorkerStats(String jkWorkerStats) {
         this.jkWorkerStats = jkWorkerStats;
+    }
+
+    public List<String> getJkDeltaStats() {
+        return jkDeltaStats;
+    }
+
+    public void setJkDeltaStats(List<String> jkDeltaStats) {
+        this.jkDeltaStats = jkDeltaStats;
     }
 
     public List<CustomStats> getCustomStats() {

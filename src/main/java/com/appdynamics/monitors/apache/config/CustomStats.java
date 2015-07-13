@@ -9,6 +9,7 @@ public class CustomStats {
     private String metricPath;
     private String keyValueSeparator;
     private List<String> metricsToCollect;
+    private List<String> deltaStats;
 
     public String getMetricGroup() {
         return metricGroup;
@@ -40,5 +41,13 @@ public class CustomStats {
 
     public void setMetricsToCollect(List<String> metricsToCollect) {
         this.metricsToCollect = metricsToCollect;
+    }
+
+    public List<String> getDeltaStats() {
+        return deltaStats;
+    }
+
+    public void setDeltaStats(List<String> deltaStats) {
+        this.deltaStats = deltaStats;
     }
 }
