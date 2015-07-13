@@ -129,8 +129,12 @@ proxyPort: ""
 proxyUsername: ""
 proxyPassword: ""
 customUrlPath: "/server-status?auto"
+#Add apache metrics with full path here to get delta for those metrics
+deltaStats: ["Custom Metrics|WebServer|Apache|Status|Availability|Server Uptime (sec)", "Custom Metrics|WebServer|Apache|Status|Activity|Total Accesses", "Custom Metrics|WebServer|Apache|Status|Activity|Bytes/min", "Custom Metrics|WebServer|Apache|Status|Activity|Type|DNS Lookup"]
 jkStatusPath: "/status"
 jkWorkerStats: "connection_pool_timeout,ping_timeout,connect_timeout,prepost_timeout,reply_timeout,retries,connection_ping_interval,recovery_options,max_packet_size,activation,lbfactor,distance,lbmult,lbvalue,elected,sessions,errors,client_errors,reply_timeouts,transferred,read,busy,max_busy,connected,time_to_recover_min,time_to_recover_max,used,map_count,last_reset_ago"
+#Add jkstats metrics with full path here to get delta for those metrics
+jkDeltaStats: ["Custom Metrics|WebServer|Apache|Status|JK Status|worker|worker1|retries"]
 
 customStats:
         #Metric group under which all the metrics are displayed
@@ -142,6 +146,8 @@ customStats:
         #Comma separated List of metrics which will be shown in the controller
         #keep this empty if you want to show all the metrics
         metricsToCollect: []
+        #Add custom metrics with full path here to get delta for those metrics
+        deltaStats: []
 
 #prefix used to show up metrics in AppDynamics
 metricPrefix:  "Custom Metrics|WebServer|Apache2|Status|"
