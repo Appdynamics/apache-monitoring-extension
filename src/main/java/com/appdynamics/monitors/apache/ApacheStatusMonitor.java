@@ -215,7 +215,7 @@ public class ApacheStatusMonitor extends AManagedMonitor {
         }
     }
 
-    private void printJKStats(Multimap<String, String> jkStatsMap, String jkMetricPrefix, String[] jkWorkerStats, List<String> jkDeltaStats) {
+    protected void printJKStats(Multimap<String, String> jkStatsMap, String jkMetricPrefix, String[] jkWorkerStats, List<String> jkDeltaStats) {
         Set<String> strings = jkStatsMap.keySet();
         for (String key : strings) {
             if (key.contains("balance_workers")) {
@@ -260,7 +260,7 @@ public class ApacheStatusMonitor extends AManagedMonitor {
     }
 
     private String getValue(Collection<String> values) {
-        if (values == null) {
+        if (values == null || values.isEmpty()) {
             return "0";
         } else {
             return values.iterator().next();
@@ -273,7 +273,7 @@ public class ApacheStatusMonitor extends AManagedMonitor {
         return keyBuilder.toString();
     }
 
-    private Multimap<String, String> buildMap(Lines lines) {
+    protected Multimap<String, String> buildMap(Lines lines) {
         Multimap<String, String> jkStatsMap = ArrayListMultimap.create();
 
         for (String line : lines) {
