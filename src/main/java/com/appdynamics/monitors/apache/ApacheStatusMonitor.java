@@ -459,7 +459,7 @@ public class ApacheStatusMonitor extends AManagedMonitor {
         printCollectiveObservedCurrent(metricPrefix + "Activity|Total Accesses", curTotalAccesses);
         BigInteger prevTotalAccesses = processDelta(metricPrefix + "Activity|Total Accesses", curTotalAccesses, deltaStats);
         if (prevTotalAccesses != null) {
-            printCollectiveObservedCurrent(metricPrefix + "Activity|Total Accesses Delta", getDeltaValue(curTotalAccesses, prevTotalAccesses));
+            printCollectiveObservedAverage(metricPrefix + "Activity|Total Accesses Delta", getDeltaValue(curTotalAccesses, prevTotalAccesses));
         }
 
 
@@ -467,7 +467,7 @@ public class ApacheStatusMonitor extends AManagedMonitor {
         printCollectiveObservedCurrent(metricPrefix + "Activity|Total Traffic", curTotalKBytes);
         BigInteger prevTotalKBytes = processDelta(metricPrefix + "Activity|Total Traffic", curTotalKBytes, deltaStats);
         if (prevTotalKBytes != null) {
-            printCollectiveObservedCurrent(metricPrefix + "Activity|Total Traffic Delta", getDeltaValue(curTotalKBytes, prevTotalKBytes));
+            printCollectiveObservedAverage(metricPrefix + "Activity|Total Traffic Delta", getDeltaValue(curTotalKBytes, prevTotalKBytes));
         }
 
 
