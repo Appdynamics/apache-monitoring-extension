@@ -400,10 +400,6 @@ public class ApacheStatusMonitor extends AManagedMonitor {
 
         String curUptime = valueMap.get("Uptime");
         printCollectiveObservedCurrent(metricPrefix + "Availability|Server Uptime (sec)", curUptime);
-        BigInteger prevUptime = processDelta(metricPrefix + "Availability|Server Uptime (sec)", curUptime, deltaStats);
-        if (prevUptime != null) {
-            printCollectiveObservedCurrent(metricPrefix + "Availability|Server Uptime (sec) Delta", getDeltaValue(curUptime, prevUptime));
-        }
 
         //Resource Utilization
         String curCpuLoad = round(valueMap.get("CPULoad"));
