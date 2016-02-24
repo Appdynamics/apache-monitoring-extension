@@ -400,10 +400,6 @@ public class ApacheStatusMonitor extends AManagedMonitor {
 
         String curUptime = valueMap.get("Uptime");
         printCollectiveObservedCurrent(metricPrefix + "Availability|Server Uptime (sec)", curUptime);
-        BigInteger prevUptime = processDelta(metricPrefix + "Availability|Server Uptime (sec)", curUptime, deltaStats);
-        if (prevUptime != null) {
-            printCollectiveObservedCurrent(metricPrefix + "Availability|Server Uptime (sec) Delta", getDeltaValue(curUptime, prevUptime));
-        }
 
         //Resource Utilization
         String curCpuLoad = round(valueMap.get("CPULoad"));
@@ -459,7 +455,7 @@ public class ApacheStatusMonitor extends AManagedMonitor {
         printCollectiveObservedCurrent(metricPrefix + "Activity|Total Accesses", curTotalAccesses);
         BigInteger prevTotalAccesses = processDelta(metricPrefix + "Activity|Total Accesses", curTotalAccesses, deltaStats);
         if (prevTotalAccesses != null) {
-            printCollectiveObservedCurrent(metricPrefix + "Activity|Total Accesses Delta", getDeltaValue(curTotalAccesses, prevTotalAccesses));
+            printCollectiveObservedAverage(metricPrefix + "Activity|Total Accesses Delta", getDeltaValue(curTotalAccesses, prevTotalAccesses));
         }
 
 
@@ -467,7 +463,7 @@ public class ApacheStatusMonitor extends AManagedMonitor {
         printCollectiveObservedCurrent(metricPrefix + "Activity|Total Traffic", curTotalKBytes);
         BigInteger prevTotalKBytes = processDelta(metricPrefix + "Activity|Total Traffic", curTotalKBytes, deltaStats);
         if (prevTotalKBytes != null) {
-            printCollectiveObservedCurrent(metricPrefix + "Activity|Total Traffic Delta", getDeltaValue(curTotalKBytes, prevTotalKBytes));
+            printCollectiveObservedAverage(metricPrefix + "Activity|Total Traffic Delta", getDeltaValue(curTotalKBytes, prevTotalKBytes));
         }
 
 
