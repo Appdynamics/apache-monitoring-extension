@@ -66,11 +66,11 @@ proxyUsername: ""
 proxyPassword: ""
 customUrlPath: "/server-status?auto"
 #Add apache metrics with full path here to get delta for those metrics
-deltaStats: ["Custom Metrics|WebServer|Apache|Status|Availability|Server Uptime (sec)", "Custom Metrics|WebServer|Apache|Status|Activity|Total Accesses", "Custom Metrics|WebServer|Apache|Status|Activity|Bytes/min", "Custom Metrics|WebServer|Apache|Status|Activity|Type|DNS Lookup"]
+deltaStats: ["Activity|Total Accesses", "Activity|Bytes/min", "Activity|Type|DNS Lookup"]
 jkStatusPath: "/status"
 jkWorkerStats: "connection_pool_timeout,ping_timeout,connect_timeout,prepost_timeout,reply_timeout,retries,connection_ping_interval,recovery_options,max_packet_size,activation,lbfactor,distance,lbmult,lbvalue,elected,sessions,errors,client_errors,reply_timeouts,transferred,read,busy,max_busy,connected,time_to_recover_min,time_to_recover_max,used,map_count,last_reset_ago"
 #Add jkstats metrics with full path here to get delta for those metrics
-jkDeltaStats: ["Custom Metrics|WebServer|Apache|Status|JK Status|worker|worker1|retries"]
+jkDeltaStats: ["JK Status|worker|worker1|retries", "JK Status|worker|worker1|sessions"]
 customStats:
         #Metric group under which all the metrics are displayed
     -   metricGroup: ""
@@ -130,11 +130,11 @@ proxyUsername: ""
 proxyPassword: ""
 customUrlPath: "/server-status?auto"
 #Add apache metrics with full path here to get delta for those metrics
-deltaStats: ["Custom Metrics|WebServer|Apache|Status|Availability|Server Uptime (sec)", "Custom Metrics|WebServer|Apache|Status|Activity|Total Accesses", "Custom Metrics|WebServer|Apache|Status|Activity|Bytes/min", "Custom Metrics|WebServer|Apache|Status|Activity|Type|DNS Lookup"]
+deltaStats: ["Availability|Server Uptime (sec)", "Activity|Total Accesses", "Activity|Bytes/min", "Activity|Type|DNS Lookup"]
 jkStatusPath: "/status"
 jkWorkerStats: "connection_pool_timeout,ping_timeout,connect_timeout,prepost_timeout,reply_timeout,retries,connection_ping_interval,recovery_options,max_packet_size,activation,lbfactor,distance,lbmult,lbvalue,elected,sessions,errors,client_errors,reply_timeouts,transferred,read,busy,max_busy,connected,time_to_recover_min,time_to_recover_max,used,map_count,last_reset_ago"
 #Add jkstats metrics with full path here to get delta for those metrics
-jkDeltaStats: ["Custom Metrics|WebServer|Apache|Status|JK Status|worker|worker1|retries"]
+jkDeltaStats: ["JK Status|worker|worker1|retries", "JK Status|worker|worker1|sessions"]
 
 customStats:
         #Metric group under which all the metrics are displayed
@@ -273,7 +273,7 @@ More info on mod_jk at http://tomcat.apache.org/connectors-doc/
 jkStatusPath: "/status"
 jkWorkerStats: "connection_pool_timeout,ping_timeout,connect_timeout,prepost_timeout,reply_timeout,retries,connection_ping_interval,recovery_options,max_packet_size,activation,lbfactor,distance,lbmult,lbvalue,elected,sessions,errors,client_errors,reply_timeouts,transferred,read,busy,max_busy,connected,time_to_recover_min,time_to_recover_max,used,map_count,last_reset_ago"
 #Add jkstats metrics with full path here to get delta for those metrics
-jkDeltaStats: ["Custom Metrics|WebServer|Apache|Status|JK Status|worker|worker1|retries"]
+jkDeltaStats: ["JK Status|worker|worker1|retries", "JK Status|worker|worker1|sessions"]
 
    ```
    `jkStatusPath` is the url path defined in the Location section of httpd.conf.<br/>
