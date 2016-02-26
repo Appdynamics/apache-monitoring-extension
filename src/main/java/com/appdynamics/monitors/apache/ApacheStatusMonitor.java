@@ -18,8 +18,7 @@ import com.singularity.ee.agent.systemagent.api.MetricWriter;
 import com.singularity.ee.agent.systemagent.api.TaskExecutionContext;
 import com.singularity.ee.agent.systemagent.api.TaskOutput;
 import com.singularity.ee.agent.systemagent.api.exception.TaskExecutionException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.log4j.Logger;
 
 import java.io.File;
 import java.math.BigDecimal;
@@ -41,7 +40,7 @@ import java.util.regex.Pattern;
  * To change this template use File | Settings | File Templates.
  */
 public class ApacheStatusMonitor extends AManagedMonitor {
-    public static final Logger logger = LoggerFactory.getLogger(ApacheStatusMonitor.class);
+    public static final Logger logger = Logger.getLogger(ApacheStatusMonitor.class);
     private static final String COLON = ":";
     private static final Pattern COLON_SPLIT_PATTERN = Pattern.compile(COLON, Pattern.LITERAL);
     private static final String EQUAL = "=";
@@ -121,25 +120,25 @@ public class ApacheStatusMonitor extends AManagedMonitor {
             }
 
             Map<String, String> stats = parse(lines, splitPattern, config);
-            String customMetricPrefix = config.getMetricPrefix() + customStat.getMetricGroup();
-            printCustomMetrics(stats, customMetricPrefix, customStat.getMetricsToCollect(), customStat.getDeltaStats());
+            printCustomMetrics(stats, config.getMetricPrefix(), customStat.getMetricGroup(), customStat.getMetricsToCollect(), customStat.getDeltaStats());
         } catch (Exception e) {
             logger.error("Exception while getting the apache stats from the URL " + url, e);
         }
     }
 
-    private void printCustomMetrics(Map<String, String> stats, String metricPrefix, List<String> metricsToCollect, List<String> deltaStats) {
+    private void printCustomMetrics(Map<String, String> stats, String metricPrefix, String customMetricGroup, List<String> metricsToCollect, List<String> deltaStats) {
         if (stats != null) {
+            String customMetricPrefix = metricPrefix + customMetricGroup;
             //If metricsToCollect is empty or null print all the stats
             if (metricsToCollect == null || metricsToCollect.isEmpty()) {
                 for (Map.Entry<String, String> entry : stats.entrySet()) {
                     String roundedValue = round(entry.getValue());
                     if (roundedValue != null) {
-                        String metricName = metricPrefix + "|" + entry.getKey();
+                        String metricName = customMetricPrefix + "|" + entry.getKey();
                         printCollectiveObservedCurrent(metricName, roundedValue);
-                        BigInteger prevValue = processDelta(metricName, roundedValue, deltaStats);
-                        if(prevValue != null) {
-                            printCollectiveObservedCurrent(metricName+" Delta", getDeltaValue(roundedValue, prevValue));
+                        BigInteger prevValue = processDelta(customMetricGroup + "|" + entry.getKey(), roundedValue, deltaStats);
+                        if (prevValue != null) {
+                            printCollectiveObservedCurrent(metricName + " Delta", getDeltaValue(roundedValue, prevValue));
                         }
                     }
                 }
@@ -150,11 +149,11 @@ public class ApacheStatusMonitor extends AManagedMonitor {
                     if (roundedValue != null) {
                         for (String metricToCollect : metricsToCollect) {
                             if (metricKey.trim().equalsIgnoreCase(metricToCollect.trim())) {
-                                String metricName = metricPrefix + "|" + metricKey;
+                                String metricName = customMetricPrefix + "|" + metricKey;
                                 printCollectiveObservedCurrent(metricName, roundedValue);
-                                BigInteger prevValue = processDelta(metricName, roundedValue, deltaStats);
-                                if(prevValue != null) {
-                                    printCollectiveObservedCurrent(metricName+" Delta", getDeltaValue(roundedValue, prevValue));
+                                BigInteger prevValue = processDelta(customMetricGroup + "|" + metricKey, roundedValue, deltaStats);
+                                if (prevValue != null) {
+                                    printCollectiveObservedCurrent(metricName + " Delta", getDeltaValue(roundedValue, prevValue));
                                 }
                                 break;
                             }
@@ -208,26 +207,25 @@ public class ApacheStatusMonitor extends AManagedMonitor {
 
             String jkWorkerStatsStr = config.getJkWorkerStats();
             String[] jkWorkerStats = jkWorkerStatsStr.split(",");
-            String jkMetricPrefix = config.getMetricPrefix() + "JK Status";
-            printJKStats(jkStatsMap, jkMetricPrefix, jkWorkerStats, config.getJkDeltaStats());
+            printJKStats(jkStatsMap, config.getMetricPrefix(), jkWorkerStats, config.getJkDeltaStats());
         } catch (Exception e) {
             logger.error("Exception while getting the apache JK stats from the URL " + url, e);
         }
     }
 
-    protected void printJKStats(Multimap<String, String> jkStatsMap, String jkMetricPrefix, String[] jkWorkerStats, List<String> jkDeltaStats) {
+    protected void printJKStats(Multimap<String, String> jkStatsMap, String metricPrefix, String[] jkWorkerStats, List<String> jkDeltaStats) {
         Set<String> strings = jkStatsMap.keySet();
         for (String key : strings) {
             if (key.contains("balance_workers")) {
                 Collection<String> workers = jkStatsMap.get(key);
                 for (String workerName : workers) {
-                    printJKWorkerMetrics(workerName, jkWorkerStats, jkStatsMap, jkMetricPrefix, jkDeltaStats);
+                    printJKWorkerMetrics(workerName, jkWorkerStats, jkStatsMap, metricPrefix, jkDeltaStats);
                 }
             }
         }
     }
 
-    private void printJKWorkerMetrics(String workerName, String[] jkWorkerStats, Multimap<String, String> jkStatsMap, String jkMetricPrefix, List<String> jkDeltaStats) {
+    private void printJKWorkerMetrics(String workerName, String[] jkWorkerStats, Multimap<String, String> jkStatsMap, String metricPrefix, List<String> jkDeltaStats) {
         for (String workerStat : jkWorkerStats) {
             String key = getKey(workerName, workerStat);
             Collection<String> values = jkStatsMap.get(key);
@@ -244,12 +242,12 @@ public class ApacheStatusMonitor extends AManagedMonitor {
             try {
                 BigDecimal bigValue = toBigDecimal(value);
                 if (bigValue != null) {
-                    String metricName = jkMetricPrefix + "|" + key.replace(".", "|");
+                    String jkMetricPrefix = "JK Status" + "|" + key.replace(".", "|");
                     String metricValue = bigValue.toString();
-                    printCollectiveObservedCurrent(metricName, metricValue);
-                    BigInteger prevMetricValue = processDelta(metricName, metricValue, jkDeltaStats);
-                    if(prevMetricValue != null) {
-                        printCollectiveObservedCurrent(metricName+" Delta", getDeltaValue(metricValue, prevMetricValue));
+                    printCollectiveObservedCurrent(metricPrefix + jkMetricPrefix, metricValue);
+                    BigInteger prevMetricValue = processDelta(jkMetricPrefix, metricValue, jkDeltaStats);
+                    if (prevMetricValue != null) {
+                        printCollectiveObservedCurrent(metricPrefix + jkMetricPrefix + " Delta", getDeltaValue(metricValue, prevMetricValue));
                     }
 
                 }
@@ -312,7 +310,7 @@ public class ApacheStatusMonitor extends AManagedMonitor {
                 valueMap.put(metricName, metricValue);
             }
         }
-        logger.debug("The extracted metrics are {}", valueMap);
+        logger.debug("The extracted metrics are " + valueMap);
         return valueMap;
     }
 
@@ -344,43 +342,43 @@ public class ApacheStatusMonitor extends AManagedMonitor {
             Map<String, String> curMetrics = new HashMap<String, String>();
             String waitingForConn = getString(counter.get("_"));
             printCollectiveObservedCurrent(metricPrefix + "Activity|Type|Waiting for Conn", waitingForConn);
-            curMetrics.put(metricPrefix + "Activity|Type|Waiting for Conn", waitingForConn);
+            curMetrics.put("Activity|Type|Waiting for Conn", waitingForConn);
 
             String startingUp = getString(counter.get("S"));
             printCollectiveObservedCurrent(metricPrefix + "Activity|Type|Starting Up", startingUp);
-            curMetrics.put(metricPrefix + "Activity|Type|Starting Up", startingUp);
+            curMetrics.put("Activity|Type|Starting Up", startingUp);
 
             String readingRequest = getString(counter.get("R"));
             printCollectiveObservedCurrent(metricPrefix + "Activity|Type|Reading Request", readingRequest);
-            curMetrics.put(metricPrefix + "Activity|Type|Reading Request", readingRequest);
+            curMetrics.put("Activity|Type|Reading Request", readingRequest);
 
             String sendingReply = getString(counter.get("W"));
             printCollectiveObservedCurrent(metricPrefix + "Activity|Type|Sending Reply", sendingReply);
-            curMetrics.put(metricPrefix + "Activity|Type|Sending Reply", sendingReply);
+            curMetrics.put("Activity|Type|Sending Reply", sendingReply);
 
             String keepAlive = getString(counter.get("K"));
             printCollectiveObservedCurrent(metricPrefix + "Activity|Type|Keep Alive", keepAlive);
-            curMetrics.put(metricPrefix + "Activity|Type|Keep Alive", keepAlive);
+            curMetrics.put("Activity|Type|Keep Alive", keepAlive);
 
             String dnsLookup = getString(counter.get("D"));
             printCollectiveObservedCurrent(metricPrefix + "Activity|Type|DNS Lookup", dnsLookup);
-            curMetrics.put(metricPrefix + "Activity|Type|DNS Lookup", dnsLookup);
+            curMetrics.put("Activity|Type|DNS Lookup", dnsLookup);
 
             String closingConnections = getString(counter.get("S"));
             printCollectiveObservedCurrent(metricPrefix + "Activity|Type|Closing Connection", closingConnections);
-            curMetrics.put(metricPrefix + "Activity|Type|Closing Connection", closingConnections);
+            curMetrics.put("Activity|Type|Closing Connection", closingConnections);
 
             String logging = getString(counter.get("L"));
             printCollectiveObservedCurrent(metricPrefix + "Activity|Type|Logging", logging);
-            curMetrics.put(metricPrefix + "Activity|Type|Logging", logging);
+            curMetrics.put("Activity|Type|Logging", logging);
 
             String gracefullyFinishing = getString(counter.get("G"));
             printCollectiveObservedCurrent(metricPrefix + "Activity|Type|Gracefully Finishing", gracefullyFinishing);
-            curMetrics.put(metricPrefix + "Activity|Type|Gracefully Finishing", gracefullyFinishing);
+            curMetrics.put("Activity|Type|Gracefully Finishing", gracefullyFinishing);
 
             String cleaningUp = getString(counter.get("I"));
             printCollectiveObservedCurrent(metricPrefix + "Activity|Type|Cleaning Up", cleaningUp);
-            curMetrics.put(metricPrefix + "Activity|Type|Cleaning Up", cleaningUp);
+            curMetrics.put("Activity|Type|Cleaning Up", cleaningUp);
 
             processDeltaForMetrics(curMetrics, config.getDeltaStats());
         }
@@ -404,56 +402,56 @@ public class ApacheStatusMonitor extends AManagedMonitor {
         //Resource Utilization
         String curCpuLoad = round(valueMap.get("CPULoad"));
         printCollectiveObservedAverage(metricPrefix + "Resource Utilization|CPU|Load", curCpuLoad);
-        BigInteger prevCpuLoad = processDelta(metricPrefix + "Resource Utilization|CPU|Load", curCpuLoad, deltaStats);
+        BigInteger prevCpuLoad = processDelta("Resource Utilization|CPU|Load", curCpuLoad, deltaStats);
         if (prevCpuLoad != null) {
             printCollectiveObservedAverage(metricPrefix + "Resource Utilization|CPU|Load Delta", getDeltaValue(curCpuLoad, prevCpuLoad));
         }
 
         String curBusyWorkers = valueMap.get("BusyWorkers");
         printCollectiveObservedAverage(metricPrefix + "Resource Utilization|Processes|Busy Workers", curBusyWorkers);
-        BigInteger prevBusyWorkers = processDelta(metricPrefix + "Resource Utilization|Processes|Busy Workers", curBusyWorkers, deltaStats);
+        BigInteger prevBusyWorkers = processDelta("Resource Utilization|Processes|Busy Workers", curBusyWorkers, deltaStats);
         if (prevBusyWorkers != null) {
             printCollectiveObservedAverage(metricPrefix + "Resource Utilization|Processes|Busy Workers Delta", getDeltaValue(curBusyWorkers, prevBusyWorkers));
         }
 
         String curIdleWorkers = valueMap.get("IdleWorkers");
         printCollectiveObservedAverage(metricPrefix + "Resource Utilization|Processes|Idle Workers", curIdleWorkers);
-        BigInteger prevIdleWorkers = processDelta(metricPrefix + "Resource Utilization|Processes|Idle Workers", curIdleWorkers, deltaStats);
+        BigInteger prevIdleWorkers = processDelta("Resource Utilization|Processes|Idle Workers", curIdleWorkers, deltaStats);
         if (prevIdleWorkers != null) {
             printCollectiveObservedAverage(metricPrefix + "Resource Utilization|Processes|Idle Workers Delta", getDeltaValue(curIdleWorkers, prevIdleWorkers));
         }
 
         String curConnsAsyncClosing = valueMap.get("ConnsAsyncClosing");
         printCollectiveObservedAverage(metricPrefix + "Resource Utilization|ConnsAsyncClosing", curConnsAsyncClosing);
-        BigInteger prevConnsAsyncClosing = processDelta(metricPrefix + "Resource Utilization|ConnsAsyncClosing", curConnsAsyncClosing, deltaStats);
+        BigInteger prevConnsAsyncClosing = processDelta("Resource Utilization|ConnsAsyncClosing", curConnsAsyncClosing, deltaStats);
         if (prevConnsAsyncClosing != null) {
             printCollectiveObservedAverage(metricPrefix + "Resource Utilization|ConnsAsyncClosing Delta", getDeltaValue(curConnsAsyncClosing, prevConnsAsyncClosing));
         }
 
         String curConnsAsyncKeepAlive = valueMap.get("ConnsAsyncKeepAlive");
         printCollectiveObservedAverage(metricPrefix + "Resource Utilization|ConnsAsyncKeepAlive", curConnsAsyncKeepAlive);
-        BigInteger prevConnsAsyncKeepAlive = processDelta(metricPrefix + "Resource Utilization|ConnsAsyncKeepAlive", curConnsAsyncKeepAlive, deltaStats);
+        BigInteger prevConnsAsyncKeepAlive = processDelta("Resource Utilization|ConnsAsyncKeepAlive", curConnsAsyncKeepAlive, deltaStats);
         if (prevConnsAsyncKeepAlive != null) {
             printCollectiveObservedAverage(metricPrefix + "Resource Utilization|ConnsAsyncKeepAlive Delta", getDeltaValue(curConnsAsyncKeepAlive, prevConnsAsyncKeepAlive));
         }
 
         String curConnsAsyncWriting = valueMap.get("ConnsAsyncWriting");
         printCollectiveObservedAverage(metricPrefix + "Resource Utilization|ConnsAsyncWriting", curConnsAsyncWriting);
-        BigInteger prevConnsAsyncWriting = processDelta(metricPrefix + "Resource Utilization|ConnsAsyncWriting", curConnsAsyncWriting, deltaStats);
+        BigInteger prevConnsAsyncWriting = processDelta("Resource Utilization|ConnsAsyncWriting", curConnsAsyncWriting, deltaStats);
         if (prevConnsAsyncWriting != null) {
             printCollectiveObservedAverage(metricPrefix + "Resource Utilization|ConnsAsyncWriting Delta", getDeltaValue(curConnsAsyncWriting, prevConnsAsyncWriting));
         }
 
         String curConnsTotal = valueMap.get("ConnsTotal");
         printCollectiveObservedAverage(metricPrefix + "Resource Utilization|Total Connections", curConnsTotal);
-        BigInteger prevConnsTotal = processDelta(metricPrefix + "Resource Utilization|Total Connections", curConnsTotal, deltaStats);
+        BigInteger prevConnsTotal = processDelta("Resource Utilization|Total Connections", curConnsTotal, deltaStats);
         if (prevConnsTotal != null) {
             printCollectiveObservedAverage(metricPrefix + "Resource Utilization|Total Connections Delta", getDeltaValue(curConnsTotal, prevConnsTotal));
         }
         // Activity
         String curTotalAccesses = valueMap.get("Total Accesses");
         printCollectiveObservedCurrent(metricPrefix + "Activity|Total Accesses", curTotalAccesses);
-        BigInteger prevTotalAccesses = processDelta(metricPrefix + "Activity|Total Accesses", curTotalAccesses, deltaStats);
+        BigInteger prevTotalAccesses = processDelta("Activity|Total Accesses", curTotalAccesses, deltaStats);
         if (prevTotalAccesses != null) {
             printCollectiveObservedAverage(metricPrefix + "Activity|Total Accesses Delta", getDeltaValue(curTotalAccesses, prevTotalAccesses));
         }
@@ -461,7 +459,7 @@ public class ApacheStatusMonitor extends AManagedMonitor {
 
         String curTotalKBytes = round(valueMap.get("Total kBytes"));
         printCollectiveObservedCurrent(metricPrefix + "Activity|Total Traffic", curTotalKBytes);
-        BigInteger prevTotalKBytes = processDelta(metricPrefix + "Activity|Total Traffic", curTotalKBytes, deltaStats);
+        BigInteger prevTotalKBytes = processDelta("Activity|Total Traffic", curTotalKBytes, deltaStats);
         if (prevTotalKBytes != null) {
             printCollectiveObservedAverage(metricPrefix + "Activity|Total Traffic Delta", getDeltaValue(curTotalKBytes, prevTotalKBytes));
         }
@@ -469,28 +467,28 @@ public class ApacheStatusMonitor extends AManagedMonitor {
 
         String curReqPerMin = convertSecToMin(valueMap.get("ReqPerSec"));
         printCollectiveObservedAverage(metricPrefix + "Activity|Requests/min", curReqPerMin);
-        BigInteger prevReqPerMin = processDelta(metricPrefix + "Activity|Requests/min", curReqPerMin, deltaStats);
+        BigInteger prevReqPerMin = processDelta("Activity|Requests/min", curReqPerMin, deltaStats);
         if (prevReqPerMin != null) {
             printCollectiveObservedAverage(metricPrefix + "Activity|Requests/min Delta", getDeltaValue(curReqPerMin, prevReqPerMin));
         }
 
         String curBytesPerMin = convertSecToMin(valueMap.get("BytesPerSec"));
         printCollectiveObservedAverage(metricPrefix + "Activity|Bytes/min", curBytesPerMin);
-        BigInteger prevBytesPerMin = processDelta(metricPrefix + "Activity|Bytes/min", curBytesPerMin, deltaStats);
+        BigInteger prevBytesPerMin = processDelta("Activity|Bytes/min", curBytesPerMin, deltaStats);
         if (prevBytesPerMin != null) {
             printCollectiveObservedAverage(metricPrefix + "Activity|Bytes/min Delta", getDeltaValue(curBytesPerMin, prevBytesPerMin));
         }
 
         String curBytesPerReq = round(valueMap.get("BytesPerReq"));
         printCollectiveObservedAverage(metricPrefix + "Activity|Bytes/req", curBytesPerReq);
-        BigInteger prevBytesPerReq = processDelta(metricPrefix + "Activity|Bytes/req", curBytesPerReq, deltaStats);
+        BigInteger prevBytesPerReq = processDelta("Activity|Bytes/req", curBytesPerReq, deltaStats);
         if (prevBytesPerReq != null) {
             printCollectiveObservedAverage(metricPrefix + "Activity|Bytes/req Delta", getDeltaValue(curBytesPerReq, prevBytesPerReq));
         }
     }
 
     private String getDeltaValue(String currentValue, BigInteger prevValue) {
-        if(currentValue == null) {
+        if (currentValue == null) {
             return prevValue.toString();
         }
         return new BigInteger(currentValue).subtract(prevValue).toString();
@@ -512,7 +510,7 @@ public class ApacheStatusMonitor extends AManagedMonitor {
         if (deltaStats != null && deltaStats.size() > 0) {
             if (deltaStats.contains(metricName)) {
                 BigInteger prevValue = previousMetricsMap.getIfPresent(metricName);
-                if(metricValue != null) {
+                if (metricValue != null) {
                     previousMetricsMap.put(metricName, new BigInteger(round(metricValue)));
                 }
                 return prevValue;
@@ -526,7 +524,7 @@ public class ApacheStatusMonitor extends AManagedMonitor {
             try {
                 return new BigDecimal(s.trim()).setScale(0, RoundingMode.HALF_UP).toString();
             } catch (Exception e) {
-                logger.error("Error while rounding the value {}", s);
+                logger.error("Error while rounding the value " + s, e);
             }
         }
         return null;
@@ -573,30 +571,14 @@ public class ApacheStatusMonitor extends AManagedMonitor {
         return null;
     }
 
-    public String convertToPercent(String valueStr) {
-        BigDecimal bd = toBigDecimal(valueStr);
-        if (bd != null) {
-            return bd.multiply(new BigDecimal("100")).setScale(0, RoundingMode.HALF_UP).toString();
-        }
-        return null;
-    }
-
     public static BigDecimal toBigDecimal(String valueStr) {
         if (valueStr != null && !valueStr.trim().isEmpty()) {
             try {
                 return new BigDecimal(valueStr.trim());
             } catch (NumberFormatException e) {
-                logger.warn("Cannot convert the value {} to string", valueStr);
+                logger.warn("Cannot convert the value " + valueStr + " to BigDecimal");
             }
         }
         return null;
-    }
-
-    public static void main(String[] args) throws TaskExecutionException, InterruptedException {
-        ApacheStatusMonitor apacheStatusMonitor = new ApacheStatusMonitor();
-
-        Map<String, String> taskArgs = new HashMap<String, String>();
-        taskArgs.put("config-file", "/home/satish/AppDynamics/Code/extensions/apache-monitoring-extension/src/main/resources/conf/config.yml");
-        apacheStatusMonitor.execute(taskArgs, null);
     }
 }
