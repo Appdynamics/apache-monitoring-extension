@@ -89,7 +89,15 @@ metricPrefix:  "Custom Metrics|WebServer|Apache|Status|"
 
    ~~~
 
-   Note: If you want to monitor more than one server, see [Monitoring multiple Apache servers](#Monitoring multiple Apache servers).  
+   Note 1: If you want to monitor more than one server, see [Monitoring multiple Apache servers](#Monitoring multiple Apache servers).
+   
+   Note 2: From version 1.4.3, no need to pass full metric path the any delta stats. You should only give metric path omiting the metricPrefix.
+   ~~~
+   ex: 
+   Invalid delta metric path: Custom Metrics|WebServer|Apache|Status|Activity|Total Accesses
+   Valid delta metric path: Activity|Total Accesses
+   ~~~
+   
 
 ​5. Restart the Machine Agent.
 
