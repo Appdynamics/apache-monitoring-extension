@@ -4,7 +4,7 @@
 
     <groupId>com.appdynamics.extensions</groupId>
     <artifactId>apache-monitoring-extension</artifactId>
-    <version>1.4.3</version>
+    <version>1.5</version>
     <packaging>jar</packaging>
 
     <name>apache-monitoring-extension</name>
@@ -56,11 +56,6 @@
             <groupId>commons-io</groupId>
             <artifactId>commons-io</artifactId>
             <version>2.4</version>
-        </dependency>
-        <dependency>
-            <groupId>commons-httpclient</groupId>
-            <artifactId>commons-httpclient</artifactId>
-            <version>3.1</version>
         </dependency>
         <dependency>
             <groupId>com.google.guava</groupId>
