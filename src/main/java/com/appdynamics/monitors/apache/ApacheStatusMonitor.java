@@ -96,7 +96,7 @@ public class ApacheStatusMonitor extends AManagedMonitor {
 
         public void run() {
             if (!initialized) {
-                logger.info("Tibco Hawk Monitor is still initializing");
+                logger.info("Apache Monitor is still initializing");
                 return;
             }
 
