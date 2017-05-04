@@ -26,7 +26,7 @@ import java.util.regex.Pattern;
  */
 public class ApacheMonitoringTask implements Runnable {
 
-    public static final Logger logger = Logger.getLogger(ApacheMonitoringTask.class);
+    private static final Logger logger = Logger.getLogger(ApacheMonitoringTask.class);
 
     private MonitorConfiguration configuration;
     private Map apacheServer;
@@ -69,7 +69,6 @@ public class ApacheMonitoringTask implements Runnable {
             logger.debug("Ignoring custom stats as no custom stat configuration is provided");
             return;
         }
-
 
         for (Map customStatsConfig : customStatsConfigs) {
 
@@ -187,7 +186,6 @@ public class ApacheMonitoringTask implements Runnable {
                     }
                 }
 
-
                 try {
                     BigDecimal bigValue = toBigDecimal(value);
                     if (bigValue != null) {
@@ -232,7 +230,6 @@ public class ApacheMonitoringTask implements Runnable {
         }
     }
 
-
     protected void collectAndPrintServerStats(Map<String, String> requestMap) {
         String statsUrlPath = (String) apacheServer.get("statsUrlPath");
 
@@ -249,8 +246,6 @@ public class ApacheMonitoringTask implements Runnable {
         Map<String, String> metrics = parse(responseAsLines, COLON_SPLIT_PATTERN);
 
         print(metrics, metricPrefix);
-
-
     }
 
     private void print(Map<String, String> metrics, String metricPrefix) {
@@ -280,7 +275,6 @@ public class ApacheMonitoringTask implements Runnable {
                 jkStatsMap.put(kv[0].trim(), kv[1].trim());
             }
         }
-
         return jkStatsMap;
     }
 
@@ -298,7 +292,6 @@ public class ApacheMonitoringTask implements Runnable {
         return valueMap;
     }
 
-
     private Map<String, String> buildRequestMap() {
         Map<String, String> requestMap = new HashMap<String, String>();
         requestMap.put("host", (String) apacheServer.get("host"));
@@ -306,13 +299,8 @@ public class ApacheMonitoringTask implements Runnable {
         requestMap.put("use-ssl", String.valueOf(apacheServer.get("useSSL")));
         requestMap.put("username", (String) apacheServer.get("username"));
         requestMap.put("password", (String) apacheServer.get("password"));
-        requestMap.put("proxy-host", (String) apacheServer.get("proxyHost"));
-        requestMap.put("proxy-port", String.valueOf(apacheServer.get("proxyPort")));
-        requestMap.put("proxy-username", (String) apacheServer.get("proxyUsername"));
-        requestMap.put("proxy-password", (String) apacheServer.get("proxyPassword"));
         return requestMap;
     }
-
 
     private void printRegularMetrics(Map<String, String> valueMap, String metricPrefix, List<Map<String, String>> serverMetrics) {
         printMetric(metricPrefix + "Availability|up", BigDecimal.ONE, "OBS.AVG.COL");
@@ -353,7 +341,6 @@ public class ApacheMonitoringTask implements Runnable {
 
                 printMetric(metricPrefix + path + " Delta", deltaMetricValue, deltaType);
             }
-
         }
     }
 
@@ -439,13 +426,10 @@ public class ApacheMonitoringTask implements Runnable {
 
                         printMetric(metricPrefix + path + " Delta", deltaMetricValue, deltaType);
                     }
-
                 }
-
             }
         }
     }
-
 
     public void printMetric(String metricPath, BigDecimal metricValue, String metricType) {
 
@@ -455,7 +439,6 @@ public class ApacheMonitoringTask implements Runnable {
         if (logger.isDebugEnabled()) {
             logger.debug("Metric [" + metricType + "] metric = " + metricPath + " = " + metricValue);
         }
-
     }
 
     public BigDecimal applyMultiplier(BigDecimal metricValue, String multiplier) {
@@ -472,7 +455,6 @@ public class ApacheMonitoringTask implements Runnable {
         }
         throw new IllegalArgumentException("Cannot convert into BigInteger " + metricValue);
     }
-
 
     public static BigDecimal toBigDecimal(String valueStr) {
         if (StringUtils.isNotBlank(valueStr)) {
