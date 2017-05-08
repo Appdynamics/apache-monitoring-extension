@@ -541,7 +541,7 @@ Always feel free to fork and contribute any changes directly via [GitHub](https:
 
 ##Community
 
-Find out more in the [AppSphere](http://appsphere.appdynamics.com/t5/Extensions/Apache-Monitoring-Extension/idi-p/753) community.
+Find out more in the [AppSphere](https://www.appdynamics.com/community/exchange/extension/apache-monitoring-extension/) community.
 
 ##Support
 
