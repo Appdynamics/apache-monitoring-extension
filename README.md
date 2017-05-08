@@ -31,7 +31,7 @@ Please enable mod_status on the HTTP server to get stats.
 
 2. Use `curl` to verify that the URL works: http://your-apache-server:90/server-status?auto
 
-   ```
+  ~~~
    > curl http://localhost:90/server-status?auto
     Total kBytes: 3
     Total Accesses: 3
@@ -43,16 +43,16 @@ Please enable mod_status on the HTTP server to get stats.
     BusyWorkers: 1
     IdleWorkers: 7
     Scoreboard: __W___……………….
-   ```
+  ~~~
 
 3. Run `maven clean install`. Deploy the ApacheMonitor.zip file found in 'target' into the \<machine agent home\>/monitors directory.
 
-   ```
+ ~~~
 > cd <machine agent home>/monitors/
 > unzip ApacheMonitor.zip
-   ```
+  ~~~
 4. Set up config.yml with the correct host and port:
- ```
+~~~
 # Apache particulars
 
 servers:
@@ -378,8 +378,8 @@ metrics:
 #This will create it in specific Tier/Component. Make sure to replace <COMPONENT_ID> with the appropriate one from your environment.
 #To find the <COMPONENT_ID> in your environment, please follow the screenshot https://docs.appdynamics.com/display/PRO42/Build+a+Monitoring+Extension+Using+Java
 metricPrefix: Server|Component:<COMPONENT_ID>|Custom Metrics|WebServer|Apache|Status|
+~~~
 
-```
 
 5. Restart the Machine Agent.
 
@@ -464,7 +464,7 @@ More info on mod_jk at http://tomcat.apache.org/connectors-doc/
 ###example configuration
 
 ####in httpd.conf
-   ```   
+   ~~~   
 	LoadModule    jk_module  modules/mod_jk.so
 	JkWorkersFile conf/workers.properties
 	JkShmFile     /var/log/httpd/mod_jk.shm
@@ -479,9 +479,9 @@ More info on mod_jk at http://tomcat.apache.org/connectors-doc/
 	    Allow from localhost
 	</Location>
 
-   ```
+   ~~~
 ####worker.properties file	
-   ```
+   ~~~
 	worker.list=worker1,worker2,loadbalancer,statusmanager
 	
 	#worker1
@@ -504,20 +504,20 @@ More info on mod_jk at http://tomcat.apache.org/connectors-doc/
 	#status manager
 	worker.statusmanager.type=status
 	
-   ```
+   ~~~
 ####config.yml
-   ```
+   ~~~
    #Only enable this if you have enabled mod_jk module enabled on apache server
      jkStatusPath: "/status"
      
-   ```
+  ~~~
    
 ##Custom Metrics
 
 You can monitor custom URLs which return name-value pairs configured in apache.
 example custom URL configuration in config.yml
 
-```
+~~~
 customStats:
         #Metric group under which all the metrics are displayed
     -   metricGroup: "MyCustom"
@@ -530,7 +530,7 @@ customStats:
         metricsToCollect: ["key1", "key2"]
         #Add custom metrics with full path here to get delta for those metrics
         deltaStats: ["key1"]
-```
+~~~
 
 
 
