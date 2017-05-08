@@ -62,10 +62,6 @@ servers:
      username: ""
      password: ""
      useSSL: false
-     proxyHost: ""
-     proxyPort: ""
-     proxyUsername: ""
-     proxyPassword: ""
      #mod_status stats url path
      statsUrlPath: "/server-status?auto"
      #Only enable this if you have enabled mod_jk module enabled on apache server
@@ -91,6 +87,11 @@ connection:
   connectTimeout: 2500
   sslCertCheckEnabled: false
   sslVerifyHostname: false
+
+proxy:
+  uri:
+  username:
+  password:
 
 numberOfThreads: 5
 encryptionKey: "welcome"
