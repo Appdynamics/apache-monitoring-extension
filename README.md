@@ -52,7 +52,7 @@ Please enable mod_status on the HTTP server to get stats.
 > unzip ApacheMonitor.zip
    ```
 4. Set up config.yml with the correct host and port:
-   ~~~
+ ```
 # Apache particulars
 
 servers:
@@ -379,10 +379,9 @@ metrics:
 #To find the <COMPONENT_ID> in your environment, please follow the screenshot https://docs.appdynamics.com/display/PRO42/Build+a+Monitoring+Extension+Using+Java
 metricPrefix: Server|Component:<COMPONENT_ID>|Custom Metrics|WebServer|Apache|Status|
 
+```
 
-   ~~~
-
-​5. Restart the Machine Agent.
+5. Restart the Machine Agent.
 
 Output from this monitoring extension includes:
 
@@ -518,7 +517,7 @@ More info on mod_jk at http://tomcat.apache.org/connectors-doc/
 You can monitor custom URLs which return name-value pairs configured in apache.
 example custom URL configuration in config.yml
 
-~~~
+```
 customStats:
         #Metric group under which all the metrics are displayed
     -   metricGroup: "MyCustom"
@@ -531,7 +530,7 @@ customStats:
         metricsToCollect: ["key1", "key2"]
         #Add custom metrics with full path here to get delta for those metrics
         deltaStats: ["key1"]
-~~~
+```
 
 
 
