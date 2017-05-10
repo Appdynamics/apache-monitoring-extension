@@ -144,7 +144,8 @@ public class ApacheMonitoringTask implements Runnable {
 
         for (String key : strings) {
             if (key.contains("balance_workers")) {
-                workerNames = jkStatusMetrics.get(key);
+                Collection<String> names = jkStatusMetrics.get(key);
+                workerNames.addAll(names);
             }
         }
 
