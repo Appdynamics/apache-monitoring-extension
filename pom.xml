@@ -1,10 +1,17 @@
+<!--
+  ~ Copyright 2013. AppDynamics LLC and its affiliates.
+  ~ All Rights Reserved.
+  ~ This is unpublished proprietary source code of AppDynamics LLC and its affiliates.
+  ~ The copyright notice above does not evidence any actual or intended publication of such source code.
+  -->
+
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.appdynamics.extensions</groupId>
     <artifactId>apache-monitoring-extension</artifactId>
-    <version>1.5.2</version>
+    <version>1.5.3</version>
     <packaging>jar</packaging>
 
     <name>apache-monitoring-extension</name>
@@ -163,6 +170,8 @@
                                 <copy todir="${target.dir}">
                                     <fileset dir="src/main/resources/conf" includes="monitor.xml"/>
                                     <fileset dir="src/main/resources/conf" includes="config.yml"/>
+                                    <fileset dir="${project.basedir}" includes="LICENSE"/>
+                                    <fileset dir="${project.basedir}" includes="NOTICE.txt"/>
                                 </copy>
                                 <copy todir="${target.dir}">
                                     <fileset dir="${project.build.directory}" includes="${project.artifactId}.${project.packaging}"/>
