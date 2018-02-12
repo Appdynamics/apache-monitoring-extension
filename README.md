@@ -1,8 +1,8 @@
-# AppDynamics Apache - Monitoring Extension
+# AppDynamics Monitoring Extension for use with Apache
 
 This extension works only with the standalone machine agent.
 
-##Use Case
+## Use Case
 
 The Apache HTTP Server is a widely-used web server supported by the Apache Software Foundation. The Apache HTTP Server monitoring extension captures metrics from an Apache web server and displays them in the AppDynamics Metric Browser.
 
@@ -21,12 +21,12 @@ In addition, it lists:
    * Top Requests: Most requests by quantity and by volume, measured by number of bytes transferred.
    * Top Activity: Current activity such as responding, cleaning up, logging, etc.
 
-##Prerequisite
+## Prerequisite
 
 Please enable mod_status on the HTTP server to get stats.
 
 
-##Installation
+## Installation
 1. Install Apache mod_status on your Apache instance. For more information, see [Apache Module mod_status](http://httpd.apache.org/docs/2.0/mod/mod_status.html).
 
 2. Use `curl` to verify that the URL works: http://your-apache-server:90/server-status?auto
@@ -398,7 +398,7 @@ Output from this monitoring extension includes:
 
 -   Idle Workers: The number of idle Apache processes waiting for an HTTP request.
 
-##Directory Structure
+## Directory Structure
 
 <table><tbody>
 <tr>
@@ -425,13 +425,13 @@ Output from this monitoring extension includes:
 </table>
 
 
-##Metrics
+## Metrics
 
-###Availability
+### Availability
 
 -   Uptime (1 or 0)
 
-###Resource Utilization
+### Resource Utilization
 
 -   Counter Description CPU Load (N/A on Windows) -- The percentage of the CPU used by Apache.
 -   Processes
@@ -439,7 +439,7 @@ Output from this monitoring extension includes:
     - Idle Workers -- The number of idle Apache processes waiting for an HTTP request.
 -   Memory
 
-###Activity
+### Activity
 
 -   Accesses -- Total number of accesses per Minute
 -   Total Traffic (kb)
@@ -457,14 +457,14 @@ Output from this monitoring extension includes:
 -   Gracefully Finishing
 -   Cleaning up of working
 
-##Load balancing metrics
+## Load balancing metrics
 
 In addition to the above specified metrics, this extension can also show metrics from mod_jk status. To do this we have to configure mod_jk in the apache HTTP server.
 More info on mod_jk at http://tomcat.apache.org/connectors-doc/
 
-###example configuration
+### example configuration
 
-####in httpd.conf
+#### in httpd.conf
    ~~~   
 	LoadModule    jk_module  modules/mod_jk.so
 	JkWorkersFile conf/workers.properties
@@ -481,7 +481,7 @@ More info on mod_jk at http://tomcat.apache.org/connectors-doc/
 	</Location>
 
    ~~~
-####worker.properties file	
+#### worker.properties file	
    ~~~
 	worker.list=worker1,worker2,loadbalancer,statusmanager
 	
@@ -506,14 +506,14 @@ More info on mod_jk at http://tomcat.apache.org/connectors-doc/
 	worker.statusmanager.type=status
 	
    ~~~
-####config.yml
+#### config.yml
    ~~~
    #Only enable this if you have enabled mod_jk module enabled on apache server
      jkStatusPath: "/status"
      
   ~~~
    
-##Custom Metrics
+## Custom Metrics
 
 You can monitor custom URLs which return name-value pairs configured in apache.
 example custom URL configuration in config.yml
@@ -535,14 +535,14 @@ customStats:
 
 
 
-##Contributing
+## Contributing
 
 Always feel free to fork and contribute any changes directly via [GitHub](https://github.com/Appdynamics/apache-monitoring-extension).
 
-##Community
+## Community
 
 Find out more in the [AppSphere](https://www.appdynamics.com/community/exchange/extension/apache-monitoring-extension/) community.
 
-##Support
+## Support
 
 For any questions or feature request, please contact [AppDynamics Center of Excellence](mailto:help@appdynamics.com).
