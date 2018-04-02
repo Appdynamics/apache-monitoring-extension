@@ -1,20 +1,20 @@
 /*
- * Copyright 2013. AppDynamics LLC and its affiliates.
- * All Rights Reserved.
- * This is unpublished proprietary source code of AppDynamics LLC and its affiliates.
- * The copyright notice above does not evidence any actual or intended publication of such source code.
+ *   Copyright 2018. AppDynamics LLC and its affiliates.
+ *   All Rights Reserved.
+ *   This is unpublished proprietary source code of AppDynamics LLC and its affiliates.
+ *   The copyright notice above does not evidence any actual or intended publication of such source code.
+ *
  */
+
 
 package com.appdynamics.monitors.apache;
 
+import com.appdynamics.extensions.ABaseMonitor;
+import com.appdynamics.extensions.TasksExecutionServiceProvider;
 import com.appdynamics.extensions.conf.MonitorConfiguration;
-import com.appdynamics.extensions.util.DeltaMetricsCalculator;
-import com.appdynamics.extensions.util.MetricWriteHelper;
-import com.appdynamics.extensions.util.MetricWriteHelperFactory;
-import com.singularity.ee.agent.systemagent.api.AManagedMonitor;
-import com.singularity.ee.agent.systemagent.api.TaskExecutionContext;
-import com.singularity.ee.agent.systemagent.api.TaskOutput;
+import com.appdynamics.extensions.util.AssertUtils;
 import com.singularity.ee.agent.systemagent.api.exception.TaskExecutionException;
+import metrics.input.Stat;
 import org.apache.log4j.ConsoleAppender;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
@@ -35,90 +35,54 @@ import java.util.concurrent.TimeUnit;
  * Time: 7:08 PM
  * To change this template use File | Settings | File Templates.
  */
-public class ApacheStatusMonitor extends AManagedMonitor {
+public class ApacheStatusMonitor extends ABaseMonitor {
 
     private static final String METRIC_PREFIX = "Custom Metrics|WebServer|Apache|Status|";
 
     private static final Logger logger = Logger.getLogger(ApacheStatusMonitor.class);
 
-    private static final String CONFIG_ARG = "config-file";
 
-    private boolean initialized;
-    private MonitorConfiguration configuration;
-
-    private final DeltaMetricsCalculator deltaCalculator = new DeltaMetricsCalculator(10);
-
-
-    public ApacheStatusMonitor() {
-        String msg = "Using Monitor Version [" + getImplementationVersion() + "]";
-        logger.info(msg);
-        System.out.println(msg);
+    @Override
+    protected String getDefaultMetricPrefix() {
+        return METRIC_PREFIX;
     }
 
-    private static String getImplementationVersion() {
-        return ApacheStatusMonitor.class.getPackage().getImplementationTitle();
+    @Override
+    public String getMonitorName() {
+        return "Apache Status Monitor";
     }
 
-    public TaskOutput execute(Map<String, String> args, TaskExecutionContext taskExecutionContext) throws TaskExecutionException {
-        String msg = "Using Monitor Version [" + getImplementationVersion() + "]";
-        logger.info(msg);
-        logger.info("Starting the Apache Monitoring task.");
 
-        Thread thread = Thread.currentThread();
-        ClassLoader originalCl = thread.getContextClassLoader();
-        thread.setContextClassLoader(AManagedMonitor.class.getClassLoader());
+    @Override
+    protected void initializeMoreStuff(Map<String, String> args, MonitorConfiguration conf) {
+        conf.setMetricsXml(args.get("metric-file"), Stat.Stats.class);
 
-        try {
-            if (!initialized) {
-                initialize(args);
-            }
-            configuration.executeTask();
+    }
 
-            logger.info("Finished Apache monitor execution");
-            return new TaskOutput("Finished Apache monitor execution");
-        } catch (Exception e) {
-            logger.error("Failed to execute the Apache monitoring task", e);
-            throw new TaskExecutionException("Failed to execute the Apache monitoring task" + e);
-        } finally {
-            thread.setContextClassLoader(originalCl);
+
+    @Override
+    protected void doRun(TasksExecutionServiceProvider serviceProvider) {
+
+        List<Map> apacheServers = (List<Map>) this.configuration.getConfigYml().get("servers");
+
+        AssertUtils.assertNotNull(this.configuration.getMetricsXmlConfiguration(), "Metrics xml not available");
+        AssertUtils.assertNotNull(apacheServers, "The 'servers' section in config.yml is not initialised");
+
+        for (Map apacheServer : apacheServers) {
+
+            ApacheMonitoringTask task = new ApacheMonitoringTask(serviceProvider, apacheServer);
+            AssertUtils.assertNotNull(apacheServer.get("displayName"), "The displayName can not be null");
+            serviceProvider.submit((String) apacheServer.get("displayName"), task);
         }
     }
 
-    private void initialize(Map<String, String> argsMap) {
-        if (!initialized) {
-            final String configFilePath = argsMap.get(CONFIG_ARG);
-
-            MetricWriteHelper metricWriteHelper = MetricWriteHelperFactory.create(this);
-            MonitorConfiguration conf = new MonitorConfiguration(METRIC_PREFIX, new TaskRunnable(), metricWriteHelper);
-            conf.setConfigYml(configFilePath);
-
-            conf.checkIfInitialized(MonitorConfiguration.ConfItem.CONFIG_YML, MonitorConfiguration.ConfItem.METRIC_PREFIX,
-                    MonitorConfiguration.ConfItem.METRIC_WRITE_HELPER, MonitorConfiguration.ConfItem.HTTP_CLIENT, MonitorConfiguration.ConfItem.EXECUTOR_SERVICE);
-            this.configuration = conf;
-            initialized = true;
-        }
+    @Override
+    protected int getTaskCount() {
+        List<Map<String, String>> servers = (List<Map<String, String>>) configuration.getConfigYml().get("servers");
+        AssertUtils.assertNotNull(servers, "The 'servers' section in config.yml is not initialised");
+        return servers.size();
     }
 
-    private class TaskRunnable implements Runnable {
-
-        public void run() {
-            if (!initialized) {
-                logger.info("Apache Monitor is still initializing");
-                return;
-            }
-
-            Map<String, ?> config = configuration.getConfigYml();
-
-
-            List<Map> apacheServers = (List<Map>) config.get("servers");
-
-            for (Map apacheServer : apacheServers) {
-
-                ApacheMonitoringTask task = new ApacheMonitoringTask(configuration, apacheServer, deltaCalculator);
-                configuration.getExecutorService().execute(task);
-            }
-        }
-    }
 
     public static void main(String[] args) throws TaskExecutionException {
 
@@ -132,7 +96,8 @@ public class ApacheStatusMonitor extends AManagedMonitor {
         final ApacheStatusMonitor monitor = new ApacheStatusMonitor();
 
         final Map<String, String> taskArgs = new HashMap<String, String>();
-        taskArgs.put("config-file", "/Users/Muddam/AppDynamics/Code/extensions/apache-monitoring-extension/src/main/resources/conf/config.yml");
+        taskArgs.put("config-file", "/Users/akshay.srivastava/AppDynamics/extensions/apache-monitoring-extension/src/main/resources/conf/config.yml");
+        taskArgs.put("metric-file", "/Users/akshay.srivastava/AppDynamics/extensions/apache-monitoring-extension/src/main/resources/conf/metrics.xml");
 
         //monitor.execute(taskArgs, null);
 
