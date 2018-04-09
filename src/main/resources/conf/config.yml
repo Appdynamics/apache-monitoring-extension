@@ -7,24 +7,6 @@ servers:
      username: ""
      password: ""
      useSSL: false
-     #mod_status stats url alias
-     statsUrlPath: "/server-status?auto"
-     #Only enable this if you have enabled mod_jk module enabled on apache server
-     jkStatusPath: ""
-
-     #If you have any custom URL's which return delimiter separated metrics define them here.
-     customStats:
-        #Metric group under which all the metrics are displayed
-       - metricGroup: "MyCustomMetrics"
-         #Metric alias to get the metrics from
-         metricPath: ""
-         #Metric key value separator
-         keyValueSeparator: ":"
-         #Comma separated List of metrics which will be shown in the controller
-         #keep this empty if you want to show all the metrics
-         metricsToCollect: []
-         #Add custom metrics with full alias here to get delta for those metrics
-         deltaMetrics: []
 
 
 connection:
