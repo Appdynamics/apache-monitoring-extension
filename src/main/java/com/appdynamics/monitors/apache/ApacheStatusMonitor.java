@@ -70,7 +70,7 @@ public class ApacheStatusMonitor extends ABaseMonitor {
 
         for (Map apacheServer : apacheServers) {
 
-            ApacheMonitoringTask task = new ApacheMonitoringTask(serviceProvider, apacheServer);
+            ApacheMonitoringTask task = new ApacheMonitoringTask(serviceProvider, apacheServer, (String) this.configuration.getConfigYml().get("customKeySeparator"));
             AssertUtils.assertNotNull(apacheServer.get("displayName"), "The displayName can not be null");
             serviceProvider.submit((String) apacheServer.get("displayName"), task);
         }

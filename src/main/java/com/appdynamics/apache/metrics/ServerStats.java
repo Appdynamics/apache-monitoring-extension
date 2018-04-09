@@ -10,19 +10,15 @@ package com.appdynamics.apache.metrics;
 
 import com.appdynamics.extensions.MetricWriteHelper;
 import com.appdynamics.extensions.conf.MonitorConfiguration;
-import com.appdynamics.extensions.http.HttpClientUtils;
-import com.appdynamics.extensions.http.UrlBuilder;
 import com.appdynamics.extensions.metrics.Metric;
 import com.appdynamics.extensions.util.GroupCounter;
 import com.google.common.base.Strings;
 import metrics.input.MetricConfig;
 import metrics.input.Stat;
-import org.apache.http.impl.client.CloseableHttpClient;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -50,9 +46,10 @@ public class ServerStats implements Runnable {
 
     private static ObjectMapper objectMapper = new ObjectMapper();
 
+    private MetricsUtil metricsUtil = new MetricsUtil();
+
     private static final String COLON = ":";
     private static final Pattern COLON_SPLIT_PATTERN = Pattern.compile(COLON, Pattern.LITERAL);
-    private static final String EQUAL = "=";
 
     public ServerStats(Stat stat, MonitorConfiguration configuration, Map<String, String> requestMap, MetricWriteHelper metricWriteHelper, String metricPrefix, Phaser phaser) {
         this.stat = stat;
@@ -68,16 +65,11 @@ public class ServerStats implements Runnable {
             String endpoint = stat.getUrl();
 
             if (Strings.isNullOrEmpty(endpoint)) {
-                logger.info("Not collecting mod_status stats as statsUrlPath is null for " + requestMap.get("host") + ":" + requestMap.get("port"));
+                logger.info("Not collecting server stats as statsUrlPath is null for " + requestMap.get("host") + ":" + requestMap.get("port"));
                 return;
             }
 
-            String url = UrlBuilder.builder(requestMap).path(endpoint).build();
-
-            CloseableHttpClient httpClient = this.configuration.getHttpClient();
-
-            List<String> responseAsLines = HttpClientUtils.getResponseAsLines(httpClient, url);
-            Map<String, String> responseMetrics = parse(responseAsLines, COLON_SPLIT_PATTERN);
+            Map<String, String> responseMetrics = metricsUtil.fetchResponse(requestMap, endpoint,this.configuration.getHttpClient(), COLON_SPLIT_PATTERN);
 
             print(responseMetrics, metricPrefix, stat);
 
@@ -92,36 +84,9 @@ public class ServerStats implements Runnable {
         }
     }
 
-    private Map<String, String> parse(List<String> lines, Pattern splitPattern) {
-        Map<String, String> valueMap = new HashMap<String, String>();
-        for (String line : lines) {
-            String[] kv = splitPattern.split(line);
-            if (kv.length == 2) {
-                String metricName = kv[0].trim();
-                String metricValue = kv[1].trim();
-                valueMap.put(metricName, metricValue);
-            }
-        }
-        logger.debug("The extracted metrics are " + valueMap);
-        return valueMap;
-    }
 
     private void print(Map<String, String> metrics, String metricPrefix, Stat stat) {
         if (!metrics.isEmpty()) {
-            /*if (!(metricPrefix.endsWith("|"))) {
-                metricPrefix = metricPrefix.concat("|");
-            }*/
-
-            /*Map<String, ?> configYml = this.configuration.getConfigYml();
-            List<Map<String, List<Map<String, String>>>> metricsFromConfig = (List<Map<String, List<Map<String, String>>>>) configYml.get("metrics");
-
-            Map<String, List<Map<String, String>>> allMetricsFromConfig = metricsFromConfig.get(0);
-            List<Map<String, String>> serverMetrics = allMetricsFromConfig.get("serverMetrics");*/
-
-            /*System.out.println("Size: " + stat.getStats()[0].getMetricConfig().length);
-            for(MetricConfig mtr : stat.getStats()[0].getMetricConfig()){
-                System.out.println("MetricConfig: " + mtr.getAlias());
-            }*/
             printRegularMetrics(metrics, metricPrefix, stat);
             parseScoreboard(metrics, metricPrefix, stat.getStats()[0]);
         }
@@ -129,7 +94,6 @@ public class ServerStats implements Runnable {
 
 
     private void printRegularMetrics(Map<String, String> valueMap, String metricPrefix, Stat childStat) {
-        //printMetric(metricPrefix + "Availability|up", BigDecimal.ONE, "OBS.AVG.COL");
 
         for (MetricConfig metricConfig : childStat.getMetricConfig()) {
             String metricValue =  valueMap.get(metricConfig.getAttr());
@@ -138,41 +102,6 @@ public class ServerStats implements Runnable {
                 Metric metric = new Metric(metricConfig.getAttr(), String.valueOf(metricValue), metricPrefix + "|" + metricConfig.getAlias(), propertiesMap);
                 metrics.add(metric);
             }
-            /*String name = metric.get("name");
-            String path = metric.get("path");
-            String type = metric.get("type");
-            String multiplier = metric.get("multiplier");
-
-
-            String metricValue = valueMap.get(name);
-
-            if (metricValue == null) {
-
-                logger.debug("Ignoring metrics with null value, metric : " + path);
-                continue;
-            }
-
-            BigDecimal metricValueInBigdecimal = new BigDecimal(metricValue);
-
-            BigDecimal metricValueToReport = applyMultiplier(metricValueInBigdecimal, multiplier);
-
-
-            printMetric(metricPrefix + path, metricValueToReport, type);
-
-            String collectDelta = metric.get("collectDelta");
-
-            if (Boolean.valueOf(collectDelta)) {
-
-                String deltaType = metric.get("deltaType");
-
-                if (Strings.isNullOrEmpty(deltaType)) {
-                    deltaType = type;
-                }
-
-                BigDecimal deltaMetricValue = deltaCalculator.calculateDelta(metricPrefix + "|" + path, metricValueToReport);
-
-                printMetric(metricPrefix + path + " Delta", deltaMetricValue, deltaType);
-            }*/
         }
     }
 
@@ -223,43 +152,6 @@ public class ServerStats implements Runnable {
                     Metric metric = new Metric(metricConfig.getAttr(), String.valueOf(metricValue), metricPrefix + "|" + metricConfig.getAlias(), propertiesMap);
                     metrics.add(metric);
                 }
-
-            /*for (Map<String, String> metric : serverMetrics) {
-                String path = metric.get("path");
-                String type = metric.get("type");
-                String multiplier = metric.get("multiplier");
-
-                if (curMetrics.containsKey(path)) {
-
-                    String metricValue = curMetrics.get(path);
-
-                    if (metricValue == null) {
-
-                        logger.debug("Ignoring metrics with null value, metric : " + path);
-                        continue;
-                    }
-
-                    BigDecimal metricValueInBigdecimal = new BigDecimal(metricValue);
-
-                    BigDecimal metricValueToReport = applyMultiplier(metricValueInBigdecimal, multiplier);
-
-                    printMetric(metricPrefix + path, metricValueToReport, type);
-
-                    String collectDelta = metric.get("collectDelta");
-
-                    if (Boolean.valueOf(collectDelta)) {
-
-                        String deltaType = metric.get("deltaType");
-
-                        if (Strings.isNullOrEmpty(deltaType)) {
-                            deltaType = type;
-                        }
-
-                        BigDecimal deltaMetricValue = deltaCalculator.calculateDelta(metricPrefix + "|" + path, metricValueToReport);
-
-                        printMetric(metricPrefix + path + " Delta", deltaMetricValue, deltaType);
-                    }
-                }*/
             }
         }
     }

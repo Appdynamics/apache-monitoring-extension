@@ -9,6 +9,7 @@
 
 package com.appdynamics.monitors.apache;
 
+import com.appdynamics.apache.metrics.CustomStats;
 import com.appdynamics.apache.metrics.JKStats;
 import com.appdynamics.apache.metrics.ServerStats;
 import com.appdynamics.extensions.AMonitorTaskRunnable;
@@ -34,15 +35,18 @@ public class ApacheMonitoringTask implements AMonitorTaskRunnable {
 
     private Map apacheServer;
 
+    private String customMetricKeySeparator;
+
     private MetricWriteHelper metricWriter;
 
     private String metricPrefix;
 
     private String displayName;
 
-    public ApacheMonitoringTask(TasksExecutionServiceProvider serviceProvider, Map apacheServer) {
+    public ApacheMonitoringTask(TasksExecutionServiceProvider serviceProvider, Map apacheServer, String customMetricKeySeparator) {
         this.configuration = serviceProvider.getMonitorConfiguration();
         this.apacheServer = apacheServer;
+        this.customMetricKeySeparator = customMetricKeySeparator;
         this.metricPrefix = configuration.getMetricPrefix() + "|" + apacheServer.get("displayName");
         this.metricWriter = serviceProvider.getMetricWriteHelper();
         this.displayName = (String)apacheServer.get("displayName");
@@ -65,6 +69,11 @@ public class ApacheMonitoringTask implements AMonitorTaskRunnable {
                     JKStats jkMetricTask = new JKStats(stat, configuration, requestMap, metricWriter, metricPrefix, phaser);
                     configuration.getExecutorService().execute("MetricCollectorTask", jkMetricTask);
                     logger.debug("Registering MetricCollectorTask phaser for " + displayName);
+                }else{
+                    phaser.register();
+                    CustomStats customMetricTask = new CustomStats(stat, customMetricKeySeparator, configuration, requestMap, metricWriter, metricPrefix, phaser);
+                    configuration.getExecutorService().execute("MetricCollectorTask", customMetricTask);
+                    logger.debug("Registering MetricCollectorTask phaser for " + displayName);
                 }
             }
             //Wait for all tasks to finish
@@ -85,7 +94,6 @@ public class ApacheMonitoringTask implements AMonitorTaskRunnable {
         requestMap.put("password", (String) apacheServer.get("password"));
         return requestMap;
     }
-
 
     public void onTaskComplete() {
         logger.info("All tasks for server {} finished");
