@@ -1,4 +1,5 @@
 /*
+ *
  *   Copyright 2018. AppDynamics LLC and its affiliates.
  *   All Rights Reserved.
  *   This is unpublished proprietary source code of AppDynamics LLC and its affiliates.
@@ -6,7 +7,7 @@
  *
  */
 
-package metrics.input;
+package com.appdynamics.extensions.apache.input;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;

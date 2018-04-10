@@ -1,4 +1,5 @@
 /*
+ *
  *   Copyright 2018. AppDynamics LLC and its affiliates.
  *   All Rights Reserved.
  *   This is unpublished proprietary source code of AppDynamics LLC and its affiliates.
@@ -6,15 +7,14 @@
  *
  */
 
+package com.appdynamics.extensions.apache;
 
-package com.appdynamics.monitors.apache;
-
+import com.appdynamics.extensions.apache.input.Stat;
 import com.appdynamics.extensions.ABaseMonitor;
 import com.appdynamics.extensions.TasksExecutionServiceProvider;
 import com.appdynamics.extensions.conf.MonitorConfiguration;
 import com.appdynamics.extensions.util.AssertUtils;
 import com.singularity.ee.agent.systemagent.api.exception.TaskExecutionException;
-import metrics.input.Stat;
 import org.apache.log4j.ConsoleAppender;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
@@ -70,7 +70,7 @@ public class ApacheStatusMonitor extends ABaseMonitor {
 
         for (Map apacheServer : apacheServers) {
 
-            ApacheMonitoringTask task = new ApacheMonitoringTask(serviceProvider, apacheServer, (String) this.configuration.getConfigYml().get("customKeySeparator"));
+            ApacheMonitoringTask task = new ApacheMonitoringTask(serviceProvider, apacheServer);
             AssertUtils.assertNotNull(apacheServer.get("displayName"), "The displayName can not be null");
             serviceProvider.submit((String) apacheServer.get("displayName"), task);
         }

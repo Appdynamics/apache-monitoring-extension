@@ -1,4 +1,5 @@
 /*
+ *
  *   Copyright 2018. AppDynamics LLC and its affiliates.
  *   All Rights Reserved.
  *   This is unpublished proprietary source code of AppDynamics LLC and its affiliates.
@@ -6,7 +7,8 @@
  *
  */
 
-package metrics.input;
+package com.appdynamics.extensions.apache.input;
+
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

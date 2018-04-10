@@ -1,4 +1,5 @@
 /*
+ *
  *   Copyright 2018. AppDynamics LLC and its affiliates.
  *   All Rights Reserved.
  *   This is unpublished proprietary source code of AppDynamics LLC and its affiliates.
@@ -6,15 +7,15 @@
  *
  */
 
-package com.appdynamics.apache.metrics;
+package com.appdynamics.extensions.apache.metrics;
 
+import com.appdynamics.extensions.apache.input.MetricConfig;
+import com.appdynamics.extensions.apache.input.Stat;
 import com.appdynamics.extensions.MetricWriteHelper;
 import com.appdynamics.extensions.conf.MonitorConfiguration;
 import com.appdynamics.extensions.metrics.Metric;
 import com.appdynamics.extensions.util.GroupCounter;
 import com.google.common.base.Strings;
-import metrics.input.MetricConfig;
-import metrics.input.Stat;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -50,6 +51,10 @@ public class ServerStats implements Runnable {
 
     private static final String COLON = ":";
     private static final Pattern COLON_SPLIT_PATTERN = Pattern.compile(COLON, Pattern.LITERAL);
+
+    public List<Metric> getMetrics() {
+        return metrics;
+    }
 
     public ServerStats(Stat stat, MonitorConfiguration configuration, Map<String, String> requestMap, MetricWriteHelper metricWriteHelper, String metricPrefix, Phaser phaser) {
         this.stat = stat;

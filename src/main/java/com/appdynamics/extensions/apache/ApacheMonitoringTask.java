@@ -7,17 +7,17 @@
  *
  */
 
-package com.appdynamics.monitors.apache;
+package com.appdynamics.extensions.apache;
 
-import com.appdynamics.apache.metrics.CustomStats;
-import com.appdynamics.apache.metrics.JKStats;
-import com.appdynamics.apache.metrics.ServerStats;
 import com.appdynamics.extensions.AMonitorTaskRunnable;
 import com.appdynamics.extensions.MetricWriteHelper;
 import com.appdynamics.extensions.TasksExecutionServiceProvider;
+import com.appdynamics.extensions.apache.input.Stat;
+import com.appdynamics.extensions.apache.metrics.CustomStats;
+import com.appdynamics.extensions.apache.metrics.JKStats;
+import com.appdynamics.extensions.apache.metrics.ServerStats;
 import com.appdynamics.extensions.conf.MonitorConfiguration;
 import com.appdynamics.extensions.util.StringUtils;
-import metrics.input.Stat;
 import org.apache.log4j.Logger;
 
 import java.util.HashMap;
@@ -35,18 +35,15 @@ public class ApacheMonitoringTask implements AMonitorTaskRunnable {
 
     private Map apacheServer;
 
-    private String customMetricKeySeparator;
-
     private MetricWriteHelper metricWriter;
 
     private String metricPrefix;
 
     private String displayName;
 
-    public ApacheMonitoringTask(TasksExecutionServiceProvider serviceProvider, Map apacheServer, String customMetricKeySeparator) {
+    public ApacheMonitoringTask(TasksExecutionServiceProvider serviceProvider, Map apacheServer) {
         this.configuration = serviceProvider.getMonitorConfiguration();
         this.apacheServer = apacheServer;
-        this.customMetricKeySeparator = customMetricKeySeparator;
         this.metricPrefix = configuration.getMetricPrefix() + "|" + apacheServer.get("displayName");
         this.metricWriter = serviceProvider.getMetricWriteHelper();
         this.displayName = (String)apacheServer.get("displayName");
@@ -71,7 +68,7 @@ public class ApacheMonitoringTask implements AMonitorTaskRunnable {
                     logger.debug("Registering MetricCollectorTask phaser for " + displayName);
                 }else{
                     phaser.register();
-                    CustomStats customMetricTask = new CustomStats(stat, customMetricKeySeparator, configuration, requestMap, metricWriter, metricPrefix, phaser);
+                    CustomStats customMetricTask = new CustomStats(stat, configuration, requestMap, metricWriter, metricPrefix, phaser);
                     configuration.getExecutorService().execute("MetricCollectorTask", customMetricTask);
                     logger.debug("Registering MetricCollectorTask phaser for " + displayName);
                 }

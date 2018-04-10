@@ -8,7 +8,7 @@
   -->
 
 <monitor>
-    <name>ApacheStatusMonitor</name>
+    <name>com.apache.extensions.apache.ApacheStatusMonitor</name>
     <type>managed</type>
     <description>Monitors general status of Apache Server
     </description>
@@ -29,7 +29,7 @@
         </task-arguments>
         <java-task>
             <classpath>apache-monitoring-extension.jar</classpath>
-            <impl-class>com.appdynamics.monitors.apache.ApacheStatusMonitor</impl-class>
+            <impl-class>com.apache.monitors.apache.ApacheStatusMonitor</impl-class>
         </java-task>
     </monitor-run-task>
 </monitor>

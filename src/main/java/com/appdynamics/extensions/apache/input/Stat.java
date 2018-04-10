@@ -1,4 +1,5 @@
 /*
+ *
  *   Copyright 2018. AppDynamics LLC and its affiliates.
  *   All Rights Reserved.
  *   This is unpublished proprietary source code of AppDynamics LLC and its affiliates.
@@ -6,7 +7,7 @@
  *
  */
 
-package metrics.input;
+package com.appdynamics.extensions.apache.input;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -22,6 +23,8 @@ public class Stat {
     private String name;
     @XmlAttribute(name = "filter-name")
     private String filterName;
+    @XmlAttribute(name = "keyValueSeparator")
+    private String keyValueSeparator;
     @XmlAttribute(name = "metric-type")
     private String metricType;
     @XmlAttribute
@@ -96,6 +99,14 @@ public class Stat {
 
     public void setChildren(String children) {
         this.children = children;
+    }
+
+    public String getKeyValueSeparator() {
+        return keyValueSeparator;
+    }
+
+    public void setKeyValueSeparator(String keyValueSeparator) {
+        this.keyValueSeparator = keyValueSeparator;
     }
 
     @XmlRootElement

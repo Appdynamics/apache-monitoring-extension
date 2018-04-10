@@ -4,22 +4,20 @@
  *   All Rights Reserved.
  *   This is unpublished proprietary source code of AppDynamics LLC and its affiliates.
  *   The copyright notice above does not evidence any actual or intended publication of such source code.
- *  */
+ *
+ */
 
+package com.appdynamics.extensions.apache.metrics;
 
-package com.appdynamics.apache.metrics;
+import com.appdynamics.extensions.apache.input.MetricConfig;
+import com.appdynamics.extensions.apache.input.Stat;
 
 import com.appdynamics.extensions.MetricWriteHelper;
 import com.appdynamics.extensions.conf.MonitorConfiguration;
-import com.appdynamics.extensions.http.HttpClientUtils;
-import com.appdynamics.extensions.http.UrlBuilder;
 import com.appdynamics.extensions.metrics.Metric;
 import com.google.common.base.Strings;
-import metrics.input.MetricConfig;
-import metrics.input.Stat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.apache.http.impl.client.CloseableHttpClient;
 import org.codehaus.jackson.map.ObjectMapper;
 
 import java.util.ArrayList;
@@ -33,8 +31,6 @@ public class CustomStats implements Runnable{
     private static final Logger logger = LoggerFactory.getLogger(CustomStats.class);
 
     private Stat stat;
-
-    private String keyValueSeparator;
 
     private MonitorConfiguration configuration;
 
@@ -57,9 +53,8 @@ public class CustomStats implements Runnable{
     private static final String EQUAL = "=";
     private static final Pattern EQUAL_SPLIT_PATTERN = Pattern.compile(EQUAL, Pattern.LITERAL);
 
-    public CustomStats(Stat stat, String keyValueSeparator, MonitorConfiguration configuration, Map<String, String> requestMap, MetricWriteHelper metricWriteHelper, String metricPrefix, Phaser phaser) {
+    public CustomStats(Stat stat,  MonitorConfiguration configuration, Map<String, String> requestMap, MetricWriteHelper metricWriteHelper, String metricPrefix, Phaser phaser) {
         this.stat = stat;
-        this.keyValueSeparator = keyValueSeparator;
         this.configuration = configuration;
         this.requestMap = requestMap;
         this.metricWriteHelper = metricWriteHelper;
@@ -78,12 +73,12 @@ public class CustomStats implements Runnable{
                     return;
                 }
                 Pattern splitPattern;
-                if (COLON.equals(keyValueSeparator)) {
+                if (COLON.equals(stat.getKeyValueSeparator())) {
                     splitPattern = COLON_SPLIT_PATTERN;
-                } else if (EQUAL.equals(keyValueSeparator)) {
+                } else if (EQUAL.equals(stat.getKeyValueSeparator())) {
                     splitPattern = EQUAL_SPLIT_PATTERN;
                 } else {
-                    splitPattern = Pattern.compile(keyValueSeparator, Pattern.LITERAL);
+                    splitPattern = Pattern.compile(stat.getKeyValueSeparator(), Pattern.LITERAL);
                 }
 
                 Map<String, String> responseMetrics = metricsUtil.fetchResponse(requestMap, endpoint,this.configuration.getHttpClient(), splitPattern);

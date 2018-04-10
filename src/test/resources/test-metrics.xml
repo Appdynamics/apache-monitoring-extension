@@ -42,13 +42,13 @@ Set delta = true for metric to report per-min data
             <metric attr="Closing Connection" alias="Activity|Type|Closing Connection" aggregationType = "OBSERVATION" timeRollUpType = "CURRENT" clusterRollUpType = "COLLECTIVE" delta="true"/>
             <metric attr="Logging" alias="Activity|Type|Loggins" aggregationType = "OBSERVATION" timeRollUpType = "CURRENT" clusterRollUpType = "COLLECTIVE" delta="true"/>
             <metric attr="Gracefully Finishing" alias="Activity|Type|Gracefully Finishings" aggregationType = "OBSERVATION" timeRollUpType = "CURRENT" clusterRollUpType = "COLLECTIVE" delta="true"/>-->
-            <!-- <metric attr="Cleaning Up" alias="Activity|Type|Cleaning Up" aggregationType = "OBSERVATION" timeRollUpType = "CURRENT" clusterRollUpType = "COLLECTIVE" delta="true"/>-->
+            <metric attr="Cleaning Up" alias="Activity|Type|Cleaning Up" aggregationType = "OBSERVATION" timeRollUpType = "CURRENT" clusterRollUpType = "COLLECTIVE" delta="true"/>
         </stat>
     </stat>
 
     <stat url="/jk-status?mime=prop" name="jkMetrics">
         <metric attr="connection_pool_timeout" alias="JK Status|connection_pool_timeout" aggregationType = "OBSERVATION" timeRollUpType = "CURRENT" clusterRollUpType = "COLLECTIVE" delta="true"/>
-        <metric attr="ping_timeout" alias="JK Status|ping_timeout" aggregationType = "OBSERVATION" timeRollUpType = "CURRENT" clusterRollUpType = "COLLECTIVE" delta="true"/>
+        <metric attr="ping_timeout" alias="JK Status|ping__timeout" aggregationType = "OBSERVATION" timeRollUpType = "CURRENT" clusterRollUpType = "COLLECTIVE" delta="true"/>
         <metric attr="connect_timeout" alias="JK Status|connect_timeout" aggregationType = "OBSERVATION" timeRollUpType = "CURRENT" clusterRollUpType = "COLLECTIVE" delta="true"/>
         <metric attr="prepost_timeout" alias="JK Status|prepost_timeout" aggregationType = "OBSERVATION" timeRollUpType = "CURRENT" clusterRollUpType = "COLLECTIVE" delta="true"/>
         <metric attr="reply_timeout" alias="JK Status|reply_timeout" aggregationType = "OBSERVATION" timeRollUpType = "CURRENT" clusterRollUpType = "COLLECTIVE" delta="true"/>

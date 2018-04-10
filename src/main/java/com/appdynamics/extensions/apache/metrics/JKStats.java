@@ -7,8 +7,10 @@
  *
  */
 
-package com.appdynamics.apache.metrics;
+package com.appdynamics.extensions.apache.metrics;
 
+import com.appdynamics.extensions.apache.input.MetricConfig;
+import com.appdynamics.extensions.apache.input.Stat;
 import com.appdynamics.extensions.MetricWriteHelper;
 import com.appdynamics.extensions.conf.MonitorConfiguration;
 import com.appdynamics.extensions.http.HttpClientUtils;
@@ -18,8 +20,6 @@ import com.appdynamics.extensions.util.StringUtils;
 import com.google.common.base.Strings;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
-import metrics.input.MetricConfig;
-import metrics.input.Stat;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.slf4j.Logger;
@@ -42,7 +42,6 @@ public class JKStats implements Runnable {
 
     private MonitorConfiguration configuration;
 
-
     private MetricWriteHelper metricWriteHelper;
 
     private Map<String, String> requestMap;
@@ -58,6 +57,10 @@ public class JKStats implements Runnable {
     private static final String EQUAL = "=";
     private static final Pattern EQUAL_SPLIT_PATTERN = Pattern.compile(EQUAL, Pattern.LITERAL);
     private static final String DOT = ".";
+
+    public List<Metric> getMetrics() {
+        return metrics;
+    }
 
     public JKStats(Stat stat, MonitorConfiguration configuration, Map<String, String> requestMap, MetricWriteHelper metricWriteHelper, String metricPrefix, Phaser phaser) {
         this.stat = stat;
@@ -117,7 +120,7 @@ public class JKStats implements Runnable {
         for(MetricConfig metricConfig : stat.getMetricConfig()){
                  for (String workerName : workerNames) {
                     String key = getKey(workerName, metricConfig.getAttr());
-                    logger.debug("Key for worker " + workerName + " is: " + key);
+                    //logger.debug("Key for worker " + workerName + " is: " + key);
                     Collection<String> values = jkStatusMetrics.get(key);
                     //Iterator<String> itr = values.iterator();
                     /*while(itr.hasNext()){
