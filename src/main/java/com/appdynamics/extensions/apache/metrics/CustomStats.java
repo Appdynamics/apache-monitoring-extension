@@ -73,12 +73,12 @@ public class CustomStats implements Runnable{
                     return;
                 }
                 Pattern splitPattern;
-                if (COLON.equals(stat.getKeyValueSeparator())) {
+                if (COLON.equals(childStat.getKeyValueSeparator())) {
                     splitPattern = COLON_SPLIT_PATTERN;
-                } else if (EQUAL.equals(stat.getKeyValueSeparator())) {
+                } else if (EQUAL.equals(childStat.getKeyValueSeparator())) {
                     splitPattern = EQUAL_SPLIT_PATTERN;
                 } else {
-                    splitPattern = Pattern.compile(stat.getKeyValueSeparator(), Pattern.LITERAL);
+                    splitPattern = Pattern.compile(childStat.getKeyValueSeparator(), Pattern.LITERAL);
                 }
 
                 Map<String, String> responseMetrics = metricsUtil.fetchResponse(requestMap, endpoint,this.configuration.getHttpClient(), splitPattern);
