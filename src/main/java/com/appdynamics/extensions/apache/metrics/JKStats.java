@@ -133,11 +133,15 @@ public class JKStats implements Runnable {
                             metricValue = "3";
                         }
                     }*/
-                    BigDecimal bigValue = toBigDecimal(metricValue);
+                    if(!StringUtils.hasText(metricValue)){
+                        BigDecimal bigValue = toBigDecimal(metricValue);
+                        metricValue = String.valueOf(bigValue);
+                    }
+                    //BigDecimal bigValue = toBigDecimal(metricValue);
                     String jkMetricPath = metricPrefix + "|" + key.replace(".", "|");
                      if (metricValue != null) {
                          Map<String, String> propertiesMap = objectMapper.convertValue(metricConfig, Map.class);
-                         Metric metric = new Metric(metricConfig.getAttr(), String.valueOf(bigValue), jkMetricPath, propertiesMap);
+                         Metric metric = new Metric(metricConfig.getAttr(), metricValue, jkMetricPath, propertiesMap);
                          metrics.add(metric);
                      }
                 }

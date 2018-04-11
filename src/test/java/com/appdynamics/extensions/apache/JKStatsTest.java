@@ -132,8 +132,8 @@ public class JKStatsTest {
         map.put("Custom Metrics|WebServer|Apache|Status|worker|worker2|recovery_options","0");
         map.put("Custom Metrics|WebServer|Apache|Status|worker|worker1|max_packet_size","8192");
         map.put("Custom Metrics|WebServer|Apache|Status|worker|worker2|max_packet_size","8192");
-        map.put("Custom Metrics|WebServer|Apache|Status|worker|worker1|activation","3");
-        map.put("Custom Metrics|WebServer|Apache|Status|worker|worker2|activation","3");
+        map.put("Custom Metrics|WebServer|Apache|Status|worker|worker1|activation","STP");
+        map.put("Custom Metrics|WebServer|Apache|Status|worker|worker2|activation","STP");
         map.put("Custom Metrics|WebServer|Apache|Status|worker|worker1|lbfactor","100");
         map.put("Custom Metrics|WebServer|Apache|Status|worker|worker2|lbfactor","100");
         map.put("Custom Metrics|WebServer|Apache|Status|worker|worker1|lbmult","1");
