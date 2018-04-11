@@ -119,7 +119,7 @@ public class ServerStats implements Runnable {
             for (char aChar : chars) {
                 counter.increment(Character.toString(aChar));
             }
-            Map<String, String> curMetrics = new HashMap<String, String>();
+            /*Map<String, String> curMetrics = new HashMap<String, String>();
             String waitingForConn = getString(counter.get("_"));
             curMetrics.put("Activity|Type|Waiting for Conn", waitingForConn);
 
@@ -148,10 +148,11 @@ public class ServerStats implements Runnable {
             curMetrics.put("Activity|Type|Gracefully Finishing", gracefullyFinishing);
 
             String cleaningUp = getString(counter.get("I"));
-            curMetrics.put("Activity|Type|Cleaning Up", cleaningUp);
+            curMetrics.put("Activity|Type|Cleaning Up", cleaningUp);*/
 
             for (MetricConfig metricConfig : childStat.getMetricConfig()) {
-                String metricValue =  curMetrics.get(metricConfig.getAlias());
+
+                String metricValue =  getString(counter.get(metricConfig.getCharacter()));
                 if(metricValue!=null) {
                     Map<String, String> propertiesMap = objectMapper.convertValue(metricConfig, Map.class);
                     Metric metric = new Metric(metricConfig.getAttr(), String.valueOf(metricValue), metricPrefix + "|" + metricConfig.getAlias(), propertiesMap);

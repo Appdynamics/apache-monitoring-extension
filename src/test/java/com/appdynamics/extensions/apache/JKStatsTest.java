@@ -14,13 +14,12 @@ import com.appdynamics.extensions.MetricWriteHelper;
 import com.appdynamics.extensions.TasksExecutionServiceProvider;
 import com.appdynamics.extensions.apache.input.Stat;
 import com.appdynamics.extensions.apache.metrics.JKStats;
-import com.appdynamics.extensions.apache.metrics.MetricsUtil;
-import com.appdynamics.extensions.apache.metrics.ServerStats;
 import com.appdynamics.extensions.conf.MonitorConfiguration;
 import com.appdynamics.extensions.http.HttpClientUtils;
 import com.appdynamics.extensions.metrics.Metric;
 import com.google.common.collect.Maps;
 import com.singularity.ee.agent.systemagent.api.exception.TaskExecutionException;
+import org.apache.commons.io.FileUtils;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.junit.Assert;
@@ -38,16 +37,11 @@ import org.powermock.modules.junit4.PowerMockRunner;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.util.ArrayList;
+import java.io.File;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Phaser;
-import java.util.stream.Collectors;
 
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
@@ -99,14 +93,8 @@ public class JKStatsTest {
                 new Answer() {
                     public Object answer(InvocationOnMock invocationOnMock) throws Throwable {
                         ObjectMapper mapper = new ObjectMapper();
-                        String file = "src/test/resources/jk-status.txt";
-                        List<String> list = new ArrayList<String>();
-                        try (BufferedReader br = Files.newBufferedReader(Paths.get(file))) {
-                            list = br.lines().collect(Collectors.toList());
-                        } catch (IOException e) {
-                            logger.error("Error reading file : ", e);
-                        }
-                        logger.info("Returning the mocked data for the api " + file);
+                        List<String> list = FileUtils.readLines(new File("src/test/resources/jk-status.txt"), "utf-8");
+                        logger.info("Returning the mocked data for the api ");
                         return list;
                     }
                 });

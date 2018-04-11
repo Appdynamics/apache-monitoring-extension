@@ -122,14 +122,9 @@ public class JKStats implements Runnable {
                     String key = getKey(workerName, metricConfig.getAttr());
                     //logger.debug("Key for worker " + workerName + " is: " + key);
                     Collection<String> values = jkStatusMetrics.get(key);
-                    //Iterator<String> itr = values.iterator();
-                    /*while(itr.hasNext()){
-                        logger.debug("Value for key: " + key + " : " + itr.next());
-                       // values.iterator().next();
-                    }*/
                     String metricValue = getValue(key, values);
 
-                     if (key.contains("activation")) {
+                     /*if (key.contains("activation")) {
                         if ("ACT".equals(metricValue)) {
                             metricValue = "1";
                         } else if ("DIS".equals(metricValue)) {
@@ -137,7 +132,7 @@ public class JKStats implements Runnable {
                         } else {
                             metricValue = "3";
                         }
-                    }
+                    }*/
                     BigDecimal bigValue = toBigDecimal(metricValue);
                     String jkMetricPath = metricPrefix + "|" + key.replace(".", "|");
                      if (metricValue != null) {
