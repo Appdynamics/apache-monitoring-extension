@@ -19,7 +19,7 @@ public class ApacheMonitorTest {
 
  @Test
  public void test() throws TaskExecutionException {
-  ApacheStatusMonitor monitor = new ApacheStatusMonitor();
+  ApacheMonitor monitor = new ApacheMonitor();
   Map<String, String> taskArgs = Maps.newHashMap();
   taskArgs.put("config-file", "src/test/resources/test-config.yml");
   taskArgs.put("metric-file", "src/test/resources/test-metrics.xml");

@@ -12,7 +12,7 @@ package com.appdynamics.extensions.apache.metrics;
 import com.appdynamics.extensions.apache.input.MetricConfig;
 import com.appdynamics.extensions.apache.input.Stat;
 import com.appdynamics.extensions.MetricWriteHelper;
-import com.appdynamics.extensions.conf.MonitorConfiguration;
+import com.appdynamics.extensions.conf.MonitorContext;
 import com.appdynamics.extensions.http.HttpClientUtils;
 import com.appdynamics.extensions.http.UrlBuilder;
 import com.appdynamics.extensions.metrics.Metric;
@@ -40,7 +40,7 @@ public class JKStats implements Runnable {
 
     private Stat stat;
 
-    private MonitorConfiguration configuration;
+    private MonitorContext context;
 
     private MetricWriteHelper metricWriteHelper;
 
@@ -62,9 +62,9 @@ public class JKStats implements Runnable {
         return metrics;
     }
 
-    public JKStats(Stat stat, MonitorConfiguration configuration, Map<String, String> requestMap, MetricWriteHelper metricWriteHelper, String metricPrefix, Phaser phaser) {
+    public JKStats(Stat stat, MonitorContext context, Map<String, String> requestMap, MetricWriteHelper metricWriteHelper, String metricPrefix, Phaser phaser) {
         this.stat = stat;
-        this.configuration = configuration;
+        this.context = context;
         this.requestMap = requestMap;
         this.metricWriteHelper = metricWriteHelper;
         this.metricPrefix = metricPrefix;
@@ -83,7 +83,7 @@ public class JKStats implements Runnable {
 
             String url = UrlBuilder.builder(requestMap).path(endpoint).build();
 
-            CloseableHttpClient httpClient = this.configuration.getHttpClient();
+            CloseableHttpClient httpClient = this.context.getHttpClient();
 
             List<String> responseAsLines = HttpClientUtils.getResponseAsLines(httpClient, url);
             Multimap<String, String> jkStatusMetrics = buildMap(responseAsLines);

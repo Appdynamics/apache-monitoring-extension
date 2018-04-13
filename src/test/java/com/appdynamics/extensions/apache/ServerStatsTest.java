@@ -14,10 +14,12 @@ import com.appdynamics.extensions.MetricWriteHelper;
 import com.appdynamics.extensions.TasksExecutionServiceProvider;
 import com.appdynamics.extensions.apache.input.Stat;
 import com.appdynamics.extensions.apache.metrics.ServerStats;
-import com.appdynamics.extensions.conf.MonitorConfiguration;
+import com.appdynamics.extensions.conf.MonitorContextConfiguration;
 import com.appdynamics.extensions.http.HttpClientUtils;
 import com.appdynamics.extensions.metrics.Metric;
+import com.appdynamics.extensions.util.PathResolver;
 import com.google.common.collect.Maps;
+import com.singularity.ee.agent.systemagent.api.AManagedMonitor;
 import com.singularity.ee.agent.systemagent.api.exception.TaskExecutionException;
 import org.apache.commons.io.FileUtils;
 import org.apache.http.impl.client.CloseableHttpClient;
@@ -37,13 +39,7 @@ import org.powermock.modules.junit4.PowerMockRunner;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -70,7 +66,7 @@ public class ServerStatsTest {
 
     private Stat.Stats stat;
 
-    private MonitorConfiguration monitorConfiguration = new MonitorConfiguration("Apache", "Custom Metrics|Apache|", Mockito.mock(AMonitorJob.class));
+    private MonitorContextConfiguration contextConfiguration = new MonitorContextConfiguration("Apache", "Custom Metrics|Apache|", PathResolver.resolveDirectory(AManagedMonitor.class), Mockito.mock(AMonitorJob.class));
 
 
     private Map<String, String> expectedValueMap;
@@ -81,16 +77,15 @@ public class ServerStatsTest {
     @Before
     public void before(){
 
-        monitorConfiguration.setConfigYml("src/test/resources/test-config.yml");
-        monitorConfiguration.setMetricsXml("src/test/resources/test-metrics.xml", Stat.Stats.class);
+        contextConfiguration.setConfigYml("src/test/resources/test-config.yml");
+        contextConfiguration.setMetricXml("src/test/resources/test-metrics.xml", Stat.Stats.class);
 
-        Mockito.when(serviceProvider.getMonitorConfiguration()).thenReturn(monitorConfiguration);
         Mockito.when(serviceProvider.getMetricWriteHelper()).thenReturn(metricWriter);
 
-        stat = (Stat.Stats) monitorConfiguration.getMetricsXmlConfiguration();
+        stat = (Stat.Stats) contextConfiguration.getMetricsXml();
 
-        serverStats = Mockito.spy(new ServerStats(stat.getStats()[0], monitorConfiguration, new HashMap<String, String>(), metricWriter,
-                                                    monitorConfiguration.getMetricPrefix(), phaser));
+        serverStats = Mockito.spy(new ServerStats(stat.getStats()[0], contextConfiguration.getContext(), new HashMap<String, String>(), metricWriter,
+                                                    contextConfiguration.getMetricPrefix(), phaser));
 
         PowerMockito.mockStatic(HttpClientUtils.class);
         PowerMockito.mockStatic(CloseableHttpClient.class);

@@ -9,10 +9,10 @@
 
 package com.appdynamics.extensions.apache;
 
-import com.appdynamics.extensions.apache.input.Stat;
 import com.appdynamics.extensions.ABaseMonitor;
 import com.appdynamics.extensions.TasksExecutionServiceProvider;
-import com.appdynamics.extensions.conf.MonitorConfiguration;
+import com.appdynamics.extensions.apache.input.Stat;
+import com.appdynamics.extensions.conf.MonitorContextConfiguration;
 import com.appdynamics.extensions.util.AssertUtils;
 import com.singularity.ee.agent.systemagent.api.exception.TaskExecutionException;
 import org.apache.log4j.ConsoleAppender;
@@ -35,11 +35,11 @@ import java.util.concurrent.TimeUnit;
  * Time: 7:08 PM
  * To change this template use File | Settings | File Templates.
  */
-public class ApacheStatusMonitor extends ABaseMonitor {
+public class ApacheMonitor extends ABaseMonitor {
 
     private static final String METRIC_PREFIX = "Custom Metrics|WebServer|Apache|Status|";
 
-    private static final Logger logger = Logger.getLogger(ApacheStatusMonitor.class);
+    private static final Logger logger = Logger.getLogger(ApacheMonitor.class);
 
 
     @Override
@@ -54,31 +54,30 @@ public class ApacheStatusMonitor extends ABaseMonitor {
 
 
     @Override
-    protected void initializeMoreStuff(Map<String, String> args, MonitorConfiguration conf) {
-        conf.setMetricsXml(args.get("metric-file"), Stat.Stats.class);
-
-    }
-
-
-    @Override
     protected void doRun(TasksExecutionServiceProvider serviceProvider) {
 
-        List<Map> apacheServers = (List<Map>) this.configuration.getConfigYml().get("servers");
+        List<Map> apacheServers = (List<Map>) this.getContextConfiguration().getConfigYml().get("servers");
 
-        AssertUtils.assertNotNull(this.configuration.getMetricsXmlConfiguration(), "Metrics xml not available");
+        AssertUtils.assertNotNull(this.getContextConfiguration().getMetricsXml(), "Metrics xml not available");
         AssertUtils.assertNotNull(apacheServers, "The 'servers' section in config.yml is not initialised");
 
         for (Map apacheServer : apacheServers) {
 
-            ApacheMonitoringTask task = new ApacheMonitoringTask(serviceProvider, apacheServer);
+            ApacheMonitorTask task = new ApacheMonitorTask(serviceProvider, this.getContextConfiguration(), apacheServer);
             AssertUtils.assertNotNull(apacheServer.get("displayName"), "The displayName can not be null");
             serviceProvider.submit((String) apacheServer.get("displayName"), task);
         }
     }
 
     @Override
+    protected void initializeMoreStuff(Map<String, String> args) {
+        this.getContextConfiguration().setMetricXml(args.get("metric-file"), Stat.Stats.class);
+
+    }
+
+    @Override
     protected int getTaskCount() {
-        List<Map<String, String>> servers = (List<Map<String, String>>) configuration.getConfigYml().get("servers");
+        List<Map<String, String>> servers = (List<Map<String, String>>) getContextConfiguration().getConfigYml().get("servers");
         AssertUtils.assertNotNull(servers, "The 'servers' section in config.yml is not initialised");
         return servers.size();
     }
@@ -93,7 +92,7 @@ public class ApacheStatusMonitor extends ABaseMonitor {
 
         logger.getRootLogger().addAppender(ca);
 
-        final ApacheStatusMonitor monitor = new ApacheStatusMonitor();
+        final ApacheMonitor monitor = new ApacheMonitor();
 
         final Map<String, String> taskArgs = new HashMap<String, String>();
         taskArgs.put("config-file", "/Users/akshay.srivastava/AppDynamics/extensions/apache-monitoring-extension/src/main/resources/conf/config.yml");

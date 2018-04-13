@@ -20,14 +20,15 @@ proxy:
   username:
   password:
 
+# number of concurrent tasks
 numberOfThreads: 5
 encryptionKey: "welcome"
 
 
 
 #This will create this metric in all the tiers, under this alias
-metricPrefix: Custom Metrics|WebServer|
+#metricPrefix: Custom Metrics|Apache|
 
 #This will create it in specific Tier/Component. Make sure to replace <COMPONENT_ID> with the appropriate one from your environment.
 #To find the <COMPONENT_ID> in your environment, please follow the screenshot https://docs.appdynamics.com/display/PRO42/Build+a+Monitoring+Extension+Using+Java
-#metricPrefix: Server|Component:<COMPONENT_ID>|Custom Metrics|WebServer|Apache|Status|
+metricPrefix: Server|Component:<COMPONENT_ID>|Custom Metrics|Apache|Status|

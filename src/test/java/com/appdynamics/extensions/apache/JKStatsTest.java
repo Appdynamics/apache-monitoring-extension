@@ -14,10 +14,12 @@ import com.appdynamics.extensions.MetricWriteHelper;
 import com.appdynamics.extensions.TasksExecutionServiceProvider;
 import com.appdynamics.extensions.apache.input.Stat;
 import com.appdynamics.extensions.apache.metrics.JKStats;
-import com.appdynamics.extensions.conf.MonitorConfiguration;
+import com.appdynamics.extensions.conf.MonitorContextConfiguration;
 import com.appdynamics.extensions.http.HttpClientUtils;
 import com.appdynamics.extensions.metrics.Metric;
+import com.appdynamics.extensions.util.PathResolver;
 import com.google.common.collect.Maps;
+import com.singularity.ee.agent.systemagent.api.AManagedMonitor;
 import com.singularity.ee.agent.systemagent.api.exception.TaskExecutionException;
 import org.apache.commons.io.FileUtils;
 import org.apache.http.impl.client.CloseableHttpClient;
@@ -63,7 +65,7 @@ public class JKStatsTest {
 
     private Stat.Stats stat;
 
-    private MonitorConfiguration monitorConfiguration = new MonitorConfiguration("Apache", "Custom Metrics|Apache|", Mockito.mock(AMonitorJob.class));
+    private MonitorContextConfiguration monitorConfiguration = new MonitorContextConfiguration("Apache", "Custom Metrics|Apache|", PathResolver.resolveDirectory(AManagedMonitor.class), Mockito.mock(AMonitorJob.class));
 
 
     private Map<String, String> expectedValueMap;
@@ -76,14 +78,14 @@ public class JKStatsTest {
     public void before(){
 
         monitorConfiguration.setConfigYml("src/test/resources/test-config.yml");
-        monitorConfiguration.setMetricsXml("src/test/resources/test-metrics.xml", Stat.Stats.class);
+        monitorConfiguration.setMetricXml("src/test/resources/test-metrics.xml", Stat.Stats.class);
 
-        Mockito.when(serviceProvider.getMonitorConfiguration()).thenReturn(monitorConfiguration);
+        //Mockito.when(serviceProvider.getMonitorConfiguration()).thenReturn(monitorConfiguration);
         Mockito.when(serviceProvider.getMetricWriteHelper()).thenReturn(metricWriter);
 
-        stat = (Stat.Stats) monitorConfiguration.getMetricsXmlConfiguration();
+        stat = (Stat.Stats) monitorConfiguration.getMetricsXml();
 
-        jkStats = Mockito.spy(new JKStats(stat.getStats()[1], monitorConfiguration, new HashMap<String, String>(), metricWriter,
+        jkStats = Mockito.spy(new JKStats(stat.getStats()[1], monitorConfiguration.getContext(), new HashMap<String, String>(), metricWriter,
                 monitorConfiguration.getMetricPrefix(), phaser));
 
         PowerMockito.mockStatic(HttpClientUtils.class);

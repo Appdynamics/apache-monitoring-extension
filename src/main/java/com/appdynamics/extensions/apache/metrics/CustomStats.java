@@ -13,7 +13,7 @@ import com.appdynamics.extensions.apache.input.MetricConfig;
 import com.appdynamics.extensions.apache.input.Stat;
 
 import com.appdynamics.extensions.MetricWriteHelper;
-import com.appdynamics.extensions.conf.MonitorConfiguration;
+import com.appdynamics.extensions.conf.MonitorContext;
 import com.appdynamics.extensions.metrics.Metric;
 import com.google.common.base.Strings;
 import org.slf4j.Logger;
@@ -32,7 +32,7 @@ public class CustomStats implements Runnable{
 
     private Stat stat;
 
-    private MonitorConfiguration configuration;
+    private MonitorContext context;
 
     private MetricWriteHelper metricWriteHelper;
 
@@ -53,9 +53,9 @@ public class CustomStats implements Runnable{
     private static final String EQUAL = "=";
     private static final Pattern EQUAL_SPLIT_PATTERN = Pattern.compile(EQUAL, Pattern.LITERAL);
 
-    public CustomStats(Stat stat,  MonitorConfiguration configuration, Map<String, String> requestMap, MetricWriteHelper metricWriteHelper, String metricPrefix, Phaser phaser) {
+    public CustomStats(Stat stat,  MonitorContext context, Map<String, String> requestMap, MetricWriteHelper metricWriteHelper, String metricPrefix, Phaser phaser) {
         this.stat = stat;
-        this.configuration = configuration;
+        this.context = context;
         this.requestMap = requestMap;
         this.metricWriteHelper = metricWriteHelper;
         this.metricPrefix = metricPrefix;
@@ -81,7 +81,7 @@ public class CustomStats implements Runnable{
                     splitPattern = Pattern.compile(childStat.getKeyValueSeparator(), Pattern.LITERAL);
                 }
 
-                Map<String, String> responseMetrics = metricsUtil.fetchResponse(requestMap, endpoint,this.configuration.getHttpClient(), splitPattern);
+                Map<String, String> responseMetrics = metricsUtil.fetchResponse(requestMap, endpoint,this.context.getHttpClient(), splitPattern);
                 printCustomStats(responseMetrics, childStat);
             }
             if (metrics != null && metrics.size() > 0) {

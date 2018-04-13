@@ -12,7 +12,7 @@ package com.appdynamics.extensions.apache.metrics;
 import com.appdynamics.extensions.apache.input.MetricConfig;
 import com.appdynamics.extensions.apache.input.Stat;
 import com.appdynamics.extensions.MetricWriteHelper;
-import com.appdynamics.extensions.conf.MonitorConfiguration;
+import com.appdynamics.extensions.conf.MonitorContext;
 import com.appdynamics.extensions.metrics.Metric;
 import com.appdynamics.extensions.util.GroupCounter;
 import com.google.common.base.Strings;
@@ -21,7 +21,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Phaser;
@@ -33,7 +32,7 @@ public class ServerStats implements Runnable {
 
     private Stat stat;
 
-    private MonitorConfiguration configuration;
+    private MonitorContext context;
 
     private MetricWriteHelper metricWriteHelper;
 
@@ -56,9 +55,9 @@ public class ServerStats implements Runnable {
         return metrics;
     }
 
-    public ServerStats(Stat stat, MonitorConfiguration configuration, Map<String, String> requestMap, MetricWriteHelper metricWriteHelper, String metricPrefix, Phaser phaser) {
+    public ServerStats(Stat stat, MonitorContext context, Map<String, String> requestMap, MetricWriteHelper metricWriteHelper, String metricPrefix, Phaser phaser) {
         this.stat = stat;
-        this.configuration = configuration;
+        this.context = context;
         this.requestMap = requestMap;
         this.metricWriteHelper = metricWriteHelper;
         this.metricPrefix = metricPrefix;
@@ -74,7 +73,7 @@ public class ServerStats implements Runnable {
                 return;
             }
 
-            Map<String, String> responseMetrics = metricsUtil.fetchResponse(requestMap, endpoint,this.configuration.getHttpClient(), COLON_SPLIT_PATTERN);
+            Map<String, String> responseMetrics = metricsUtil.fetchResponse(requestMap, endpoint,this.context.getHttpClient(), COLON_SPLIT_PATTERN);
 
             print(responseMetrics, metricPrefix, stat);
 
