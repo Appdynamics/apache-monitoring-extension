@@ -37,7 +37,7 @@ import java.util.concurrent.TimeUnit;
  */
 public class ApacheMonitor extends ABaseMonitor {
 
-    private static final String METRIC_PREFIX = "Custom Metrics|WebServer|Apache|Status|";
+    private static final String METRIC_PREFIX = "Custom Metrics|Apache";
 
     private static final Logger logger = Logger.getLogger(ApacheMonitor.class);
 
@@ -49,7 +49,7 @@ public class ApacheMonitor extends ABaseMonitor {
 
     @Override
     public String getMonitorName() {
-        return "Apache Status Monitor";
+        return "Apache Monitor";
     }
 
 
@@ -83,6 +83,7 @@ public class ApacheMonitor extends ABaseMonitor {
     }
 
 
+    //#TODO Does this needs to go with the final code?
     public static void main(String[] args) throws TaskExecutionException {
 
         ConsoleAppender ca = new ConsoleAppender();

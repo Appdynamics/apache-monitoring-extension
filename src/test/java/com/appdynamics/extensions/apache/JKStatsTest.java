@@ -113,7 +113,7 @@ public class JKStatsTest {
         Assert.assertTrue("The expected values were not send. The missing values are " + expectedValueMap
                 , expectedValueMap.isEmpty());
     }
-
+    //TODO Change the metricPaths
     private Map<String, String> getExpectedValueMap() {
         Map<String, String> map = Maps.newHashMap();
         map.put("Custom Metrics|WebServer|Apache|Status|worker|worker1|connection_pool_timeout","0");

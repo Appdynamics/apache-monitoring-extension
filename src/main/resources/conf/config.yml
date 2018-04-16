@@ -6,6 +6,7 @@ servers:
      port: 80
      username: ""
      password: ""
+     encryptedPassword: ""
      useSSL: false
 
 
@@ -21,8 +22,9 @@ proxy:
   password:
 
 # number of concurrent tasks
+#TODO  Each server requires 1 + 3(?)(ServerStats, JKStats, CustomStats) threads.
 numberOfThreads: 5
-encryptionKey: "welcome"
+encryptionKey:
 
 
 
