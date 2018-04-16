@@ -81,35 +81,4 @@ public class ApacheMonitor extends ABaseMonitor {
         AssertUtils.assertNotNull(servers, "The 'servers' section in config.yml is not initialised");
         return servers.size();
     }
-
-
-    //#TODO Does this needs to go with the final code?
-    public static void main(String[] args) throws TaskExecutionException {
-
-        ConsoleAppender ca = new ConsoleAppender();
-        ca.setWriter(new OutputStreamWriter(System.out));
-        ca.setLayout(new PatternLayout("%-5p [%t]: %m%n"));
-        ca.setThreshold(Level.DEBUG);
-
-        logger.getRootLogger().addAppender(ca);
-
-        final ApacheMonitor monitor = new ApacheMonitor();
-
-        final Map<String, String> taskArgs = new HashMap<String, String>();
-        taskArgs.put("config-file", "/Users/akshay.srivastava/AppDynamics/extensions/apache-monitoring-extension/src/main/resources/conf/config.yml");
-        taskArgs.put("metric-file", "/Users/akshay.srivastava/AppDynamics/extensions/apache-monitoring-extension/src/main/resources/conf/metrics.xml");
-
-        //monitor.execute(taskArgs, null);
-
-        ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
-        scheduler.scheduleAtFixedRate(new Runnable() {
-            public void run() {
-                try {
-                    monitor.execute(taskArgs, null);
-                } catch (Exception e) {
-                    logger.error("Error while running the task", e);
-                }
-            }
-        }, 2, 30, TimeUnit.SECONDS);
-    }
 }

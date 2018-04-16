@@ -24,8 +24,10 @@ Please place the extension in the **"monitors"** directory of your **Machine Age
 
 #### Load balancing metrics
 
-In addition to the above specified metrics, this extension can also show metrics from mod_jk status. To do this we have to configure mod_jk in the apache HTTP server.
-More info on mod_jk at http://tomcat.apache.org/connectors-doc/
+This extension can also show the load balancing metrics from mod_jk status. In order to do this, please configure mod_jk in the apache HTTP server.
+More info on mod_jk is available [here](http://tomcat.apache.org/connectors-doc/)
+
+Following are the sample configuration files that need to be setup for mod_jk metrics. Please check this [link](http://tomcat.apache.org/connectors-doc/common_howto/quick.html) for more details.
 
 ### httpd.conf
    ~~~
@@ -72,7 +74,7 @@ More info on mod_jk at http://tomcat.apache.org/connectors-doc/
 
 #### Custom Stats Configuration
 
-  If you have any custom URL's which return delimiter separated metrics define them in metrics.xml as following:
+  If you have any custom URL's which return delimiter separated metrics, please define them in metrics.xml as following:
 
     <stat name="customStats">
         <stat url=<URL-of-custom-stats> keyValueSeparator=<Delimiter> >

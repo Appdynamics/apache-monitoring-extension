@@ -184,7 +184,7 @@
                                     <fileset dir="src/main/resources/conf" includes="monitor.xml"/>
                                     <fileset dir="src/main/resources/conf" includes="config.yml"/>
                                     <fileset dir="src/main/resources/conf" includes="metrics.xml"/>
-                                    <fileset dir="${project.basedir}" includes="LICENSE"/>
+                                    <fileset dir="${project.basedir}" includes="LICENSE.txt"/>
                                     <fileset dir="${project.basedir}" includes="NOTICE.txt"/>
                                 </copy>
                                 <copy todir="${target.dir}">

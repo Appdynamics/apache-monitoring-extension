@@ -115,21 +115,21 @@ public class ServerStatsTest {
 
     private Map<String, String> getExpectedValueMap() {
         Map<String, String> map = Maps.newHashMap();
-        map.put("Custom Metrics|WebServer|Apache|Status|Availability|Server Uptime (sec)","906998");
-        map.put("Custom Metrics|WebServer|Apache|Status|Resource Utilization|CPU|Load",".598118");
-        map.put("Custom Metrics|WebServer|Apache|Status|Resource Utilization|Processes|Busy Workers","371");
-        map.put("Custom Metrics|WebServer|Apache|Status|Resource Utilization|Processes|Idle Workers","397");
-        map.put("Custom Metrics|WebServer|Apache|Status|Resource Utilization|ConnsAsyncClosing","406");
-        map.put("Custom Metrics|WebServer|Apache|Status|Resource Utilization|ConnsAsyncKeepAlive","139");
-        map.put("Custom Metrics|WebServer|Apache|Status|Resource Utilization|ConnsAsyncWriting","13");
-        map.put("Custom Metrics|WebServer|Apache|Status|Resource Utilization|Total Connections","935");
-        map.put("Custom Metrics|WebServer|Apache|Status|Activity|Total Accesses","101625603");
-        map.put("Custom Metrics|WebServer|Apache|Status|Activity|Total Traffic","16067823270");
-        map.put("Custom Metrics|WebServer|Apache|Status|Activity|Requests/min","112.046");
-        map.put("Custom Metrics|WebServer|Apache|Status|Activity|Bytes/min","18140600.41");
-        map.put("Custom Metrics|WebServer|Apache|Status|Activity|Type|Waiting for Conn","397");
-        map.put("Custom Metrics|WebServer|Apache|Status|Activity|Type|Sending Reply","45");
-        map.put("Custom Metrics|WebServer|Apache|Status|Activity|Type|Reading Request","322");
+        map.put("Custom Metrics|Apache|Availability|Server Uptime (sec)","906998");
+        map.put("Custom Metrics|Apache|Resource Utilization|CPU|Load",".598118");
+        map.put("Custom Metrics|Apache|Resource Utilization|Processes|Busy Workers","371");
+        map.put("Custom Metrics|Apache|Resource Utilization|Processes|Idle Workers","397");
+        map.put("Custom Metrics|Apache|Resource Utilization|ConnsAsyncClosing","406");
+        map.put("Custom Metrics|Apache|Resource Utilization|ConnsAsyncKeepAlive","139");
+        map.put("Custom Metrics|Apache|Resource Utilization|ConnsAsyncWriting","13");
+        map.put("Custom Metrics|Apache|Resource Utilization|Total Connections","935");
+        map.put("Custom Metrics|Apache|Activity|Total Accesses","101625603");
+        map.put("Custom Metrics|Apache|Activity|Total Traffic","16067823270");
+        map.put("Custom Metrics|Apache|Activity|Requests/min","112.046");
+        map.put("Custom Metrics|Apache|Activity|Bytes/min","18140600.41");
+        map.put("Custom Metrics|Apache|Activity|Type|Waiting for Conn","397");
+        map.put("Custom Metrics|Apache|Activity|Type|Sending Reply","45");
+        map.put("Custom Metrics|Apache|Activity|Type|Reading Request","322");
         return map;
     }
 

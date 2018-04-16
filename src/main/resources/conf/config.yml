@@ -22,8 +22,7 @@ proxy:
   password:
 
 # number of concurrent tasks
-#TODO  Each server requires 1 + 3(?)(ServerStats, JKStats, CustomStats) threads.
-numberOfThreads: 5
+numberOfThreads: 4
 encryptionKey:
 
 
