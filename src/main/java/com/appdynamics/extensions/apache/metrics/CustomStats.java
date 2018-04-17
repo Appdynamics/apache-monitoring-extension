@@ -48,6 +48,10 @@ public class CustomStats implements Runnable{
 
     private MetricsUtil metricsUtil = new MetricsUtil();
 
+    public List<Metric> getMetrics() {
+        return metrics;
+    }
+
     private static final String COLON = ":";
     private static final Pattern COLON_SPLIT_PATTERN = Pattern.compile(COLON, Pattern.LITERAL);
     private static final String EQUAL = "=";

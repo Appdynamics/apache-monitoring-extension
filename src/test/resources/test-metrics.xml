@@ -82,4 +82,10 @@ Set delta = true for metric to report per-min data
         <metric attr="last_reset_ago" alias="JK Status|last_reset_ago" aggregationType = "OBSERVATION" timeRollUpType = "CURRENT" clusterRollUpType = "COLLECTIVE" />
     </stat>
 
+    <stat name="customStats">
+        <stat url="/server-status?auto" keyValueSeparator=":" >
+            <metric attr="Uptime" alias="Availability|Server Uptime (sec)" aggregationType = "OBSERVATION" timeRollUpType = "CURRENT" clusterRollUpType = "COLLECTIVE"/>
+            <metric attr="CPULoad" alias="Resource Utilization|CPU|Load" aggregationType = "OBSERVATION" timeRollUpType = "CURRENT" clusterRollUpType = "COLLECTIVE" />
+        </stat>
+    </stat>
 </stats>
