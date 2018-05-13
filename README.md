@@ -82,43 +82,49 @@ Following are the sample configuration files that need to be setup for mod_jk me
         </stat>
     </stat>
 
-#### Instances Configuration
+#### Config.yml Configuration
 
-  The extension supports reporting metrics from multiple apache instances. Have a look at config.yml for more details.
+Configure the extension by editing the config.yml file in `<MACHINE_AGENT_HOME>/monitors/ApacheMonitor/`.
 
-  Configure the extension by editing the config.yml file in `<MACHINE_AGENT_HOME>/monitors/ApacheMonitor/`. Below is the format
+  1. Configure the "COMPONENT_ID" under which the metrics need to be reported. This can be done by changing the value of `<COMPONENT_ID>` in
+       metricPrefix: "Server|Component:<COMPONENT_ID>|Custom Metrics|Apache|".
 
-``` yaml
-servers:
-   - displayName: "Local Apache"
-     host: "localhost"
-     port: 80
-     username: ""
-     password: ""
-     useSSL: false
+       For example,
+       ```
+       metricPrefix: "Server|Component:100|Custom Metrics|Apache|"
 
-connection:
-  socketTimeout: 3000
-  connectTimeout: 2500
-  sslCertCheckEnabled: false
-  sslVerifyHostname: false
+  2. The extension supports reporting metrics from multiple apache instances. Have a look at config.yml for more details.
 
-proxy:
-  uri:
-  username:
-  password:
+      For example:
+      ```
+      servers:
+       - displayName: "Local Apache"
+         host: "localhost"
+         port: 80
+         username: ""
+         password: ""
+         encryptedPassword: ""
+         useSsl: false
 
-numberOfThreads: 5
-encryptionKey: "welcome"
+      connection:
+        socketTimeout: 5000
+        connectTimeout: 2500
+        sslCertCheckEnabled: true
+        sslVerifyHostname: false
+      ```
+  3. Configure the encyptionKey for encryptionPasswords(only if password encryption required).
+     For example,
+     ```
+     #Encryption key for Encrypted password.
+     encryptionKey: "axcdde43535hdhdgfiniyy576"
+     ```
+  4. Configure the numberOfThreads
+     For example,
+     If number of servers that need to be monitored is 3, then number of threads required is 3 * 4 = 12
+     ```
+     numberOfThreads: 12
+     ```
 
-#This will create this metric in all the tiers, under this alias
-#metricPrefix: Custom Metrics|WebServer|
-
-#This will create it in specific Tier/Component. Make sure to replace <COMPONENT_ID> with the appropriate one from your environment.
-#To find the <COMPONENT_ID> in your environment, please follow the screenshot https://docs.appdynamics.com/display/PRO42/Build+a+Monitoring+Extension+Using+Java
-metricPrefix: Server|Component:<COMPONENT_ID>|Custom Metrics|WebServer|Apache|Status|
-
-```
 
 ## Credentials Encryption
 
@@ -173,5 +179,5 @@ Always feel free to fork and contribute any changes directly here on [GitHub](ht
 |--------------------------|------------|
 |Extension Version         |2.0.0       |
 |Controller Compatibility  |3.7 or Later|
-|Product Tested On         |3.2.0+      |
-|Last Update               |04/12/2018  |
+|Product Tested On         |2.4.33      |
+|Last Update               |05/14/2018  |

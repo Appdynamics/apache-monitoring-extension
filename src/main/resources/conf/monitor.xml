@@ -28,7 +28,7 @@
         </task-arguments>
         <java-task>
             <classpath>apache-monitoring-extension.jar</classpath>
-            <impl-class>com.apache.monitors.apache.ApacheMonitor</impl-class>
+            <impl-class>com.appdynamics.extensions.apache.ApacheMonitor</impl-class>
         </java-task>
     </monitor-run-task>
 </monitor>
