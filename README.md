@@ -72,17 +72,7 @@ Following are the sample configuration files that need to be setup for mod_jk me
 
    ~~~
 
-#### Custom Stats Configuration
-
-  If you have any custom URL's which return delimiter separated metrics, please define them in metrics.xml as following:
-
-    <stat name="customStats">
-        <stat url=<URL-of-custom-stats> keyValueSeparator=<Delimiter> >
-            <metric attr=<AttributeToMonitor> alias="<PathofMetric>" aggregationType = "OBSERVATION" timeRollUpType = "CURRENT" clusterRollUpType = "COLLECTIVE"/>
-        </stat>
-    </stat>
-
-#### Config.yml Configuration
+#### config.yml
 
 Configure the extension by editing the config.yml file in `<MACHINE_AGENT_HOME>/monitors/ApacheMonitor/`.
 
@@ -124,7 +114,46 @@ Configure the extension by editing the config.yml file in `<MACHINE_AGENT_HOME>/
      ```
      numberOfThreads: 12
      ```
+#### metrics.xml
 
+You can add/remove metrics of your choosing by modifying the provided metrics.xml file. This file consists of all the metrics that
+will be monitored and sent to the controller. Please look at how the metrics have been defined and follow the same convention when
+adding new metrics. You do have the ability to also chose your Rollup types as well as for each metric as well as set an alias name
+that you would like displayed on the metric browser.
+
+This monitor provides an option to add a custom URL for monitoring the metrics provided by the particular end-point.
+    ### Custom Stats Configuration
+
+      If you have any custom URL's which return delimiter separated metrics, please define them in metrics.xml as following:
+
+        <stat name="customStats">
+            <stat url=<URL-of-custom-stats> keyValueSeparator=<Delimiter> >
+                <metric attr=<AttributeToMonitor> alias="<PathofMetric>" aggregationType = "OBSERVATION" timeRollUpType = "CURRENT" clusterRollUpType = "COLLECTIVE"/>
+            </stat>
+        </stat>
+
+For configuring the metrics, the following properties can be used:
+
+     |     Property      |   Default value |         Possible values         |                                              Description                                                                                                |
+     | :---------------- | :-------------- | :------------------------------ | :------------------------------------------------------------------------------------------------------------- |
+     | alias             | metric name     | Any string                      | The substitute name to be used in the metric browser instead of metric name.                                   |
+     | aggregationType   | "AVERAGE"       | "AVERAGE", "SUM", "OBSERVATION" | [Aggregation qualifier](https://docs.appdynamics.com/display/PRO44/Build+a+Monitoring+Extension+Using+Java)    |
+     | timeRollUpType    | "AVERAGE"       | "AVERAGE", "SUM", "CURRENT"     | [Time roll-up qualifier](https://docs.appdynamics.com/display/PRO44/Build+a+Monitoring+Extension+Using+Java)   |
+     | clusterRollUpType | "INDIVIDUAL"    | "INDIVIDUAL", "COLLECTIVE"      | [Cluster roll-up qualifier](https://docs.appdynamics.com/display/PRO44/Build+a+Monitoring+Extension+Using+Java)|
+     | multiplier        | 1               | Any number                      | Value with which the metric needs to be multiplied.                                                            |
+     | convert           | null            | Any key value map               | Set of key value pairs that indicates the value to which the metrics need to be transformed. eg: UP:0, DOWN:1  |
+     | delta             | false           | true, false                     | If enabled, gives the delta values of metrics instead of actual values.                                        |
+
+     For example,
+     ```
+     - name: "CPUUtilization"
+              alias: "CPULoad"
+              aggregationType: "OBSERVATION"
+              timeRollUpType: "CURRENT"
+              clusterRollUpType: "COLLECTIVE"
+              delta: false
+     ```
+     **All these metric properties are optional, and the default value shown in the table is applied to the metric(if a property has not been specified) by default.**
 
 ## Credentials Encryption
 
