@@ -154,34 +154,39 @@ For configuring the metrics, the following properties can be used:
      ```
      **All these metric properties are optional, and the default value shown in the table is applied to the metric(if a property has not been specified) by default.**
 
-#### Metrics
+### Metrics
 
 ##### Availability:
  Uptime (1 or 0)
 
 ##### Resource Utilization:
- Counter Description CPU Load (N/A on Windows) -- The percentage of the CPU used by Apache.
- Processes
- Busy Workers -- The number of Apache processes actively processing an HTTP request.
- Idle Workers -- The number of idle Apache processes waiting for an HTTP request.
- Memory
+     |     Property                |     Description                                                             |                                                                                              |
+     | :-------------------------- | :-------------------------------------------------------------------------- |
+     | Counter Description         |                                                                             |
+     | CPU Load (N/A on Windows)   | The substitute name to be used in the metric browser instead of metric name.|                                   |
+     | Processes                   |                                                                             |
+     | Busy Workers                | The number of Apache processes actively processing an HTTP request          |
+     | Idle Workers                | The number of idle Apache processes waiting for an HTTP request.            |
+     | Memory                      |                                                                             |
 
 ##### Activity:
- Accesses -- Total number of accesses per Minute
- Total Traffic (kb)
- Requests per second -- The number of HTTP requests the web server is processing per second.
- Bytes per second -- The amount of data the web server is transferring per second.
- Bytes per request -- The average number of bytes being transferred per HTTP request.
- Activity Types
- Starting up
- Reading Request
- Sending Reply
- Keepalive
- DNS Lookup
- Closing Connection
- Logging
- Gracefully Finishing
- Cleaning up of working
+     |     Property                |     Description                                                             |                                                                                              |
+     | :-------------------------- | :-------------------------------------------------------------------------- |
+     | Accesses                    | Total number of accesses per Minute                                         |
+     | Total Traffic (kb)          |                                                                             |
+     | Requests per second         | The number of HTTP requests the web server is processing per second.        |
+     | Bytes per second            | The amount of data the web server is transferring per second.               |
+     | Bytes per request           | The average number of bytes being transferred per HTTP request.             |
+     | Activity Types              |                                                                             |
+     | Starting up                 |                                                                             |
+     | Reading Request             |                                                                             |
+     | Sending Reply               |                                                                             |
+     | Keepalive                   |                                                                             |
+     | DNS Lookup                  |                                                                             |
+     | Closing Connection          |                                                                             |
+     | Logging                     |                                                                             |
+     | Gracefully Finishing        |                                                                             |
+     | Cleaning up of working      |                                                                             |
 
 ##### Load balancing metrics:
  In addition to the above specified metrics, this extension can also show metrics from mod_jk status. To do this we have to
