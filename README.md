@@ -72,7 +72,7 @@ Following are the sample configuration files that need to be setup for mod_jk me
 
    ~~~
 
-#### config.yml
+#### Config.yml
 
 Configure the extension by editing the config.yml file in `<MACHINE_AGENT_HOME>/monitors/ApacheMonitor/`.
 
@@ -114,7 +114,7 @@ Configure the extension by editing the config.yml file in `<MACHINE_AGENT_HOME>/
      ```
      numberOfThreads: 12
      ```
-#### metrics.xml
+#### Metrics.xml
 
 You can add/remove metrics of your choosing by modifying the provided metrics.xml file. This file consists of all the metrics that
 will be monitored and sent to the controller. Please look at how the metrics have been defined and follow the same convention when
@@ -122,16 +122,15 @@ adding new metrics. You do have the ability to also chose your Rollup types as w
 that you would like displayed on the metric browser.
 
 This monitor provides an option to add a custom URL for monitoring the metrics provided by the particular end-point.
-    ### Custom Stats Configuration
-
-      If you have any custom URL's which return delimiter separated metrics, please define them in metrics.xml as following:
-
-        <stat name="customStats">
-            <stat url=<URL-of-custom-stats> keyValueSeparator=<Delimiter> >
-                <metric attr=<AttributeToMonitor> alias="<PathofMetric>" aggregationType = "OBSERVATION" timeRollUpType = "CURRENT" clusterRollUpType = "COLLECTIVE"/>
-            </stat>
-        </stat>
-
+##### Custom Stats Configuration
+ If you have any custom URL's which return delimiter separated metrics, please define them in metrics.xml as following:
+ ```
+ <stat name="customStats">
+     <stat url=<URL-of-custom-stats> keyValueSeparator=<Delimiter> >
+        <metric attr=<AttributeToMonitor> alias="<PathofMetric>" aggregationType = "OBSERVATION" timeRollUpType = "CURRENT" clusterRollUpType = "COLLECTIVE"/>
+     </stat>
+ </stat>
+ ```
 For configuring the metrics, the following properties can be used:
 
      |     Property      |   Default value |         Possible values         |                                              Description                                                                                                |
@@ -154,6 +153,41 @@ For configuring the metrics, the following properties can be used:
               delta: false
      ```
      **All these metric properties are optional, and the default value shown in the table is applied to the metric(if a property has not been specified) by default.**
+
+#### Metrics
+
+##### Availability:
+ Uptime (1 or 0)
+
+##### Resource Utilization:
+ Counter Description CPU Load (N/A on Windows) -- The percentage of the CPU used by Apache.
+ Processes
+ Busy Workers -- The number of Apache processes actively processing an HTTP request.
+ Idle Workers -- The number of idle Apache processes waiting for an HTTP request.
+ Memory
+
+##### Activity:
+ Accesses -- Total number of accesses per Minute
+ Total Traffic (kb)
+ Requests per second -- The number of HTTP requests the web server is processing per second.
+ Bytes per second -- The amount of data the web server is transferring per second.
+ Bytes per request -- The average number of bytes being transferred per HTTP request.
+ Activity Types
+ Starting up
+ Reading Request
+ Sending Reply
+ Keepalive
+ DNS Lookup
+ Closing Connection
+ Logging
+ Gracefully Finishing
+ Cleaning up of working
+
+##### Load balancing metrics:
+ In addition to the above specified metrics, this extension can also show metrics from mod_jk status. To do this we have to
+ configure mod_jk in the apache HTTP server. More info on mod_jk can be found [here](http://tomcat.apache.org/connectors-doc/)
+
+
 
 ## Credentials Encryption
 
