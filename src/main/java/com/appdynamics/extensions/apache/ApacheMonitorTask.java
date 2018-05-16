@@ -18,8 +18,10 @@ import com.appdynamics.extensions.apache.metrics.JKStats;
 import com.appdynamics.extensions.apache.metrics.ServerStats;
 import com.appdynamics.extensions.conf.MonitorContextConfiguration;
 import com.appdynamics.extensions.util.StringUtils;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.Phaser;
@@ -29,7 +31,7 @@ import java.util.concurrent.Phaser;
  */
 public class ApacheMonitorTask implements AMonitorTaskRunnable {
 
-    private static final Logger logger = Logger.getLogger(ApacheMonitorTask.class);
+    private static final Logger logger = LoggerFactory.getLogger(ApacheMonitorTask.class);
 
     private MonitorContextConfiguration configuration;
 
@@ -89,7 +91,7 @@ public class ApacheMonitorTask implements AMonitorTaskRunnable {
         requestMap.put("useSsl", String.valueOf(apacheServer.get("useSsl")));
         requestMap.put("username", (String) apacheServer.get("username"));
         requestMap.put("password", (String) apacheServer.get("password"));
-        return requestMap;
+       return requestMap;
     }
 
     public void onTaskComplete() {

@@ -122,36 +122,6 @@ public class ServerStats implements Runnable {
             for (char aChar : chars) {
                 counter.increment(Character.toString(aChar));
             }
-            /*Map<String, String> curMetrics = new HashMap<String, String>();
-            String waitingForConn = getString(counter.get("_"));
-            curMetrics.put("Activity|Type|Waiting for Conn", waitingForConn);
-
-            String startingUp = getString(counter.get("S"));
-            curMetrics.put("Activity|Type|Starting Up", startingUp);
-
-            String readingRequest = getString(counter.get("R"));
-            curMetrics.put("Activity|Type|Reading Request", readingRequest);
-
-            String sendingReply = getString(counter.get("W"));
-            curMetrics.put("Activity|Type|Sending Reply", sendingReply);
-
-            String keepAlive = getString(counter.get("K"));
-            curMetrics.put("Activity|Type|Keep Alive", keepAlive);
-
-            String dnsLookup = getString(counter.get("D"));
-            curMetrics.put("Activity|Type|DNS Lookup", dnsLookup);
-
-            String closingConnections = getString(counter.get("C"));
-            curMetrics.put("Activity|Type|Closing Connection", closingConnections);
-
-            String logging = getString(counter.get("L"));
-            curMetrics.put("Activity|Type|Logging", logging);
-
-            String gracefullyFinishing = getString(counter.get("G"));
-            curMetrics.put("Activity|Type|Gracefully Finishing", gracefullyFinishing);
-
-            String cleaningUp = getString(counter.get("I"));
-            curMetrics.put("Activity|Type|Cleaning Up", cleaningUp);*/
 
             for (MetricConfig metricConfig : childStat.getMetricConfig()) {
 

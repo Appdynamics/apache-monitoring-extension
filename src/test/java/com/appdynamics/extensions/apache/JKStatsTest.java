@@ -173,7 +173,6 @@ public class JKStatsTest {
         map.put("Custom Metrics|Apache|worker|worker2|map_count","0");
         map.put("Custom Metrics|Apache|worker|worker1|last_reset_ago","518");
         map.put("Custom Metrics|Apache|worker|worker2|last_reset_ago","518");
-        map.put("Custom Metrics|Apache|HeartBeat","1");
 
         return map;
     }

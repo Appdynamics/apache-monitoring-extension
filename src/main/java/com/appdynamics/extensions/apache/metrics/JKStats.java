@@ -26,7 +26,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.math.BigDecimal;
-import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -105,13 +104,11 @@ public class JKStats implements Runnable {
             if (workerNames.size() > 0) {
                 printJKWorkerMetrics(jkStatusMetrics, workerNames, stat);
             }
-            metrics.add(new Metric("HeartBeat", String.valueOf(BigInteger.ONE), metricPrefix + "|HeartBeat", "AVG", "AVG", "IND"));
             if (metrics != null && metrics.size() > 0) {
                 metricWriteHelper.transformAndPrintMetrics(metrics);
             }
         }catch(Exception e){
             logger.error("JKStats error: " + e.getMessage());
-            metricWriteHelper.printMetric(metricPrefix + "|HeartBeat", BigDecimal.ZERO, "AVG.AVG.IND");
         }finally {
             logger.debug("JKStats Phaser arrived for {}", requestMap.get("host"));
             phaser.arriveAndDeregister();

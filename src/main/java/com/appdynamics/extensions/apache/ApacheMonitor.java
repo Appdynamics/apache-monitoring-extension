@@ -12,13 +12,10 @@ package com.appdynamics.extensions.apache;
 import com.appdynamics.extensions.ABaseMonitor;
 import com.appdynamics.extensions.TasksExecutionServiceProvider;
 import com.appdynamics.extensions.apache.input.Stat;
-import com.appdynamics.extensions.conf.MonitorContextConfiguration;
 import com.appdynamics.extensions.util.AssertUtils;
 import com.singularity.ee.agent.systemagent.api.exception.TaskExecutionException;
-import org.apache.log4j.ConsoleAppender;
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
-import org.apache.log4j.PatternLayout;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.OutputStreamWriter;
 import java.util.HashMap;
@@ -39,7 +36,7 @@ public class ApacheMonitor extends ABaseMonitor {
 
     private static final String METRIC_PREFIX = "Custom Metrics|Apache";
 
-    private static final Logger logger = Logger.getLogger(ApacheMonitor.class);
+    private static final Logger logger = LoggerFactory.getLogger(ApacheMonitor.class);
 
 
     @Override
