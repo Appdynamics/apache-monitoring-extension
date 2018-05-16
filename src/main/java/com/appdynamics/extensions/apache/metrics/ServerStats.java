@@ -20,6 +20,8 @@ import org.codehaus.jackson.map.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -77,11 +79,13 @@ public class ServerStats implements Runnable {
 
             print(responseMetrics, metricPrefix, stat);
 
+            metrics.add(new Metric("HeartBeat", String.valueOf(BigInteger.ONE), metricPrefix + "|HeartBeat", "AVG", "AVG", "IND"));
             if (metrics != null && metrics.size() > 0) {
                 metricWriteHelper.transformAndPrintMetrics(metrics);
             }
         }catch(Exception e){
             logger.error("ServerStats error: " + e.getMessage());
+            metricWriteHelper.printMetric(metricPrefix + "|HeartBeat", BigDecimal.ZERO, "AVG.AVG.IND");
         }finally {
             logger.debug("ServerStats Phaser arrived for {}", requestMap.get("host"));
             phaser.arriveAndDeregister();

@@ -130,6 +130,7 @@ public class ServerStatsTest {
         map.put("Custom Metrics|Apache|Activity|Type|Waiting for Conn","397");
         map.put("Custom Metrics|Apache|Activity|Type|Sending Reply","45");
         map.put("Custom Metrics|Apache|Activity|Type|Reading Request","322");
+        map.put("Custom Metrics|Apache|HeartBeat", "1");
         return map;
     }
 
