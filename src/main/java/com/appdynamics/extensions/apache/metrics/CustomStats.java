@@ -69,6 +69,7 @@ public class CustomStats implements Runnable{
     public void run() {
 
         try {
+            phaser.register();
             for(Stat childStat: stat.getStats()) {
                 String endpoint = childStat.getUrl();
 

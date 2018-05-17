@@ -74,6 +74,7 @@ public class JKStats implements Runnable {
     public void run() {
 
         try {
+            phaser.register();
             String endpoint = stat.getUrl();
 
             if (Strings.isNullOrEmpty(endpoint)) {

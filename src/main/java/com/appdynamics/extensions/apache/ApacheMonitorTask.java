@@ -59,17 +59,14 @@ public class ApacheMonitorTask implements AMonitorTaskRunnable {
 
             for(Stat stat: metricConfig.getStats()) {
                 if(StringUtils.hasText(stat.getName()) && stat.getName().equalsIgnoreCase("serverMetrics")) {
-                    phaser.register();
                     ServerStats serverMetricTask = new ServerStats(stat, configuration.getContext(), requestMap, metricWriter, metricPrefix, phaser);
                     configuration.getContext().getExecutorService().execute("MetricCollectorTask", serverMetricTask);
                     logger.debug("Registering MetricCollectorTask phaser for " + displayName);
                 }else if(StringUtils.hasText(stat.getName()) && stat.getName().equalsIgnoreCase("jkMetrics")){
-                    phaser.register();
                     JKStats jkMetricTask = new JKStats(stat, configuration.getContext(), requestMap, metricWriter, metricPrefix, phaser);
                     configuration.getContext().getExecutorService().execute("MetricCollectorTask", jkMetricTask);
                     logger.debug("Registering MetricCollectorTask phaser for " + displayName);
                 }else{
-                    phaser.register();
                     CustomStats customMetricTask = new CustomStats(stat, configuration.getContext(), requestMap, metricWriter, metricPrefix, phaser);
                     configuration.getContext().getExecutorService().execute("MetricCollectorTask", customMetricTask);
                     logger.debug("Registering MetricCollectorTask phaser for " + displayName);
@@ -91,7 +88,7 @@ public class ApacheMonitorTask implements AMonitorTaskRunnable {
         requestMap.put("useSsl", String.valueOf(apacheServer.get("useSsl")));
         requestMap.put("username", (String) apacheServer.get("username"));
         requestMap.put("password", (String) apacheServer.get("password"));
-       return requestMap;
+        return requestMap;
     }
 
     public void onTaskComplete() {
