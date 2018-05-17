@@ -154,22 +154,21 @@ For configuring the metrics, the following properties can be used:
      ```
      **All these metric properties are optional, and the default value shown in the table is applied to the metric(if a property has not been specified) by default.**
 
-### Metrics
+## Metrics
 
-##### Availability:
+### Availability:
  Uptime (1 or 0)
 
-##### Resource Utilization:
+### Resource Utilization:
      |     Property                |     Description                                                             |                                                                                              |
      | :-------------------------- | :-------------------------------------------------------------------------- |
-     | Counter Description         |                                                                             |
      | CPU Load (N/A on Windows)   | The substitute name to be used in the metric browser instead of metric name.|                                   |
      | Processes                   |                                                                             |
      | Busy Workers                | The number of Apache processes actively processing an HTTP request          |
      | Idle Workers                | The number of idle Apache processes waiting for an HTTP request.            |
-     | Memory                      |                                                                             |
+     | Total Connections                      |                                                                             |
 
-##### Activity:
+### Activity:
      |     Property                |     Description                                                             |                                                                                              |
      | :-------------------------- | :-------------------------------------------------------------------------- |
      | Accesses                    | Total number of accesses per Minute                                         |
@@ -188,7 +187,7 @@ For configuring the metrics, the following properties can be used:
      | Gracefully Finishing        |                                                                             |
      | Cleaning up of working      |                                                                             |
 
-##### Load balancing metrics:
+### Load balancing metrics:
  In addition to the above specified metrics, this extension can also show metrics from mod_jk status. To do this we have to
  configure mod_jk in the apache HTTP server. More info on mod_jk can be found [here](http://tomcat.apache.org/connectors-doc/)
 
