@@ -11,7 +11,7 @@
 
     <groupId>com.appdynamics.extensions</groupId>
     <artifactId>apache-monitoring-extension</artifactId>
-    <version>1.5.3</version>
+    <version>2.0.0</version>
     <packaging>jar</packaging>
 
     <name>apache-monitoring-extension</name>
@@ -32,7 +32,7 @@
         <dependency>
             <groupId>com.appdynamics</groupId>
             <artifactId>appd-exts-commons</artifactId>
-            <version>1.6.4</version>
+            <version>2.1.0</version>
         </dependency>
         <dependency>
             <groupId>org.apache.httpcomponents</groupId>
@@ -93,6 +93,18 @@
             <version>4.11</version>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>org.powermock</groupId>
+            <artifactId>powermock-module-junit4</artifactId>
+            <version>1.5.6</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.powermock</groupId>
+            <artifactId>powermock-api-mockito</artifactId>
+            <version>1.5.6</version>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 
     <build>
@@ -103,8 +115,8 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>2.3.2</version>
                 <configuration>
-                    <source>1.5</source>
-                    <target>1.5</target>
+                    <source>1.7</source>
+                    <target>1.7</target>
                 </configuration>
             </plugin>
             <plugin>
@@ -136,6 +148,7 @@
                                 <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
                                     <manifestEntries>
                                         <Implementation-Title>Apache Monitor v${project.version} Build Date ${maven.build.timestamp}</Implementation-Title>
+                                        <Main-Class>com.appdynamics.extensions.workbench.WorkbenchServerLauncher</Main-Class>
                                     </manifestEntries>
                                 </transformer>
                             </transformers>
@@ -170,7 +183,8 @@
                                 <copy todir="${target.dir}">
                                     <fileset dir="src/main/resources/conf" includes="monitor.xml"/>
                                     <fileset dir="src/main/resources/conf" includes="config.yml"/>
-                                    <fileset dir="${project.basedir}" includes="LICENSE"/>
+                                    <fileset dir="src/main/resources/conf" includes="metrics.xml"/>
+                                    <fileset dir="${project.basedir}" includes="LICENSE.txt"/>
                                     <fileset dir="${project.basedir}" includes="NOTICE.txt"/>
                                 </copy>
                                 <copy todir="${target.dir}">

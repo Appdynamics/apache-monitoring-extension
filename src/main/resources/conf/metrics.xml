@@ -1,0 +1,103 @@
+<!--
+  ~ /*
+  ~   Copyright 2018. AppDynamics LLC and its affiliates.
+  ~   All Rights Reserved.
+  ~   This is unpublished proprietary source code of AppDynamics LLC and its affiliates.
+  ~   The copyright notice above does not evidence any actual or intended publication of such source code.
+  ~  */
+  -->
+
+<!--
+aggregationType = AVERAGE | SUM | OBSERVATION
+timeRollUpType = AVERAGE | SUM | CURRENT
+clusterRollUpType = INDIVIDUAL | COLLECTIVE
+-->
+<!--
+Set delta = true for metric to report per-min data
+-->
+<stats>
+    <!-- Items in Nodes|<node> - data looked up from /api/nodes nodeDataMetric-->
+    <stat url="/server-status?auto" name="serverMetrics" children="entries">
+        <metric attr="Uptime" alias="Availability|Server Uptime (sec)" aggregationType = "OBSERVATION" timeRollUpType = "CURRENT" clusterRollUpType = "COLLECTIVE"/>
+        <metric attr="CPULoad" alias="Resource Utilization|CPU|Load" aggregationType = "AVERAGE" timeRollUpType = "AVERAGE" clusterRollUpType = "COLLECTIVE" />
+        <metric attr="CPULoad" alias="Resource Utilization|CPU|Load Per Min" aggregationType = "AVERAGE" timeRollUpType = "AVERAGE" clusterRollUpType = "COLLECTIVE" delta="true"/>
+        <metric attr="BusyWorkers" alias="Resource Utilization|Processes|Busy Workers" aggregationType = "AVERAGE" timeRollUpType = "AVERAGE" clusterRollUpType = "COLLECTIVE" />
+        <metric attr="BusyWorkers" alias="Resource Utilization|Processes|Busy Workers Per Min" aggregationType = "AVERAGE" timeRollUpType = "AVERAGE" clusterRollUpType = "COLLECTIVE" delta="true"/>
+        <metric attr="IdleWorkers" alias="Resource Utilization|Processes|Idle Workers" aggregationType = "AVERAGE" timeRollUpType = "AVERAGE" clusterRollUpType = "COLLECTIVE" />
+        <metric attr="IdleWorkers" alias="Resource Utilization|Processes|Idle Workers Per Min" aggregationType = "AVERAGE" timeRollUpType = "AVERAGE" clusterRollUpType = "COLLECTIVE" delta="true"/>
+        <!--<metric attr="ConnsAsyncClosing" alias="Resource Utilization|ConnsAsync Closing" aggregationType = "AVERAGE" timeRollUpType = "AVERAGE" clusterRollUpType = "COLLECTIVE" />
+        <metric attr="ConnsAsyncClosing" alias="Resource Utilization|ConnsAsync Closing Per Min" aggregationType = "AVERAGE" timeRollUpType = "AVERAGE" clusterRollUpType = "COLLECTIVE" delta="true"/>
+        <metric attr="ConnsAsyncKeepAlive" alias="Resource Utilization|ConnsAsync KeepAlive" aggregationType = "AVERAGE" timeRollUpType = "AVERAGE" clusterRollUpType = "COLLECTIVE" />
+        <metric attr="ConnsAsyncKeepAlive" alias="Resource Utilization|ConnsAsync KeepAlive Per Min" aggregationType = "AVERAGE" timeRollUpType = "AVERAGE" clusterRollUpType = "COLLECTIVE" delta="true"/>
+        <metric attr="ConnsAsyncWriting" alias="Resource Utilization|ConnsAsync Writing" aggregationType = "AVERAGE" timeRollUpType = "AVERAGE" clusterRollUpType = "COLLECTIVE" />
+        <metric attr="ConnsAsyncWriting" alias="Resource Utilization|ConnsAsync Writing Per Min" aggregationType = "AVERAGE" timeRollUpType = "AVERAGE" clusterRollUpType = "COLLECTIVE" delta="true"/>-->
+        <metric attr="ConnsTotal" alias="Resource Utilization|Total Connections" aggregationType = "OBSERVATION" timeRollUpType = "CURRENT" clusterRollUpType = "COLLECTIVE" />
+        <metric attr="TotalAccesses" alias="Activity|Total Accesses" aggregationType = "OBSERVATION" timeRollUpType = "CURRENT" clusterRollUpType = "COLLECTIVE" />
+        <metric attr="TotalkBytes" alias="Activity|Total Traffic" aggregationType = "OBSERVATION" timeRollUpType = "CURRENT" clusterRollUpType = "COLLECTIVE" />
+        <metric attr="ReqPerSec" alias="Activity|Requests/min" multiplier="60" aggregationType = "AVERAGE" timeRollUpType = "AVERAGE" clusterRollUpType = "COLLECTIVE"/>
+        <metric attr="BytesPerSec" alias="Activity|Bytes/min" multiplier="60" aggregationType = "AVERAGE" timeRollUpType = "AVERAGE" clusterRollUpType = "COLLECTIVE"/>
+        <!--<metric attr="BytesPerReq" alias="Activity|Bytes/req" aggregationType = "AVERAGE" timeRollUpType = "AVERAGE" clusterRollUpType = "COLLECTIVE" />-->
+        <!-- Do not change character entries for scoreboard-->
+        <stat name="Scoreboard" children="entries">
+            <metric attr="WaitingforConn" alias="Activity|Type|Waiting for Conn" character="_" aggregationType = "OBSERVATION" timeRollUpType = "CURRENT" clusterRollUpType = "COLLECTIVE" />
+            <metric attr="StartingUp" alias="Activity|Type|Starting Up" character="S" aggregationType = "OBSERVATION" timeRollUpType = "CURRENT" clusterRollUpType = "COLLECTIVE" />
+            <metric attr="ReadingRequest" alias="Activity|Type|Reading Request" character="R" aggregationType = "AVERAGE" timeRollUpType = "AVERAGE" clusterRollUpType = "COLLECTIVE" />
+            <metric attr="ReadingRequest" alias="Activity|Type|Reading Request Per Min" character="R" aggregationType = "AVERAGE" timeRollUpType = "AVERAGE" clusterRollUpType = "COLLECTIVE" delta="true"/>
+            <metric attr="SendingReply" alias="Activity|Type|Sending Reply" character="W" aggregationType = "AVERAGE" timeRollUpType = "AVERAGE" clusterRollUpType = "COLLECTIVE" />
+            <metric attr="SendingReply" alias="Activity|Type|Sending Reply Per Min" character="W" aggregationType = "AVERAGE" timeRollUpType = "AVERAGE" clusterRollUpType = "COLLECTIVE" delta="true"/>
+            <metric attr="KeepAlive" alias="Activity|Type|Keep Alive" character="K" aggregationType = "AVERAGE" timeRollUpType = "AVERAGE" clusterRollUpType = "COLLECTIVE" />
+            <metric attr="KeepAlive" alias="Activity|Type|Keep Alive Per Min" character="K" aggregationType = "AVERAGE" timeRollUpType = "AVERAGE" clusterRollUpType = "COLLECTIVE" delta="true"/>
+        <!--<metric attr="DNSLookup" alias="Activity|Type|DNS Lookup" character="D" aggregationType = "AVERAGE" timeRollUpType = "AVERAGE" clusterRollUpType = "COLLECTIVE" />
+            <metric attr="ClosingConnection" alias="Activity|Type|Closing Connection" character="G" aggregationType = "AVERAGE" timeRollUpType = "AVERAGE" clusterRollUpType = "COLLECTIVE" />
+            <metric attr="Logging" alias="Activity|Type|Logging" character="L" aggregationType = "AVERAGE" timeRollUpType = "AVERAGE" clusterRollUpType = "COLLECTIVE" />
+            <metric attr="Logging" alias="Activity|Type|Logging Per Min" character="L" aggregationType = "AVERAGE" timeRollUpType = "AVERAGE" clusterRollUpType = "COLLECTIVE" delta="true"/>
+            <metric attr="GracefullyFinishing" alias="Activity|Type|Gracefully Finishing" character="G" aggregationType = "AVERAGE" timeRollUpType = "AVERAGE" clusterRollUpType = "COLLECTIVE" />
+            <metric attr="CleaningUp" alias="Activity|Type|Cleaning Up" character="I" aggregationType = "AVERAGE" timeRollUpType = "AVERAGE" clusterRollUpType = "COLLECTIVE" />-->
+        </stat>
+    </stat>
+
+    <stat url="/jk-status?mime=prop" name="jkMetrics">
+        <metric attr="connection_pool_timeout" alias="JK Status|connection_pool_timeout" aggregationType = "OBSERVATION" timeRollUpType = "CURRENT" clusterRollUpType = "COLLECTIVE" />
+        <metric attr="ping_timeout" alias="JK Status|ping_timeout" aggregationType = "OBSERVATION" timeRollUpType = "CURRENT" clusterRollUpType = "COLLECTIVE" />
+        <metric attr="connect_timeout" alias="JK Status|connect_timeout" aggregationType = "OBSERVATION" timeRollUpType = "CURRENT" clusterRollUpType = "COLLECTIVE" />
+        <metric attr="prepost_timeout" alias="JK Status|prepost_timeout" aggregationType = "OBSERVATION" timeRollUpType = "CURRENT" clusterRollUpType = "COLLECTIVE" />
+        <metric attr="reply_timeout" alias="JK Status|reply_timeout" aggregationType = "OBSERVATION" timeRollUpType = "CURRENT" clusterRollUpType = "COLLECTIVE" />
+        <metric attr="retries" alias="JK Status|retries" aggregationType = "OBSERVATION" timeRollUpType = "CURRENT" clusterRollUpType = "COLLECTIVE" />
+        <metric attr="connection_ping_interval" alias="JK Status|connection_ping_interval" aggregationType = "OBSERVATION" timeRollUpType = "CURRENT" clusterRollUpType = "COLLECTIVE" />
+        <metric attr="recovery_options" alias="JK Status|recovery_options" aggregationType = "OBSERVATION" timeRollUpType = "CURRENT" clusterRollUpType = "COLLECTIVE" />
+        <metric attr="max_packet_size" alias="JK Status|max_packet_size" aggregationType = "OBSERVATION" timeRollUpType = "CURRENT" clusterRollUpType = "COLLECTIVE" />
+        <metric attr="activation" alias="JK Status|activation" aggregationType = "OBSERVATION" timeRollUpType = "CURRENT" clusterRollUpType = "COLLECTIVE">
+            <convert str="ACT" value="1"/>
+            <convert str="DIS" value="2"/>
+            <convert str="STP" value="3"/>
+        </metric>
+        <metric attr="lbfactor" alias="JK Status|lbfactor" aggregationType = "OBSERVATION" timeRollUpType = "CURRENT" clusterRollUpType = "COLLECTIVE" />
+        <metric attr="distance" alias="JK Status|distance" aggregationType = "OBSERVATION" timeRollUpType = "CURRENT" clusterRollUpType = "COLLECTIVE" />
+        <metric attr="lbmult" alias="JK Status|lbmult" aggregationType = "OBSERVATION" timeRollUpType = "CURRENT" clusterRollUpType = "COLLECTIVE" />
+        <metric attr="lbvalue" alias="JK Status|lbvalue" aggregationType = "OBSERVATION" timeRollUpType = "CURRENT" clusterRollUpType = "COLLECTIVE" />
+        <metric attr="elected" alias="JK Status|elected" aggregationType = "OBSERVATION" timeRollUpType = "CURRENT" clusterRollUpType = "COLLECTIVE" />
+        <metric attr="sessions" alias="JK Status|sessions" aggregationType = "AVERAGE" timeRollUpType = "AVERAGE" clusterRollUpType = "COLLECTIVE" />
+        <metric attr="sessions" alias="JK Status|sessions per min" aggregationType = "AVERAGE" timeRollUpType = "AVERAGE" clusterRollUpType = "COLLECTIVE" delta="true"/>
+        <metric attr="errors" alias="JK Status|errors" aggregationType = "AVERAGE" timeRollUpType = "AVERAGE" clusterRollUpType = "COLLECTIVE" />
+        <metric attr="errors" alias="JK Status|errors per min" aggregationType = "AVERAGE" timeRollUpType = "AVERAGE" clusterRollUpType = "COLLECTIVE" delta="true"/>
+        <metric attr="client_errors" alias="JK Status|client_errors" aggregationType = "AVERAGE" timeRollUpType = "AVERAGE" clusterRollUpType = "COLLECTIVE" />
+        <metric attr="client_errors" alias="JK Status|client_errors per min" aggregationType = "AVERAGE" timeRollUpType = "AVERAGE" clusterRollUpType = "COLLECTIVE" delta="true"/>
+        <metric attr="reply_timeouts" alias="JK Status|reply_timeouts" aggregationType = "AVERAGE" timeRollUpType = "AVERAGE" clusterRollUpType = "COLLECTIVE" />
+        <metric attr="reply_timeouts" alias="JK Status|reply_timeouts per min" aggregationType = "AVERAGE" timeRollUpType = "AVERAGE" clusterRollUpType = "COLLECTIVE" delta="true"/>
+        <metric attr="transferred" alias="JK Status|transferred" aggregationType = "AVERAGE" timeRollUpType = "AVERAGE" clusterRollUpType = "COLLECTIVE" />
+        <metric attr="transferred" alias="JK Status|transferred per min" aggregationType = "AVERAGE" timeRollUpType = "AVERAGE" clusterRollUpType = "COLLECTIVE" delta="true"/>
+        <metric attr="read" alias="JK Status|read" aggregationType = "AVERAGE" timeRollUpType = "AVERAGE" clusterRollUpType = "COLLECTIVE" />
+        <metric attr="read" alias="JK Status|read per min" aggregationType = "AVERAGE" timeRollUpType = "AVERAGE" clusterRollUpType = "COLLECTIVE" delta="true"/>
+        <metric attr="busy" alias="JK Status|busy" aggregationType = "AVERAGE" timeRollUpType = "AVERAGE" clusterRollUpType = "COLLECTIVE" />
+        <metric attr="busy" alias="JK Status|busy per min" aggregationType = "AVERAGE" timeRollUpType = "AVERAGE" clusterRollUpType = "COLLECTIVE" delta="true"/>
+        <metric attr="max_busy" alias="JK Status|max_busy" aggregationType = "AVERAGE" timeRollUpType = "AVERAGE" clusterRollUpType = "COLLECTIVE" />
+        <metric attr="connected" alias="JK Status|connected" aggregationType = "AVERAGE" timeRollUpType = "AVERAGE" clusterRollUpType = "COLLECTIVE" />
+        <metric attr="time_to_recover_min" alias="JK Status|time_to_recover_min" aggregationType = "OBSERVATION" timeRollUpType = "CURRENT" clusterRollUpType = "COLLECTIVE" />
+        <metric attr="time_to_recover_max" alias="JK Status|time_to_recover_max" aggregationType = "OBSERVATION" timeRollUpType = "CURRENT" clusterRollUpType = "COLLECTIVE" />
+        <metric attr="used" alias="JK Status|used" aggregationType = "AVERAGE" timeRollUpType = "AVERAGE" clusterRollUpType = "COLLECTIVE" />
+        <metric attr="used" alias="JK Status|used per min" aggregationType = "AVERAGE" timeRollUpType = "AVERAGE" clusterRollUpType = "COLLECTIVE" delta="true"/>
+        <metric attr="map_count" alias="JK Status|map_count" aggregationType = "OBSERVATION" timeRollUpType = "CURRENT" clusterRollUpType = "COLLECTIVE" />
+        <metric attr="last_reset_ago" alias="JK Status|last_reset_ago" aggregationType = "OBSERVATION" timeRollUpType = "CURRENT" clusterRollUpType = "COLLECTIVE" />
+    </stat>
+
+</stats>
