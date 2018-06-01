@@ -64,11 +64,11 @@ public class ServerStats implements Runnable {
         this.metricWriteHelper = metricWriteHelper;
         this.metricPrefix = metricPrefix;
         this.phaser = phaser;
+        this.phaser.register();
     }
 
     public void run() {
         try {
-            phaser.register();
             String endpoint = stat.getUrl();
 
             if (Strings.isNullOrEmpty(endpoint)) {
