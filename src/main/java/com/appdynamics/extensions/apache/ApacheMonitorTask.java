@@ -88,13 +88,7 @@ public class ApacheMonitorTask implements AMonitorTaskRunnable {
         requestMap.put("useSsl", String.valueOf(apacheServer.get("useSsl")));
         requestMap.put("username", (String) apacheServer.get("username"));
         requestMap.put("password", (String) apacheServer.get("password"));
-        requestMap.put("sslProtocols", "TLSv1.1");
-        requestMap.put("sslVerifyHostname", "false");
-        /*requestMap.put("sslxKeyStorePassword","changeit");
-        requestMap.put("sslTrustStorePassword","changeit");
-        requestMap.put("sslTrustStorePath", "/Users/akshay.srivastava/AppDynamics/extensions/apache-monitoring-extension/src/main/resources/truststore.jks");
-        requestMap.put("sslKeyStorePath","/Users/akshay.srivastava/AppDynamics/extensions/apache-monitoring-extension/src/main/resources/keystore.jks");
-*/      return requestMap;
+        return requestMap;
     }
 
     public void onTaskComplete() {
