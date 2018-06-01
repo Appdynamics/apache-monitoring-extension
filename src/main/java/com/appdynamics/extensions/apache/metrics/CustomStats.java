@@ -64,12 +64,12 @@ public class CustomStats implements Runnable{
         this.metricWriteHelper = metricWriteHelper;
         this.metricPrefix = metricPrefix;
         this.phaser = phaser;
+        this.phaser.register();
     }
 
     public void run() {
 
         try {
-            phaser.register();
             for(Stat childStat: stat.getStats()) {
                 String endpoint = childStat.getUrl();
 
