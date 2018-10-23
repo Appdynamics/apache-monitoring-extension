@@ -54,6 +54,7 @@ public class ApacheMonitorTask implements AMonitorTaskRunnable {
     public void run() {
         try {
             Phaser phaser = new Phaser();
+            phaser.register();
             Stat.Stats metricConfig = (Stat.Stats) configuration.getMetricsXml();
             Map<String, String> requestMap = buildRequestMap();
 
