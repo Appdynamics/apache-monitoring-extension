@@ -1,5 +1,8 @@
 # AppDynamics Extensions Apache CHANGELOG
 
+## 2.0.1 - Oct 23, 2018
+1. Fixed phaser bug.
+
 ## 2.0.0 - May 14, 2018
 1. Moved Apache Status Monitor to 2.0.0 framework
 2. Moved metrics configurations from config.yml to metrics.xml
