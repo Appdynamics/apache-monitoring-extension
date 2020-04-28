@@ -18,7 +18,6 @@ import com.appdynamics.extensions.util.GroupCounter;
 import com.google.common.base.Strings;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -30,7 +29,7 @@ import java.util.regex.Pattern;
 
 public class ServerStats implements Runnable {
 
-    private static final Logger logger = LoggerFactory.getLogger(ServerStats.class);
+    private static final Logger logger = ExtensionsLoggerFactory.getLogger(ServerStats.class);
 
     private Stat stat;
 

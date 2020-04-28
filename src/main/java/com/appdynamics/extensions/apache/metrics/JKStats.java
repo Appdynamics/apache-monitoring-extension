@@ -36,7 +36,7 @@ import java.util.regex.Pattern;
 
 public class JKStats implements Runnable {
 
-    private static final Logger logger = LoggerFactory.getLogger(JKStats.class);
+    private static final Logger logger = ExtensionsLoggerFactory.getLogger(JKStats.class);
 
     private Stat stat;
 

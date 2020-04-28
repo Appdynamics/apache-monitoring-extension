@@ -17,9 +17,9 @@ import com.appdynamics.extensions.apache.metrics.CustomStats;
 import com.appdynamics.extensions.apache.metrics.JKStats;
 import com.appdynamics.extensions.apache.metrics.ServerStats;
 import com.appdynamics.extensions.conf.MonitorContextConfiguration;
+import com.appdynamics.extensions.logging.ExtensionsLoggerFactory;
 import com.appdynamics.extensions.util.StringUtils;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.math.BigDecimal;
 import java.util.HashMap;
@@ -31,7 +31,7 @@ import java.util.concurrent.Phaser;
  */
 public class ApacheMonitorTask implements AMonitorTaskRunnable {
 
-    private static final Logger logger = LoggerFactory.getLogger(ApacheMonitorTask.class);
+    private static final Logger logger = ExtensionsLoggerFactory.getLogger(ApacheMonitorTask.class);
 
     private MonitorContextConfiguration configuration;
 

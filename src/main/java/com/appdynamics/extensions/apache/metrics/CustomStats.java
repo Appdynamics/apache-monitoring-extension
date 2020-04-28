@@ -14,6 +14,7 @@ import com.appdynamics.extensions.apache.input.Stat;
 
 import com.appdynamics.extensions.MetricWriteHelper;
 import com.appdynamics.extensions.conf.MonitorContext;
+import com.appdynamics.extensions.logging.ExtensionsLoggerFactory;
 import com.appdynamics.extensions.metrics.Metric;
 import com.google.common.base.Strings;
 import org.slf4j.Logger;
@@ -28,7 +29,7 @@ import java.util.regex.Pattern;
 
 public class CustomStats implements Runnable{
 
-    private static final Logger logger = LoggerFactory.getLogger(CustomStats.class);
+    private static final Logger logger = ExtensionsLoggerFactory.getLogger(CustomStats.class);
 
     private Stat stat;
 
