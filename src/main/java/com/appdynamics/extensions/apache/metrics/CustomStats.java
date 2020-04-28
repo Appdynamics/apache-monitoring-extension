@@ -9,17 +9,15 @@
 
 package com.appdynamics.extensions.apache.metrics;
 
+import com.appdynamics.extensions.MetricWriteHelper;
 import com.appdynamics.extensions.apache.input.MetricConfig;
 import com.appdynamics.extensions.apache.input.Stat;
-
-import com.appdynamics.extensions.MetricWriteHelper;
 import com.appdynamics.extensions.conf.MonitorContext;
 import com.appdynamics.extensions.logging.ExtensionsLoggerFactory;
 import com.appdynamics.extensions.metrics.Metric;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Strings;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.codehaus.jackson.map.ObjectMapper;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -30,3 +30,31 @@ proxy:
 numberOfThreads: 20
 
 encryptionKey:
+
+
+# Generate a custom dashboard based on the provided template
+customDashboard:
+  enabled: false
+  dashboardName: "Apache Monitor Dashboard"
+  # Update the path to the dashboard file.
+  pathToSIMDashboard: ""
+  pathToNormalDashboard: ""
+
+# Default information needs to be updated
+controllerInfo:
+  controllerHost: "controller"
+  controllerPort: 8080
+  account: "customer1"
+  username: "user1"
+  password: "welcome"
+  encryptedPassword: ""
+  encryptionKey: ""
+  controllerSslEnabled: false
+  enableOrchestration: false
+  uniqueHostId: ""
+  accountAccessKey: ""
+  machinePath: ""
+  simEnabled: true
+  applicationName: ""
+  tierName: ""
+  nodeName: ""

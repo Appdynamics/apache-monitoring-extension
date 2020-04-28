@@ -9,14 +9,15 @@
 
 package com.appdynamics.extensions.apache.metrics;
 
+import com.appdynamics.extensions.MetricWriteHelper;
 import com.appdynamics.extensions.apache.input.MetricConfig;
 import com.appdynamics.extensions.apache.input.Stat;
-import com.appdynamics.extensions.MetricWriteHelper;
 import com.appdynamics.extensions.conf.MonitorContext;
+import com.appdynamics.extensions.logging.ExtensionsLoggerFactory;
 import com.appdynamics.extensions.metrics.Metric;
 import com.appdynamics.extensions.util.GroupCounter;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Strings;
-import org.codehaus.jackson.map.ObjectMapper;
 import org.slf4j.Logger;
 
 import java.math.BigDecimal;

@@ -1,5 +1,8 @@
 # AppDynamics Extensions Apache CHANGELOG
 
+## 2.0.2 - Apr 28, 2020
+1. Moved to commons 2.2.2 version
+
 ## 2.0.1 - Oct 23, 2018
 1. Fixed phaser bug.
 
