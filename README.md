@@ -19,7 +19,7 @@ The extension needs to be able to connect to Apache in order to collect and send
 4. Restart the Machine Agent
 
 Please place the extension in the **"monitors"** directory of your **Machine Agent** installation directory. Do not place the extension in the **"extensions"** directory of your **Machine Agent** installation directory.
-
+ 
 ## Configuration
 
 #### Load balancing metrics
@@ -244,7 +244,7 @@ Always feel free to fork and contribute any changes directly here on [GitHub](ht
 ## Version
 |          Name            |  Version   |
 |--------------------------|------------|
-|Extension Version         |2.0.0       |
-|Controller Compatibility  |3.7 or Later|
-|Product Tested On         |2.4.33      |
-|Last Update               |05/14/2018  |
+|Extension Version         |2.0.2       |
+|Controller Compatibility  |4.5 or Later|
+|Product Tested On         |4.5.12+     |
+|Last Update               |04/28/2020  |

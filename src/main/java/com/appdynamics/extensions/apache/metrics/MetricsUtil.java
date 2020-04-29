@@ -11,9 +11,9 @@ package com.appdynamics.extensions.apache.metrics;
 
 import com.appdynamics.extensions.http.HttpClientUtils;
 import com.appdynamics.extensions.http.UrlBuilder;
+import com.appdynamics.extensions.logging.ExtensionsLoggerFactory;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.HashMap;
 import java.util.List;
@@ -23,7 +23,7 @@ import java.util.regex.Pattern;
 
 public class MetricsUtil {
 
-    private static final Logger logger = LoggerFactory.getLogger(MetricsUtil.class);
+    private static final Logger logger = ExtensionsLoggerFactory.getLogger(MetricsUtil.class);
 
     protected Map<String, String> fetchResponse(Map<String, String> requestMap, String endpoint, CloseableHttpClient httpClient, Pattern splitPattern){
 

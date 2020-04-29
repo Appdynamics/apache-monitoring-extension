@@ -16,14 +16,15 @@ import com.appdynamics.extensions.apache.input.Stat;
 import com.appdynamics.extensions.apache.metrics.CustomStats;
 import com.appdynamics.extensions.conf.MonitorContextConfiguration;
 import com.appdynamics.extensions.http.HttpClientUtils;
+import com.appdynamics.extensions.logging.ExtensionsLoggerFactory;
 import com.appdynamics.extensions.metrics.Metric;
 import com.appdynamics.extensions.util.PathResolver;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.Maps;
 import com.singularity.ee.agent.systemagent.api.AManagedMonitor;
 import com.singularity.ee.agent.systemagent.api.exception.TaskExecutionException;
 import org.apache.commons.io.FileUtils;
 import org.apache.http.impl.client.CloseableHttpClient;
-import org.codehaus.jackson.map.ObjectMapper;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -37,7 +38,6 @@ import org.powermock.core.classloader.annotations.PowerMockIgnore;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.util.HashMap;
@@ -53,7 +53,7 @@ import static org.mockito.Matchers.anyString;
 @PowerMockIgnore("javax.net.ssl.*")
 public class CustomStatsTest {
 
-    public static final Logger logger = LoggerFactory.getLogger(CustomStatsTest.class);
+    public static final Logger logger = ExtensionsLoggerFactory.getLogger(CustomStatsTest.class);
 
     @Mock
     private TasksExecutionServiceProvider serviceProvider;

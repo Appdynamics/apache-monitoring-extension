@@ -13,17 +13,9 @@ import com.appdynamics.extensions.ABaseMonitor;
 import com.appdynamics.extensions.TasksExecutionServiceProvider;
 import com.appdynamics.extensions.apache.input.Stat;
 import com.appdynamics.extensions.util.AssertUtils;
-import com.singularity.ee.agent.systemagent.api.exception.TaskExecutionException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-import java.io.OutputStreamWriter;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
 
 /**
  * Created with IntelliJ IDEA.
@@ -35,9 +27,6 @@ import java.util.concurrent.TimeUnit;
 public class ApacheMonitor extends ABaseMonitor {
 
     private static final String METRIC_PREFIX = "Custom Metrics|Apache";
-
-    private static final Logger logger = LoggerFactory.getLogger(ApacheMonitor.class);
-
 
     @Override
     protected String getDefaultMetricPrefix() {
@@ -72,10 +61,9 @@ public class ApacheMonitor extends ABaseMonitor {
 
     }
 
-    @Override
-    protected int getTaskCount() {
-        List<Map<String, String>> servers = (List<Map<String, String>>) getContextConfiguration().getConfigYml().get("servers");
+    protected List<Map<String, ?>> getServers() {
+        List<Map<String, ?>> servers = (List<Map<String, ?>>) getContextConfiguration().getConfigYml().get("servers");
         AssertUtils.assertNotNull(servers, "The 'servers' section in config.yml is not initialised");
-        return servers.size();
+        return servers;
     }
 }
