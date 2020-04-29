@@ -68,9 +68,7 @@ public class ApacheMonitor extends ABaseMonitor {
 
     protected List<Map<String, ?>> getServers() {
         List<Map<String, ?>> servers = (List<Map<String, ?>>) getContextConfiguration().getConfigYml().get("servers");
-        List<Map<String, ?>> oneServer = new ArrayList<>();
-        oneServer.add(servers.get(0));
-        AssertUtils.assertNotNull(oneServer, "The 'instances' section in config.yml is not initialised");
-        return oneServer;
+        AssertUtils.assertNotNull(servers, "The 'servers' section in config.yml is not initialised");
+        return servers;
     }
 }
