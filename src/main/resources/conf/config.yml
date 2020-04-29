@@ -32,14 +32,6 @@ numberOfThreads: 20
 encryptionKey:
 
 
-# Generate a custom dashboard based on the provided template
-customDashboard:
-  enabled: false
-  dashboardName: "Apache Monitor Dashboard"
-  # Update the path to the dashboard file.
-  pathToSIMDashboard: ""
-  pathToNormalDashboard: ""
-
 # Default information needs to be updated
 controllerInfo:
   controllerHost: "controller"

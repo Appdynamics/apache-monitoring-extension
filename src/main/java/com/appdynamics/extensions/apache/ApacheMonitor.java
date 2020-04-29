@@ -12,11 +12,8 @@ package com.appdynamics.extensions.apache;
 import com.appdynamics.extensions.ABaseMonitor;
 import com.appdynamics.extensions.TasksExecutionServiceProvider;
 import com.appdynamics.extensions.apache.input.Stat;
-import com.appdynamics.extensions.logging.ExtensionsLoggerFactory;
 import com.appdynamics.extensions.util.AssertUtils;
-import org.slf4j.Logger;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -30,8 +27,6 @@ import java.util.Map;
 public class ApacheMonitor extends ABaseMonitor {
 
     private static final String METRIC_PREFIX = "Custom Metrics|Apache";
-
-    private static final Logger logger = ExtensionsLoggerFactory.getLogger(ApacheMonitor.class);
 
     @Override
     protected String getDefaultMetricPrefix() {
