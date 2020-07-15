@@ -12,7 +12,7 @@ servers:
      username: ""
      password: ""
      encryptedPassword: ""
-     useSsl: false
+     useSSL: false
 
 connection:
   socketTimeout: 5000
@@ -50,3 +50,5 @@ controllerInfo:
   applicationName: ""
   tierName: ""
   nodeName: ""
+
+enableHealthChecks: false

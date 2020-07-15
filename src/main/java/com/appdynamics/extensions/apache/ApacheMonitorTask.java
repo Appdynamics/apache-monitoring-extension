@@ -85,7 +85,7 @@ public class ApacheMonitorTask implements AMonitorTaskRunnable {
         Map<String, String> requestMap = new HashMap<String, String>();
         requestMap.put("host", (String) apacheServer.get("host"));
         requestMap.put("port", String.valueOf(apacheServer.get("port")));
-        requestMap.put("useSsl", String.valueOf(apacheServer.get("useSsl")));
+        requestMap.put("useSSL", String.valueOf(apacheServer.get("useSSL")));
         requestMap.put("username", (String) apacheServer.get("username"));
         requestMap.put("password", (String) apacheServer.get("password"));
         return requestMap;
