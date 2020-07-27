@@ -1,5 +1,8 @@
 # AppDynamics Extensions Apache CHANGELOG
 
+## 2.0.3 - Jul 15, 2020
+1. Fixed issue for useSSL flag
+
 ## 2.0.2 - Apr 28, 2020
 1. Moved to commons 2.2.2 version
 
