@@ -11,3 +11,5 @@ target
 *.ear
 /bin
 
+# OS generated files #
+.DS_Store*

@@ -39,8 +39,7 @@ controllerInfo:
   account: "customer1"
   username: "user1"
   password: "welcome"
-  encryptedPassword: ""
-  encryptionKey: ""
+#  encryptedPassword: ""
   controllerSslEnabled: false
   enableOrchestration: false
   uniqueHostId: ""
