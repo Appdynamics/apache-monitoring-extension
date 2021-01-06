@@ -244,7 +244,8 @@ Always feel free to fork and contribute any changes directly here on [GitHub](ht
 ## Version
 |          Name            |  Version   |
 |--------------------------|------------|
-|Extension Version         |2.0.3       |
+|Extension Version         |2.0.4       |
 |Controller Compatibility  |4.5 or Later|
+|Agent Compatibility  |4.5.13 or Later|
 |Product Tested On         |4.5.12+     |
-|Last Update               |07/15/2020  |
+|Last Update               |04/01/2021  |

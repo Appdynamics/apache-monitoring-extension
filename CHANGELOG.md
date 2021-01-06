@@ -1,5 +1,8 @@
 # AppDynamics Extensions Apache CHANGELOG
 
+## 2.0.4 - Jan 4, 2021
+1. Updated to appd-exts-commons 2.2.4
+
 ## 2.0.3 - Jul 15, 2020
 1. Fixed issue for useSSL flag
 
