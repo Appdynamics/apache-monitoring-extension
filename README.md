@@ -6,14 +6,15 @@ The Apache HTTP Server is a widely-used web server supported by the Apache Softw
 
 ## Prerequisite
 
-Please enable mod_status on the HTTP server to get stats. Install Apache mod_status on your Apache instance. For more information, see [Apache Module mod_status](http://httpd.apache.org/docs/2.0/mod/mod_status.html).
+1. Before the extension is installed, the prerequisites mentioned [here](https://community.appdynamics.com/t5/Knowledge-Base/Extensions-Prerequisites-Guide/ta-p/35213) need to be met. Please do not proceed with the extension installation if the specified prerequisites are not met.
 
-In order to use this extension, you do need a [Standalone JAVA Machine Agent](https://docs.appdynamics.com/display/PRO44/Java+Agent) or [SIM Agent](https://docs.appdynamics.com/display/PRO44/Server+Visibility).  For more details on downloading these products, please  visit [here](https://download.appdynamics.com/).
+2. Please enable mod_status on the HTTP server to get stats. Install Apache mod_status on your Apache instance. For more information, see [Apache Module mod_status](http://httpd.apache.org/docs/2.0/mod/mod_status.html).
 
-The extension needs to be able to connect to Apache in order to collect and send metrics. To do this, you will have to either establish a remote connection in between the extension and the product, or have an agent on the same machine running the product in order for the extension to collect and send the metrics.
+3. The extension needs to be able to connect to Apache in order to collect and send metrics. To do this, you will have to either establish a remote connection in between the extension and the product, or have an agent on the same machine running the product in order for the extension to collect and send the metrics.
 
 ## Installation
-1. Download and unzip the ApacheMonitor.zip to the "<MachineAgent_Dir>/monitors" directory
+1. Run 'mvn clean install' from "ApacheMonitorRepo"
+1. Unzip the `ApacheMonitor-<Version>.zip` from `target` directory to the "<MachineAgent_Dir>/monitors" directory
 2. Edit the file config.yml as described below in Configuration Section, located in <MachineAgent_Dir>/monitors/ApacheMonitor and update the Apache server(s) details.
 3. All metrics to be reported are configured in metrics.xml. Users can remove entries from metrics.xml to stop the metric from reporting, or add new entries as well.
 4. Restart the Machine Agent
@@ -30,7 +31,8 @@ More info on mod_jk is available [here](http://tomcat.apache.org/connectors-doc/
 Following are the sample configuration files that need to be setup for mod_jk metrics. Please check this [link](http://tomcat.apache.org/connectors-doc/common_howto/quick.html) for more details.
 
 ### httpd.conf
-   ~~~
+
+```
   LoadModule    jk_module  modules/mod_jk.so
   JkWorkersFile conf/workers.properties
   JkShmFile     /var/log/httpd/mod_jk.shm
@@ -45,9 +47,11 @@ Following are the sample configuration files that need to be setup for mod_jk me
       Allow from localhost
   </Location>
 
-   ~~~
+```
+
 ### worker.properties file
-   ~~~
+
+```
   worker.list=worker1,worker2,loadbalancer,statusmanager
 
   #worker1
@@ -70,23 +74,24 @@ Following are the sample configuration files that need to be setup for mod_jk me
   #status manager
   worker.statusmanager.type=status
 
-   ~~~
+```
 
 #### Config.yml
 
 Configure the extension by editing the config.yml file in `<MACHINE_AGENT_HOME>/monitors/ApacheMonitor/`.
 
-  1. Configure the "COMPONENT_ID" under which the metrics need to be reported. This can be done by changing the value of `<COMPONENT_ID>` in
-       metricPrefix: "Server|Component:<COMPONENT_ID>|Custom Metrics|Apache|".
+1. Configure the "COMPONENT_ID" under which the metrics need to be reported. This can be done by changing the value of `<COMPONENT_ID>` in `metricPrefix: "Server|Component:<COMPONENT_ID>|Custom Metrics|Apache|"`.
 
-       For example,
-       ```
+For example,
+```
        metricPrefix: "Server|Component:100|Custom Metrics|Apache|"
+```
+More details around metric prefix can be found [here](https://community.appdynamics.com/t5/Knowledge-Base/How-do-I-troubleshoot-missing-custom-metrics-or-extensions/ta-p/28695)
 
-  2. The extension supports reporting metrics from multiple apache instances. Have a look at config.yml for more details.
+2. The extension supports reporting metrics from multiple apache instances. Have a look at config.yml for more details.
 
-      For example:
-      ```
+For example:
+```
       servers:
        - displayName: "Local Apache"
          host: "localhost"
@@ -94,26 +99,25 @@ Configure the extension by editing the config.yml file in `<MACHINE_AGENT_HOME>/
          username: ""
          password: ""
          encryptedPassword: ""
-         useSsl: false
+         useSSL: false
 
       connection:
         socketTimeout: 5000
         connectTimeout: 2500
         sslCertCheckEnabled: true
         sslVerifyHostname: false
-      ```
-  3. Configure the encyptionKey for encryptionPasswords(only if password encryption required).
-     For example,
-     ```
+```
+3. Configure the encyptionKey for encryptionPasswords(only if password encryption required).
+For example,
+```
      #Encryption key for Encrypted password.
      encryptionKey: "axcdde43535hdhdgfiniyy576"
-     ```
-  4. Configure the numberOfThreads
-     For example,
-     If number of servers that need to be monitored is 3, then number of threads required is 3 * 4 = 12
-     ```
+```
+4. Configure the numberOfThreads
+For example, if number of servers that need to be monitored is 3, then number of threads required is 3 * 4 = 12
+```
      numberOfThreads: 12
-     ```
+```
 #### Metrics.xml
 
 You can add/remove metrics of your choosing by modifying the provided metrics.xml file. This file consists of all the metrics that
@@ -123,75 +127,44 @@ that you would like displayed on the metric browser.
 
 This monitor provides an option to add a custom URL for monitoring the metrics provided by the particular end-point.
 ##### Custom Stats Configuration
- If you have any custom URL's which return delimiter separated metrics, please define them in metrics.xml as following:
- ```
+If you have any custom URL's which return delimiter separated metrics, please define them in metrics.xml as following:
+```
  <stat name="customStats">
      <stat url=<URL-of-custom-stats> keyValueSeparator=<Delimiter> >
         <metric attr=<AttributeToMonitor> alias="<PathofMetric>" aggregationType = "OBSERVATION" timeRollUpType = "CURRENT" clusterRollUpType = "COLLECTIVE"/>
      </stat>
  </stat>
- ```
+```
 For configuring the metrics, the following properties can be used:
 
-     |     Property      |   Default value |         Possible values         |                                              Description                                                                                                |
-     | :---------------- | :-------------- | :------------------------------ | :------------------------------------------------------------------------------------------------------------- |
-     | alias             | metric name     | Any string                      | The substitute name to be used in the metric browser instead of metric name.                                   |
-     | aggregationType   | "AVERAGE"       | "AVERAGE", "SUM", "OBSERVATION" | [Aggregation qualifier](https://docs.appdynamics.com/display/PRO44/Build+a+Monitoring+Extension+Using+Java)    |
-     | timeRollUpType    | "AVERAGE"       | "AVERAGE", "SUM", "CURRENT"     | [Time roll-up qualifier](https://docs.appdynamics.com/display/PRO44/Build+a+Monitoring+Extension+Using+Java)   |
-     | clusterRollUpType | "INDIVIDUAL"    | "INDIVIDUAL", "COLLECTIVE"      | [Cluster roll-up qualifier](https://docs.appdynamics.com/display/PRO44/Build+a+Monitoring+Extension+Using+Java)|
-     | multiplier        | 1               | Any number                      | Value with which the metric needs to be multiplied.                                                            |
-     | convert           | null            | Any key value map               | Set of key value pairs that indicates the value to which the metrics need to be transformed. eg: UP:0, DOWN:1  |
-     | delta             | false           | true, false                     | If enabled, gives the delta values of metrics instead of actual values.                                        |
+|     Property      |   Default value |         Possible values         |                                              Description                                                                                                |
+| :---------------- | :-------------- | :------------------------------ | :------------------------------------------------------------------------------------------------------------- |
+| alias             | metric name     | Any string                      | The substitute name to be used in the metric browser instead of metric name.                                   |
+| aggregationType   | "AVERAGE"       | "AVERAGE", "SUM", "OBSERVATION" | [Aggregation qualifier](https://docs.appdynamics.com/display/latest/Build+a+Monitoring+Extension+Using+Java)    |
+| timeRollUpType    | "AVERAGE"       | "AVERAGE", "SUM", "CURRENT"     | [Time roll-up qualifier](https://docs.appdynamics.com/display/latest/Build+a+Monitoring+Extension+Using+Java)   |
+| clusterRollUpType | "INDIVIDUAL"    | "INDIVIDUAL", "COLLECTIVE"      | [Cluster roll-up qualifier](https://docs.appdynamics.com/display/latest/Build+a+Monitoring+Extension+Using+Java)|
+| multiplier        | 1               | Any number                      | Value with which the metric needs to be multiplied.                                                            |
+| convert           | null            | Any key value map               | Set of key value pairs that indicates the value to which the metrics need to be transformed. eg: UP:0, DOWN:1  |
+| delta             | false           | true, false                     | If enabled, gives the delta values of metrics instead of actual values.                                        |
 
-     For example,
-     ```
+For example,
+```
      - name: "CPUUtilization"
               alias: "CPULoad"
               aggregationType: "OBSERVATION"
               timeRollUpType: "CURRENT"
               clusterRollUpType: "COLLECTIVE"
               delta: false
-     ```
-     **All these metric properties are optional, and the default value shown in the table is applied to the metric(if a property has not been specified) by default.**
+```
+**All these metric properties are optional, and the default value shown in the table is applied to the metric(if a property has not been specified) by default.**
 
 ## Metrics
 
-### Availability:
- Uptime (1 or 0)
-
-### Resource Utilization:
-     |     Property                |     Description                                                             |                                                                                              |
-     | :-------------------------- | :-------------------------------------------------------------------------- |
-     | CPU Load (N/A on Windows)   | The substitute name to be used in the metric browser instead of metric name.|                                   |
-     | Processes                   |                                                                             |
-     | Busy Workers                | The number of Apache processes actively processing an HTTP request          |
-     | Idle Workers                | The number of idle Apache processes waiting for an HTTP request.            |
-     | Total Connections                      |                                                                             |
-
-### Activity:
-     |     Property                |     Description                                                             |                                                                                              |
-     | :-------------------------- | :-------------------------------------------------------------------------- |
-     | Accesses                    | Total number of accesses per Minute                                         |
-     | Total Traffic (kb)          |                                                                             |
-     | Requests per second         | The number of HTTP requests the web server is processing per second.        |
-     | Bytes per second            | The amount of data the web server is transferring per second.               |
-     | Bytes per request           | The average number of bytes being transferred per HTTP request.             |
-     | Activity Types              |                                                                             |
-     | Starting up                 |                                                                             |
-     | Reading Request             |                                                                             |
-     | Sending Reply               |                                                                             |
-     | Keepalive                   |                                                                             |
-     | DNS Lookup                  |                                                                             |
-     | Closing Connection          |                                                                             |
-     | Logging                     |                                                                             |
-     | Gracefully Finishing        |                                                                             |
-     | Cleaning up of working      |                                                                             |
+### Server status metrics
+Please refer to metrics.xml file located at `<MachineAgentInstallationDirectory>/monitors/ApacheMonitor/metrics.xml` to view the metrics which this extension can report.
 
 ### Load balancing metrics:
- In addition to the above specified metrics, this extension can also show metrics from mod_jk status. To do this we have to
- configure mod_jk in the apache HTTP server. More info on mod_jk can be found [here](http://tomcat.apache.org/connectors-doc/)
-
-
+ This extension can also show metrics from mod_jk status. To do this we have to configure mod_jk in the apache HTTP server. More info on mod_jk can be found [here](http://tomcat.apache.org/connectors-doc/)
 
 ## Credentials Encryption
 
@@ -204,8 +177,8 @@ Workbench is an inbuilt feature provided with each extension in order to assist 
 1. Please enable mod_status on the HTTP server to get stats. For more information, see [Apache Module mod_status](http://httpd.apache.org/docs/2.0/mod/mod_status.html).
 2. Use `curl` to verify that the URL works: http://your-apache-server:90/server-status?auto
 
-  ~~~
-   > curl http://localhost:90/server-status?auto
+```
+   > curl -v http://localhost:90/server-status?auto
     Total kBytes: 3
     Total Accesses: 3
     Total kBytes: 3
@@ -216,7 +189,7 @@ Workbench is an inbuilt feature provided with each extension in order to assist 
     BusyWorkers: 1
     IdleWorkers: 7
     Scoreboard: __W___……………….
-  ~~~
+```
 
 3. Please follow the steps listed in this [troubleshooting-document](https://community.appdynamics.com/t5/Knowledge-Base/How-to-troubleshoot-missing-custom-metrics-or-extensions-metrics/ta-p/28695) in order to troubleshoot your issue. These are a set of common issues that customers might have faced during the installation of the extension.
 
@@ -228,7 +201,8 @@ Always feel free to fork and contribute any changes directly here on [GitHub](ht
 |          Name            |  Version   |
 |--------------------------|------------|
 |Extension Version         |2.0.4       |
-|Controller Compatibility  |4.5 or Later|
-|Agent Compatibility  |4.5.13 or Later|
 |Product Tested On         |4.5.12+     |
 |Last Update               |04/01/2021  |
+|Changes list              |[ChangeLog](https://github.com/Appdynamics/apache-monitoring-extension/blob/master/CHANGELOG.md)|
+
+**Note**: While extensions are maintained and supported by customers under the open-source licensing model, they interact with agents and Controllers that are subject to [AppDynamics’ maintenance and support policy](https://docs.appdynamics.com/latest/en/product-and-release-announcements/maintenance-support-for-software-versions). Some extensions have been tested with AppDynamics 4.5.13+ artifacts, but you are strongly recommended against using versions that are no longer supported.
