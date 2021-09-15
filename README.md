@@ -150,11 +150,11 @@ For configuring the metrics, the following properties can be used:
 For example,
 ```
      - name: "CPUUtilization"
-              alias: "CPULoad"
-              aggregationType: "OBSERVATION"
-              timeRollUpType: "CURRENT"
-              clusterRollUpType: "COLLECTIVE"
-              delta: false
+       alias: "CPULoad"
+       aggregationType: "OBSERVATION"
+       timeRollUpType: "CURRENT"
+       clusterRollUpType: "COLLECTIVE"
+       delta: false
 ```
 **All these metric properties are optional, and the default value shown in the table is applied to the metric(if a property has not been specified) by default.**
 
