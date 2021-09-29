@@ -8,16 +8,19 @@ The Apache HTTP Server is a widely-used web server supported by the Apache Softw
 
 1. Before the extension is installed, the prerequisites mentioned [here](https://community.appdynamics.com/t5/Knowledge-Base/Extensions-Prerequisites-Guide/ta-p/35213) need to be met. Please do not proceed with the extension installation if the specified prerequisites are not met.
 
-2. Please enable mod_status on the HTTP server to get stats. Install Apache mod_status on your Apache instance. For more information, see [Apache Module mod_status](http://httpd.apache.org/docs/2.0/mod/mod_status.html).
+2. Download and install [Apache Maven](https://maven.apache.org/) which is configured with `Java 8` to build the extension artifact from source. You can check the java version used in maven using command `mvn -v` or `mvn --version`. If your maven is using some other java version then please download java 8 for your platform and set JAVA_HOME parameter before starting maven.
 
-3. The extension needs to be able to connect to Apache in order to collect and send metrics. To do this, you will have to either establish a remote connection in between the extension and the product, or have an agent on the same machine running the product in order for the extension to collect and send the metrics.
+3. Please enable mod_status on the HTTP server to get stats. Install Apache mod_status on your Apache instance. For more information, see [Apache Module mod_status](http://httpd.apache.org/docs/2.0/mod/mod_status.html).
+
+4. The extension needs to be able to connect to Apache in order to collect and send metrics. To do this, you will have to either establish a remote connection in between the extension and the product, or have an agent on the same machine running the product in order for the extension to collect and send the metrics.
 
 ## Installation
-1. Run 'mvn clean install' from "ApacheMonitorRepo"
-1. Unzip the `ApacheMonitor-<Version>.zip` from `target` directory to the "<MachineAgent_Dir>/monitors" directory
-2. Edit the file config.yml as described below in Configuration Section, located in <MachineAgent_Dir>/monitors/ApacheMonitor and update the Apache server(s) details.
-3. All metrics to be reported are configured in metrics.xml. Users can remove entries from metrics.xml to stop the metric from reporting, or add new entries as well.
-4. Restart the Machine Agent
+1. Clone the "apache-monitoring-extension" repo using `git clone <repoUrl>` command.
+2. Run 'mvn clean install' from "apache-monitoring-extension"
+3. Unzip the `ApacheMonitor-<Version>.zip` from `target` directory to the "<MachineAgent_Dir>/monitors" directory
+4. Edit the file config.yml as described below in Configuration Section, located in <MachineAgent_Dir>/monitors/ApacheMonitor and update the Apache server(s) details.
+5. All metrics to be reported are configured in metrics.xml. Users can remove entries from metrics.xml to stop the metric from reporting, or add new entries as well.
+6. Restart the Machine Agent
 
 Please place the extension in the **"monitors"** directory of your **Machine Agent** installation directory. Do not place the extension in the **"extensions"** directory of your **Machine Agent** installation directory.
  
