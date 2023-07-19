@@ -1,5 +1,8 @@
 # AppDynamics Extensions Apache CHANGELOG
 
+## 2.0.5 - Feb 2, 2023
+1. Updated to appd-exts-commons 2.2.8
+
 ## 2.0.4 - Jan 4, 2021
 1. Updated to appd-exts-commons 2.2.4
 
