@@ -204,7 +204,7 @@ Always feel free to fork and contribute any changes directly here on [GitHub](ht
 |          Name            | Version                                                                                          |
 |--------------------------|--------------------------------------------------------------------------------------------------|
 |Extension Version         | 2.0.7                                                                                            |
-|Product Tested On         | (to be updated after QE testing)                                                                 |
+|Product Tested On         | 4.5.13+                                                                                          |
 |Last Update               | 08/28/2024                                                                                       |
 |Changes list              | [ChangeLog](https://github.com/Appdynamics/apache-monitoring-extension/blob/master/CHANGELOG.md) |
 
