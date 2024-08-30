@@ -1,5 +1,9 @@
 # AppDynamics Extensions Apache CHANGELOG
 
+## 2.0.7 - Aug 28, 2024
+1. Updated to appd-exts-commons 2.2.13
+2. Updated junit to 4.13.2
+
 ## 2.0.6 - Jul 23, 2024
 1. Updated to appd-exts-commons 2.2.11
 2. Updated powermock api and junit4 to 2.0.9
